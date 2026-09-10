@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowRight, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import paintCan from "@/assets/akshara-paint-can.png";
-import paintTools from "@/assets/akshara-tools.png";
-import paintStroke from "@/assets/akshara-paint-stroke.png";
+import paintCan from "@/assets/cdn/akshara-paint-can.png.asset.json";
+import paintTools from "@/assets/cdn/akshara-tools.png.asset.json";
+import paintStroke from "@/assets/cdn/akshara-paint-stroke.png.asset.json";
 
 const navItems = ["Home", "About", "Products", "Services", "Projects", "Contact"];
 
@@ -117,19 +117,19 @@ export function AksharaHero() {
         <div className="absolute inset-0 z-20 pointer-events-none">
           <div className="can-wrap absolute left-1/2 top-[56%] w-[min(54vw,410px)] -translate-x-1/2 -translate-y-1/2 will-change-transform sm:top-[59%] sm:w-[min(31vw,430px)]">
             <div className="tools absolute left-1/2 top-[23%] -z-10 w-[106%] -translate-x-1/2 translate-y-[34%] scale-75 opacity-0 will-change-transform">
-              <img src={paintTools} alt="Professional paint brush, roller, scraper and decorating tools" loading="lazy" width={1408} height={1408} className="w-full object-contain product-glow" />
+              <img src={paintTools.url} alt="Professional paint brush, roller, scraper and decorating tools" loading="lazy" width={1408} height={1408} className="w-full object-contain product-glow" />
             </div>
             <div className="can-lid absolute left-[3%] top-[1%] z-20 h-[13%] w-[94%] rounded-[50%] border-[5px] border-primary/30 bg-gradient-to-b from-studio-white via-muted to-primary/25 shadow-lg will-change-transform">
               <span className="absolute inset-[15%] rounded-[50%] border border-primary/20 bg-secondary" />
             </div>
-            <img src={paintCan} alt="Akshara premium architectural paint can" width={1200} height={1408} fetchPriority="high" className="relative z-10 w-full object-contain product-glow" />
+            <img src={paintCan.url} alt="Akshara premium architectural paint can" width={1200} height={1408} fetchPriority="high" className="relative z-10 w-full object-contain product-glow" />
             <span className="can-glint absolute left-[24%] top-[14%] z-20 h-[70%] w-[8%] -skew-x-6 rounded-full bg-studio-white/20 opacity-0 blur-md" />
             <span className="absolute -bottom-[2%] left-[10%] -z-20 h-[8%] w-[80%] rounded-full bg-primary/25 blur-xl" />
           </div>
         </div>
 
         <div className="paint-reveal absolute inset-x-[-8%] top-[42%] z-10 h-[36%] rotate-[-2deg] will-change-[clip-path] sm:top-[34%] sm:h-[46%]">
-          <img src={paintStroke} alt="" aria-hidden="true" loading="lazy" width={1600} height={704} className="h-full w-full object-fill drop-shadow-xl" />
+          <img src={paintStroke.url} alt="" aria-hidden="true" loading="lazy" width={1600} height={704} className="h-full w-full object-fill drop-shadow-xl" />
         </div>
 
         <div className="roller-action absolute left-[18%] top-[38%] z-30 w-[27vw] max-w-[300px] opacity-0 will-change-transform">
