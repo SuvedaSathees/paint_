@@ -1,3 +1,5 @@
+Sitemap: https://akshara-paints.com/sitemap.xml
+
 User-agent: Googlebot
 Allow: /
 

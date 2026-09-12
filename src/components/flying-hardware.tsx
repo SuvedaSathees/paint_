@@ -24,6 +24,30 @@ export function FlyingHardware() {
           className="w-full h-auto object-contain filter drop-shadow-[0_14px_22px_rgba(0,0,0,0.20)]"
         />
       </div>
+
+      {/* 3. Real High-Tensile Chrome Hex Bolt & Washer */}
+      <div className="absolute -left-[24%] sm:-left-[28%] bottom-[3%] w-[28%] sm:w-[32%] rotate-[-10deg] float-reverse">
+        <img
+          src="/akshara-real-bolt.png"
+          alt="Heavy-duty chrome hex bolt and washer"
+          loading="eager"
+          width={1024}
+          height={1024}
+          className="w-full h-auto object-contain mix-blend-multiply filter drop-shadow-[0_16px_24px_rgba(0,0,0,0.22)] contrast-[1.05]"
+        />
+      </div>
+
+      {/* 4. Real Chrome Vanadium Adjustable Wrench */}
+      <div className="absolute -right-[28%] sm:-right-[32%] -top-[8%] w-[34%] sm:w-[38%] rotate-[18deg] float-gentle">
+        <img
+          src="/akshara-real-wrench.png"
+          alt="Professional chrome vanadium adjustable wrench"
+          loading="eager"
+          width={920}
+          height={976}
+          className="w-full h-auto object-contain filter drop-shadow-[0_18px_28px_rgba(0,0,0,0.22)]"
+        />
+      </div>
     </div>
   );
 }

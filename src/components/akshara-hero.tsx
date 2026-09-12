@@ -1,105 +1,23 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ArrowDown, ArrowRight, Menu, X } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FlyingHardware } from "@/components/flying-hardware";
+import { SiteFooter } from "@/components/site-footer";
+import { HomeContent } from "@/components/home-content";
+import { SiteHeader, navItems as heroNavItems } from "@/components/site-header";
 
-const navItems = ["Home", "About", "Products", "Services", "Projects", "Contact"];
+export { heroNavItems };
+
 const SCROLL_DISTANCE = 3800;
 
-function BrandMark() {
-  return (
-    <a href="#top" className="relative z-10 flex items-center gap-3" aria-label="Akshara home">
-      <span className="grid size-9 place-items-center rounded-full bg-primary font-display text-sm font-bold text-primary-foreground shadow-sm">
-        A
-      </span>
-      <span className="leading-none">
-        <strong className="block font-display text-sm tracking-[0.16em] text-primary">AKSHARA</strong>
-        <span className="mt-1 block text-[0.5rem] font-semibold tracking-[0.2em] text-muted-foreground">
-          PAINTS &amp; HARDWARE
-        </span>
-      </span>
-    </a>
-  );
-}
-
 function HeroNav({ onNavigate }: { onNavigate: (toEnd: boolean) => void }) {
-  const [open, setOpen] = useState(false);
-
   return (
-    <header className="hero-nav absolute inset-x-0 top-0 z-50 px-4 pt-4 sm:px-7 sm:pt-6 lg:px-10 opacity-0 pointer-events-none will-change-[transform,opacity]">
-      <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between rounded-full border border-primary/10 bg-background/80 px-4 shadow-sm backdrop-blur-xl sm:px-6">
-        <BrandMark />
-        <nav className="hidden items-center gap-6 lg:flex" aria-label="Main navigation">
-          {navItems.map((item, index) => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => onNavigate(index !== 0)}
-              className={`text-[0.68rem] font-semibold uppercase tracking-[0.13em] transition-colors hover:text-paint-deep cursor-pointer ${
-                index === 0 ? "text-primary" : "text-muted-foreground"
-              }`}
-            >
-              {item}
-            </button>
-          ))}
-        </nav>
-        <Button
-          variant="hero"
-          size="default"
-          type="button"
-          onClick={() => onNavigate(true)}
-          className="hidden h-10 px-5 lg:inline-flex cursor-pointer"
-        >
-          <span>Let&apos;s talk</span>
-          <ArrowRight className="size-3.5" />
-        </Button>
-        <button
-          type="button"
-          className="grid size-10 place-items-center rounded-full text-primary lg:hidden cursor-pointer"
-          onClick={() => setOpen((value) => !value)}
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-        >
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
-      </div>
-      {open && (
-        <nav
-          className="mx-auto mt-2 grid max-w-[1440px] gap-1 rounded-2xl border border-primary/10 bg-background/95 p-3 shadow-lg backdrop-blur-xl lg:hidden animate-in fade-in slide-in-from-top-2"
-          aria-label="Mobile navigation"
-        >
-          {navItems.map((item, index) => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => {
-                onNavigate(index !== 0);
-                setOpen(false);
-              }}
-              className="text-left rounded-xl px-4 py-3 text-sm font-semibold text-primary hover:bg-secondary cursor-pointer"
-            >
-              {item}
-            </button>
-          ))}
-          <div className="pt-2">
-            <Button
-              variant="hero"
-              size="default"
-              type="button"
-              onClick={() => {
-                onNavigate(true);
-                setOpen(false);
-              }}
-              className="w-full justify-center cursor-pointer"
-            >
-              Let&apos;s talk
-            </Button>
-          </div>
-        </nav>
-      )}
-    </header>
+    <SiteHeader
+      onNavigate={onNavigate}
+      className="hero-nav absolute inset-x-0 top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-5 lg:px-8 opacity-0 pointer-events-none will-change-[transform,opacity]"
+    />
   );
 }
 
@@ -107,12 +25,11 @@ export function AksharaHero() {
   const rootRef = useRef<HTMLDivElement>(null);
   const isAnimatingRef = useRef(false);
 
-  const smoothScrollTo = (targetY: number, duration = 3400) => {
-    if (isAnimatingRef.current) return;
-    isAnimatingRef.current = true;
-
+  const smoothScrollTo = (targetY: number, duration = 1000) => {
     const startY = window.scrollY;
     const distance = targetY - startY;
+    if (Math.abs(distance) < 5) return;
+
     const startTime = performance.now();
 
     const step = (currentTime: number) => {
@@ -128,8 +45,6 @@ export function AksharaHero() {
 
       if (progress < 1) {
         requestAnimationFrame(step);
-      } else {
-        isAnimatingRef.current = false;
       }
     };
 
@@ -200,8 +115,8 @@ export function AksharaHero() {
         .to(".camera-halo", { scale: 1.25, opacity: 0.85, duration: 1.1 }, 1.2)
 
         // Stage 05: Can and splashing paint shift right, roller sweeps paint stroke across
-        .to(".can-wrap", { xPercent: 40, yPercent: 14, scale: 0.86, duration: 1.25 }, 3.1)
-        .to(".paint-splash", { scale: 0.96, xPercent: -41.5, yPercent: 0, rotate: 1, duration: 1.25 }, 3.1)
+        .to(".can-wrap", { xPercent: 40, yPercent: -6, scale: 0.78, duration: 1.25 }, 3.1)
+        .to(".paint-splash", { scale: 0.88, xPercent: -41.5, yPercent: 0, rotate: 1, duration: 1.25 }, 3.1)
 
         // Orange paint stroke reveals from left to right across the screen
         .fromTo(
@@ -271,8 +186,8 @@ export function AksharaHero() {
         .to(".scene-wash", { opacity: 1, duration: 1 }, 4.35)
 
         // Stage 07: Finale composition (can rests on right with open lid and splash, copy reveals on left)
-        .to(".can-wrap", { xPercent: 61, yPercent: 22, scale: 0.7, rotate: 360, duration: 1.2 }, 4.7)
-        .to(".paint-splash", { scale: 0.86, xPercent: -41.5, yPercent: -3, rotate: 1, opacity: 0.95, duration: 1.2 }, 4.7)
+        .to(".can-wrap", { xPercent: 61, yPercent: -13, scale: 0.67, rotate: 360, duration: 1.2 }, 4.7)
+        .to(".paint-splash", { scale: 0.77, xPercent: -41.5, yPercent: -3, rotate: 1, opacity: 0.95, duration: 1.2 }, 4.7)
         .fromTo(
           ".final-copy > *",
           { opacity: 0, y: 40 },
@@ -284,8 +199,22 @@ export function AksharaHero() {
     return () => ctx.revert();
   }, []);
 
+  useEffect(() => {
+    const handleHash = () => {
+      if (typeof window !== "undefined" && window.location.hash === "#finale") {
+        setTimeout(() => {
+          smoothScrollTo(SCROLL_DISTANCE, 800);
+        }, 120);
+      }
+    };
+
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
+
   const handleNavigate = (toEnd: boolean) => {
-    smoothScrollTo(toEnd ? SCROLL_DISTANCE : 0, 2000);
+    smoothScrollTo(toEnd ? SCROLL_DISTANCE : 0, 1000);
   };
 
   return (
@@ -303,19 +232,19 @@ export function AksharaHero() {
         {/* Initial Stage Intro Copy */}
         <div className="intro-copy absolute left-1/2 top-[calc(19%-50px)] z-10 w-full -translate-x-1/2 px-5 text-center sm:top-[calc(18%-50px)] pointer-events-none">
           <p className="mb-3 text-[0.63rem] font-bold uppercase tracking-[0.32em] text-paint-deep">
-            Built for beautiful spaces
+            Authorised Birla Opus Dealer &middot; Erode
           </p>
           <h1 className="font-display text-[clamp(2.7rem,8vw,7.2rem)] font-semibold leading-[0.86] tracking-[0.02em] text-primary">
             AKSHARA
           </h1>
-          <p className="mt-4 text-[0.65rem] font-semibold uppercase tracking-[0.35em] text-navy-soft sm:text-xs">
+          <p className="mt-4 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-navy-soft sm:text-xs">
             Paints &amp; Hardware
           </p>
         </div>
 
         {/* Product Stage: Paint Can, Open Lid, Splashing Paint, and Emerging Tools */}
         <div className="absolute inset-0 z-20 pointer-events-none">
-          <div className="can-wrap absolute left-1/2 top-[calc(56%+30px)] w-[min(54vw,410px)] -translate-x-1/2 -translate-y-1/2 will-change-transform sm:top-[calc(59%+30px)] sm:w-[min(31vw,430px)]">
+          <div className="can-wrap absolute left-1/2 top-[calc(56%+26px)] w-[min(54vw,410px)] -translate-x-1/2 -translate-y-1/2 will-change-transform sm:top-[calc(59%+26px)] sm:w-[min(31vw,430px)]">
             
             {/* Dynamic Photorealistic Orange Paint Splash naturally emerging from inside the can opening */}
             <div
@@ -332,19 +261,21 @@ export function AksharaHero() {
             </div>
 
             {/* The Akshara Paint Can */}
-            <img
-              src="/akshara-paint-can.png?v=4"
-              alt="Akshara premium architectural paint can"
-              width={1200}
-              height={1408}
-              fetchPriority="high"
-              className="relative z-10 w-full object-contain product-glow"
-            />
+            <div className="relative z-10 w-full">
+              <img
+                src="/akshara-paint-can.png?v=emerald-can"
+                alt="Akshara premium architectural paint can"
+                width={1024}
+                height={1024}
+                fetchPriority="high"
+                className="relative z-10 w-full object-contain transition-all duration-500 product-glow drop-shadow-[0_25px_50px_rgba(5,96,58,0.32)]"
+              />
+            </div>
 
             {/* Specular can glint */}
             <span className="can-glint absolute left-[24%] top-[14%] z-20 h-[70%] w-[8%] -skew-x-6 rounded-full bg-studio-white/30 opacity-0 blur-md" />
             {/* Contact floor shadow */}
-            <span className="absolute -bottom-[2%] left-[10%] -z-20 h-[8%] w-[80%] rounded-full bg-primary/25 blur-xl" />
+            <span className="absolute -bottom-[2%] left-[10%] -z-20 h-[8%] w-[80%] rounded-full blur-xl bg-[#05603a]/30" />
 
             {/* Curated 3D Floating Hardware & Tools Orbiting the Paint Box */}
             <FlyingHardware />
@@ -352,7 +283,7 @@ export function AksharaHero() {
         </div>
 
         {/* The Orange Paint Stroke Reveal */}
-        <div className="paint-reveal absolute inset-x-[-8%] top-[42%] z-10 h-[36%] rotate-[-2deg] will-change-[clip-path] sm:top-[34%] sm:h-[46%] pointer-events-none">
+        <div className="paint-reveal absolute inset-x-[-8%] top-[40%] z-10 h-[32%] rotate-[-2deg] will-change-[clip-path] sm:top-[35%] sm:h-[35%] pointer-events-none">
           <img
             src="/akshara-paint-stroke.png"
             alt="Akshara textured wet paint stroke"
@@ -378,28 +309,64 @@ export function AksharaHero() {
         {/* Finale: Brand Message & CTA Buttons */}
         <div
           id="finale"
-          className="final-copy absolute left-[7vw] top-1/2 z-40 w-[min(86vw,610px)] -translate-y-1/2 sm:left-[8vw]"
+          className="final-copy absolute left-[7vw] top-[50%] z-40 w-[min(86vw,560px)] -translate-y-1/2 sm:left-[8vw]"
         >
-          <p className="mb-5 text-xs font-bold uppercase tracking-[0.28em] text-paint-deep opacity-0">
-            Paints · Electrical Pipes · Bolts &amp; Nuts · Building Materials
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-accent opacity-0">
+            &mdash; AUTHORISED BIRLA OPUS DEALER &middot; ERODE &mdash;
           </p>
-          <h2 className="text-balance font-display text-[clamp(2.8rem,6.6vw,6.5rem)] font-semibold leading-[0.92] text-primary opacity-0">
-            Bring Your Space to Life.
+          <h2 className="text-balance font-display text-[clamp(2.1rem,4.5vw,4.1rem)] font-serif font-semibold leading-[0.96] text-primary opacity-0">
+            Paints, Electrical &amp; Construction Supplies.
           </h2>
-          <p className="mt-6 max-w-md text-sm leading-7 text-navy-soft opacity-0 sm:text-base">
-            Authorised dealer for Birla Opus Paints, electrical conduit pipes, heavy-duty bolts &amp; nuts, and reliable building supplies.
+          <p className="mt-3.5 max-w-md text-sm leading-relaxed text-[#0E2838] font-semibold opacity-0 sm:text-[0.95rem] drop-shadow-[0_1px_0_rgba(255,255,255,0.35)]">
+            From signature Birla Opus computerized color tinting to ISI rigid conduit pipes, industrial fasteners, and site hardware supplies &mdash; delivered direct to your job site in Erode.
           </p>
-          <div className="mt-8 flex flex-col gap-3 opacity-0 sm:flex-row">
+          <div className="mt-6 flex flex-col gap-3 opacity-0 sm:flex-row sm:items-center">
             <Button variant="hero" size="hero" asChild>
-              <a href="mailto:hello@aksharapaints.com">
-                Explore our products <ArrowRight className="size-4" />
+              <a href="#products-showcase">
+                Explore Divisions
               </a>
             </Button>
             <Button variant="heroOutline" size="hero" asChild>
-              <a href="https://maps.google.com" target="_blank" rel="noreferrer">
-                Visit our store
+              <a href="#estimator">
+                Instant Paint Calculator
               </a>
             </Button>
+          </div>
+
+          {/* Compact Trust Stats Row */}
+          <div className="mt-5 pt-4 border-t border-primary/12 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-lg opacity-0">
+            <div className="flex flex-col">
+              <span className="font-display text-base sm:text-lg font-bold text-primary leading-tight">
+                5000+
+              </span>
+              <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
+                Colours in Stock
+              </span>
+            </div>
+            <div className="flex flex-col sm:border-l sm:border-primary/10 sm:pl-3">
+              <span className="font-display text-base sm:text-lg font-bold text-primary leading-tight">
+                15+
+              </span>
+              <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
+                Years in Erode
+              </span>
+            </div>
+            <div className="flex flex-col sm:border-l sm:border-primary/10 sm:pl-3">
+              <span className="font-display text-base sm:text-lg font-bold text-primary leading-tight">
+                1200+
+              </span>
+              <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
+                Projects Done
+              </span>
+            </div>
+            <div className="flex flex-col sm:border-l sm:border-primary/10 sm:pl-3">
+              <span className="font-display text-base sm:text-lg font-bold text-primary leading-tight">
+                98%
+              </span>
+              <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
+                Satisfaction
+              </span>
+            </div>
           </div>
         </div>
 
@@ -414,6 +381,11 @@ export function AksharaHero() {
           <ArrowDown className="size-4 animate-bounce" />
         </button>
       </section>
+
+      {/* Extended Rich Home Content */}
+      <HomeContent />
+
+      <SiteFooter />
     </main>
   );
 }
