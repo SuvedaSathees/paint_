@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Palette, Check, ShoppingBag, Eye, ArrowRight } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Palette, Check, ShoppingBag, Eye, ArrowRight, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ShadeCard {
@@ -239,10 +240,22 @@ export function RoomVisualizer() {
                 variant="hero"
                 size="sm"
                 asChild
-                className="rounded-full cursor-pointer text-xs gap-1"
+                className="rounded-full cursor-pointer text-xs gap-1.5 font-bold shadow-sm"
+              >
+                <Link to="/visualizer">
+                  <Camera className="size-3.5" />
+                  <span>Upload &amp; Paint Your Own Room &rarr;</span>
+                </Link>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="rounded-full cursor-pointer text-xs gap-1 border-primary/25"
               >
                 <a
-                  href={`https://wa.me/919876543210?text=Hi%20Akshara%20Paints,%20I%20would%20like%20to%20order%20a%20tester%20or%20tin%20for%20shade%20${encodeURIComponent(selectedShade.name)}%20(${selectedShade.code})`}
+                  href={`https://wa.me/919443722255?text=Hi%20Akshara%20Paints,%20I%20would%20like%20to%20order%20a%20tester%20or%20tin%20for%20shade%20${encodeURIComponent(selectedShade.name)}%20(${selectedShade.code})`}
                   target="_blank"
                   rel="noreferrer"
                   className="gap-1"

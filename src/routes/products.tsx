@@ -1,1337 +1,1096 @@
-import { useState, useMemo } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
-import {
-  Gem,
-  Sun,
-  Paintbrush,
-  Layers,
-  ShieldCheck,
-  Shield,
-  Flame,
-  Zap,
-  Building2,
-  Box,
-  Anchor,
-  Award,
-  Ruler,
-  Wrench,
-  Sparkles,
-  RefreshCw,
-  Feather,
-  Check,
-  Search,
-  CheckCircle2,
-  Package,
-  ArrowRight,
-  Copy,
-  SlidersHorizontal,
-  Plus,
-} from "lucide-react";
+import { Search } from "lucide-react";
 
 export const Route = createFileRoute("/products")({
   head: () => ({
     meta: [
-      { title: "What We Sell | Akshara Paints & Hardware" },
+      { title: "Commercial Products & Building Materials | Akshara Paints & Hardware Erode" },
       {
         name: "description",
         content:
-          "Explore Birla Opus decorative paints, electrical conduit pipes, industrial bolts & nuts, and construction supplies from Akshara Paints & Hardware.",
+          "Browse wholesale and contractor supplies across 6 commercial categories: Birla Opus paints, electrical conduits, high-tensile fasteners, waterproofing solutions, and building supplies in Erode.",
       },
-      { property: "og:title", content: "What We Sell | Akshara Paints & Hardware" },
+      { property: "og:title", content: "Commercial Products & Building Materials | Akshara Paints & Hardware Erode" },
       {
         property: "og:description",
         content:
-          "Birla Opus paints, electrical conduit piping, fasteners, and professional tools in a premium 3x3 showcase.",
+          "Explore Birla Opus paints, electrical conduit pipes, structural fasteners, and construction materials with same-day site dispatch across Erode.",
       },
       { property: "og:type", content: "website" },
+      {
+        name: "keywords",
+        content:
+          "Birla Opus paints Erode, electrical conduit pipes Erode, high tensile fasteners Erode, foundation bolts, waterproofing chemicals, building materials supplier Erode, Perundurai SIPCOT materials",
+      },
     ],
   }),
   component: ProductsPage,
 });
 
-// Custom Wood Grain / Swatch panel icon for Primer & Wood Finish
-function WoodGrainIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <rect x="4" y="3" width="16" height="18" rx="3" />
-      <path d="M9 3v4c0 1.5.5 3 2 4.5 1.5 1.5 2 3 2 4.5v5" />
-      <path d="M15 3v2c0 2-1 3.5-2 5" />
-      <path d="M12 15c0 1.5.5 2.5 1.5 3.5 1 1 1.5 1.5 1.5 2.5" />
-      <path d="M8 12c0 2 1 3.5 1 5" />
-    </svg>
-  );
-}
-
-interface FeatureItem {
-  icon: typeof Gem | typeof WoodGrainIcon;
-  name: string;
-  subname?: string;
-  bg: string;
-}
-
-interface ProductItem {
+export interface SubcategoryItem {
   id: string;
-  name: string;
-  category: "paints" | "pipes" | "fasteners" | "tools" | "materials" | "waterproofing";
-  eyebrow: string;
-  tagline: string;
+  title: string;
   badge: string;
+  highlight: string;
   image: string;
-  features: FeatureItem[];
-  ctaText: string;
-  sloganLines: string[];
+  description: string;
+  specs: string;
+  ctaLabel: string;
 }
 
-const productsCatalog: ProductItem[] = [
-  // 1. Birla Opus Paints (Authorised Dealer)
+export interface CategoryItem {
+  id: string;
+  title: string;
+  shortTitle: string;
+  highlight: string;
+  image: string;
+  description: string;
+  subcategoriesCountText: string;
+  subcategories: SubcategoryItem[];
+}
+
+const catalogCategories: CategoryItem[] = [
   {
-    id: "birla-opus-paints",
-    name: "Birla Opus Paints",
-    category: "paints",
-    eyebrow: "AUTHORISED DEALER",
-    tagline: "Interior & exterior emulsions, primers, textures and computerized tinting on-site.",
-    badge: "OFFICIAL DEALER",
+    id: "paints",
+    title: "Birla Opus Decorative Paints",
+    shortTitle: "Birla Paints",
+    highlight: "2,200+ Shades | Computerized Tinting",
     image: "/product-paints.jpg",
-    features: [
-      { icon: Gem, name: "Luxury", subname: "Emulsion", bg: "#FCE7DF" },
-      { icon: Sun, name: "Weather", subname: "Guard", bg: "#D8EFE4" },
-      { icon: WoodGrainIcon, name: "Primer", bg: "#F3EDE2" },
-      { icon: Layers, name: "Wood", subname: "Finish", bg: "#E5DEFA" },
+    description:
+      "Architectural interior emulsions, exterior weatherproof coatings, wood finishes, and computerized custom color dispensing.",
+    subcategoriesCountText: "9 Subcategories / 50+ Products",
+    subcategories: [
+      {
+        id: "interior-luxury-emulsions",
+        title: "Interior Luxury Emulsions",
+        badge: "15+ Products",
+        highlight: "Opus Calista & Style | Ultra Sheen",
+        image: "/akshara-paint-can-emerald.png",
+        description:
+          "High-durability washable emulsions with zero volatile organic compounds and stain-resistant acrylic formulations.",
+        specs: "Packs: 1L, 4L, 10L, 20L | Coverage: 140 sq.ft per Liter",
+        ctaLabel: "Inquire Interior Paints",
+      },
+      {
+        id: "exterior-weatherproof-coatings",
+        title: "Exterior Weatherproof Coatings",
+        badge: "12+ Products",
+        highlight: "AllDry Rain-Shield | 10-Yr Guard",
+        image: "/akshara-paint-can-navy.png",
+        description:
+          "UV-stable elastomeric exterior paints designed to withstand tropical monsoon rains and prevent fungus buildup.",
+        specs: "Packs: 4L, 10L, 20L | Coverage: 65 sq.ft per Liter",
+        ctaLabel: "Inquire Exterior Paints",
+      },
+      {
+        id: "wood-finishes-polyurethane",
+        title: "Wood Finishes & Polyurethane Enamels",
+        badge: "8+ Products",
+        highlight: "High Gloss & Satin | Teak Certified",
+        image: "/akshara-paint-can-obsidian.png",
+        description:
+          "Mirror-sheen protective enamels and clear polyurethane coats for architectural doors, trims, and metal fabrication.",
+        specs: "Packs: 500ml, 1L, 4L | Application: Spray & Brush",
+        ctaLabel: "Inquire Wood Finishes",
+      },
+      {
+        id: "undercoats-primers-putty",
+        title: "Undercoats, Primers & Wall Putty",
+        badge: "10+ Products",
+        highlight: "Damp-Block Sealer | Acrylic Formula",
+        image: "/product-paints.jpg",
+        description:
+          "Substrate preparation primers and white cement acrylic putties ensuring uniform adhesion and flawless topcoat sheen.",
+        specs: "Packs: 5kg, 20kg, 40kg Bags & Buckets",
+        ctaLabel: "Inquire Undercoats",
+      },
+      {
+        id: "interior-satin-smooth",
+        title: "Interior Satin & Smooth Emulsions",
+        badge: "10+ Products",
+        highlight: "Elegance & Style | Soft Sheen",
+        image: "/akshara-paint-can.png",
+        description:
+          "Silky smooth washable wall paints offering class 1 scrub resistance, low odor, and uniform coverage for bedrooms and living spaces.",
+        specs: "Packs: 1L, 4L, 10L, 20L | Coverage: 130-150 sq.ft per Liter",
+        ctaLabel: "Inquire Satin Paints",
+      },
+      {
+        id: "terrace-roof-waterproofing",
+        title: "Terrace & Roof Waterproofing",
+        badge: "6+ Products",
+        highlight: "SmartProof Liquid | 7-Bar Seal",
+        image: "/product-waterproofing.jpg",
+        description:
+          "Heavy-duty elastomeric liquid waterproofing membranes providing seamless moisture protection across roof slabs and parapets.",
+        specs: "Packs: 1L, 4L, 10L, 20L | 300% Elongation Capacity",
+        ctaLabel: "Inquire Waterproofing",
+      },
+      {
+        id: "polyurethane-metal-enamels",
+        title: "Polyurethane & Synthetic Enamels",
+        badge: "8+ Products",
+        highlight: "Mirror Gloss | Anti-Rust Shield",
+        image: "/akshara-paint-can-clean.png",
+        description:
+          "High-gloss enamel topcoats providing chip-resistant protection on architectural steel grills, iron gates, and wooden fixtures.",
+        specs: "Packs: 500ml, 1L, 4L, 10L | High Gloss Finish",
+        ctaLabel: "Inquire Metal Enamels",
+      },
+      {
+        id: "computerized-color-tinting",
+        title: "Computerized Tinting & Custom Shades",
+        badge: "2,200+ Shades",
+        highlight: "Instant In-Store | Spectrophotometer",
+        image: "/akshara-swatch-fan.png",
+        description:
+          "Automated digital color dispensing matching architect fandecks, RAL codes, and custom color swatches in under 5 minutes.",
+        specs: "Precision: 0.01ml Batch Accuracy | 5-Minute In-Store Tinting",
+        ctaLabel: "Inquire Custom Shades",
+      },
+      {
+        id: "contractor-rollers-applicators",
+        title: "Contractor Rollers & Applicator Gear",
+        badge: "12+ Tools",
+        highlight: "Lint-Free Microfiber | Stainless Cage",
+        image: "/product-rollers.jpg",
+        description:
+          "Professional high-density microfiber rollers, aluminum extension poles, sash cutting brushes, and paint trays.",
+        specs: "Rollers: 7-inch & 9-inch | Extension Poles: 2m to 4m",
+        ctaLabel: "Inquire Applicator Gear",
+      },
     ],
-    ctaText: "Shop Birla",
-    sloganLines: ["COLOURS", "FOR A BRIGHTER", "TOMORROW"],
   },
-
-  // 2. SmartProof Waterproofing (Advanced Polymer)
   {
-    id: "smartproof-waterproofing",
-    name: "SmartProof Waterproofing",
-    category: "waterproofing",
-    eyebrow: "BIRLA OPUS ADVANCED",
-    tagline: "Liquid elastomeric polymer systems for roof slabs, terraces, basements, and retaining walls.",
-    badge: "ZERO LEAKAGE",
-    image: "/product-waterproofing.jpg",
-    features: [
-      { icon: ShieldCheck, name: "7-Bar", subname: "Proof", bg: "#E0F2FE" },
-      { icon: Layers, name: "Seamless", subname: "Film", bg: "#D8EFE4" },
-      { icon: Building2, name: "Slab", subname: "Sealer", bg: "#F3EDE2" },
-      { icon: Sparkles, name: "UV", subname: "Stable", bg: "#E5DEFA" },
-    ],
-    ctaText: "Shop SmartProof",
-    sloganLines: ["LIFETIME MOISTURE", "BARRIER DEFENCE", "SEALED"],
-  },
-
-  // 3. Rigid PVC Conduit Pipes (ISI 9537)
-  {
-    id: "rigid-pvc-conduits",
-    name: "Rigid PVC Conduits",
-    category: "pipes",
-    eyebrow: "ISI:9537 CERTIFIED PVC",
-    tagline: "High-impact unplasticised PVC conduits engineered for safe residential, commercial & slab wiring.",
-    badge: "ISI:9537 APPROVED",
+    id: "pipes",
+    title: "Electrical Conduit Systems",
+    shortTitle: "Conduit Pipes",
+    highlight: "IS:9537 Part 3 | High Impact Rigid PVC",
     image: "/product-pipes.jpg",
-    features: [
-      { icon: Flame, name: "Fire", subname: "Retard", bg: "#FEF3C7" },
-      { icon: Zap, name: "High", subname: "Impact", bg: "#D8EFE4" },
-      { icon: Building2, name: "Slab", subname: "Castable", bg: "#F3EDE2" },
-      { icon: ShieldCheck, name: "Non", subname: "Corrosive", bg: "#E5DEFA" },
+    description:
+      "Commercial-grade electrical raceways, fire-retardant conduit pipes, inspection bends, and junction accessories.",
+    subcategoriesCountText: "9 Subcategories / 40+ Products",
+    subcategories: [
+      {
+        id: "rigid-conduits",
+        title: "Heavy Duty Rigid PVC Conduits",
+        badge: "10+ Products",
+        highlight: "20mm to 32mm | Fire Retardant",
+        image: "/product-pipes.jpg",
+        description:
+          "Crush-resistant conduit pipes designed for concealed concrete slab casting and surface-mounted wiring runs.",
+        specs: "Standard 3-Meter Lengths | Medium & Heavy Duty",
+        ctaLabel: "Inquire Rigid Conduits",
+      },
+      {
+        id: "conduit-fittings",
+        title: "Conduit Junction Boxes & Bends",
+        badge: "12+ Products",
+        highlight: "Inspection Covers | Brass Inserts",
+        image: "/akshara-real-pipe.png",
+        description:
+          "Deep circular junction boxes, factory 90-degree saddle bends, and solvent-weld male/female conduit couplers.",
+        specs: "1-Way, 2-Way Angle, 3-Way & 4-Way Junctions",
+        ctaLabel: "Inquire Conduit Fittings",
+      },
+      {
+        id: "flexible-pipes",
+        title: "Flexible Corrugated Conduit Pipes",
+        badge: "6+ Products",
+        highlight: "Flame Resistant | Easy Pull",
+        image: "/product-pipes.jpg",
+        description:
+          "Continuous flexible piping for false ceilings, modular partitions, and complex multi-switchboard connections.",
+        specs: "Coils: 25m & 50m | Diameters: 20mm & 25mm",
+        ctaLabel: "Inquire Flexible Conduits",
+      },
+      {
+        id: "metal-conduits",
+        title: "Galvanized Metal Conduits & Saddles",
+        badge: "8+ Products",
+        highlight: "GI Raceways | Industrial Spec",
+        image: "/akshara-silver-pipe.png",
+        description:
+          "Hot-dip galvanized steel conduit systems for exposed industrial plants, factories, and commercial switchrooms.",
+        specs: "Heavy Gauge Steel | Complete with GI Spacers",
+        ctaLabel: "Inquire Metal Conduits",
+      },
+      {
+        id: "pvc-solvent-cement",
+        title: "Heavy-Duty PVC Solvent Cements",
+        badge: "Instant Weld",
+        highlight: "Leak-Proof Fusion | Rapid Set",
+        image: "/akshara-paint-can.png",
+        description:
+          "High-strength chemical welding cement providing permanent pressure-tight seals on PVC conduit joints and fittings.",
+        specs: "Packs: 100ml, 250ml, 500ml, 1 Liter Tins",
+        ctaLabel: "Inquire Solvent Cement",
+      },
+      {
+        id: "inspection-long-bends",
+        title: "Factory 90° Inspection Long Bends",
+        badge: "Easy Pull",
+        highlight: "Smooth Sweep | Removable Port",
+        image: "/product-pipes.jpg",
+        description:
+          "Precision-engineered long sweep conduit bends allowing electricians to navigate wall corners without wire friction.",
+        specs: "Sizes: 20mm & 25mm | Packs of 50 Units",
+        ctaLabel: "Inquire Inspection Bends",
+      },
+      {
+        id: "unistrut-pipe-clamps",
+        title: "Conduit Saddle Clamps & Channel Straps",
+        badge: "Zinc Plated",
+        highlight: "Corrosion Resistant | Vibration Proof",
+        image: "/akshara-real-pipe.png",
+        description:
+          "Two-hole steel base saddles and unistrut channel clamps for rigidly anchoring exposed conduit raceways.",
+        specs: "Packs of 100 | Sized for 20mm, 25mm, 32mm",
+        ctaLabel: "Inquire Saddle Clamps",
+      },
+      {
+        id: "modular-metal-boxes",
+        title: "Concealed Modular Switch Boxes",
+        badge: "GI Metal",
+        highlight: "1 to 18 Modules | Heavy Gauge",
+        image: "/product-pipes.jpg",
+        description:
+          "Galvanized iron flush wall boxes with brass earth terminals engineered for concealed modular electrical plates.",
+        specs: "Module Sizes: 2M, 3M, 4M, 6M, 8M, 12M, 18M",
+        ctaLabel: "Inquire Switch Boxes",
+      },
+      {
+        id: "conduit-couplers-spacers",
+        title: "Couplers, Reducers & Conduit Spacers",
+        badge: "High Precision",
+        highlight: "Snap-Fit Grip | Virgin PVC",
+        image: "/akshara-real-pipe.png",
+        description:
+          "Heavy-gauge precision conduit couplers, female adaptors, and bar saddles ensuring aligned raceway lines.",
+        specs: "Boxes of 100 | 20mm & 25mm Standard Sizing",
+        ctaLabel: "Inquire Conduit Couplers",
+      },
     ],
-    ctaText: "Shop Conduits",
-    sloganLines: ["ISI CERTIFIED", "CONDUIT PIPING", "SAFETY"],
   },
-
-  // 4. Conduit Bends & Modular Fittings
   {
-    id: "conduit-bends-boxes",
-    name: "Conduit Bends & Boxes",
-    category: "pipes",
-    eyebrow: "MODULAR FITTINGS",
-    tagline: "Deep inspection junction boxes, standard bends, inspection elbows, and heavy-gauge pipe saddles.",
-    badge: "COMPLETE SYSTEM",
-    image: "/product-pipes.jpg",
-    features: [
-      { icon: Box, name: "Snap-Fit", subname: "Lids", bg: "#FCE7DF" },
-      { icon: Layers, name: "1–4 Way", subname: "Boxes", bg: "#D8EFE4" },
-      { icon: Sun, name: "UV", subname: "Shield", bg: "#F3EDE2" },
-      { icon: Zap, name: "Heavy", subname: "Gauge", bg: "#E5DEFA" },
-    ],
-    ctaText: "Shop Fittings",
-    sloganLines: ["PRECISION FIT", "WIRING SYSTEM", "ACCESSORIES"],
-  },
-
-  // 5. High-Tensile Hex Bolts (Grade 8.8 / 10.9)
-  {
-    id: "high-tensile-bolts",
-    name: "High-Tensile Hex Bolts",
-    category: "fasteners",
-    eyebrow: "INDUSTRIAL FASTENERS",
-    tagline: "Cold-forged zinc-plated and hot-dip galvanised structural hex bolts with flange locking nuts.",
-    badge: "GRADE 8.8 / 10.9",
+    id: "fasteners",
+    title: "High-Tensile Fasteners & Anchor Bolts",
+    shortTitle: "Fasteners",
+    highlight: "Grade 8.8 & 10.9 | M6 to M36 Sizing",
     image: "/product-bolts.jpg",
-    features: [
-      { icon: Anchor, name: "Grade", subname: "8.8 / 10.9", bg: "#F1F5F9" },
-      { icon: Shield, name: "Zinc", subname: "Coated", bg: "#E0F2FE" },
-      { icon: ShieldCheck, name: "High", subname: "Shear", bg: "#F3EDE2" },
-      { icon: Award, name: "DIN 931", subname: "Spec", bg: "#FCE7DF" },
+    description:
+      "Structural steel hex bolts, foundation anchor studs, unistrut hardware, and corrosion-resistant fasteners.",
+    subcategoriesCountText: "9 Subcategories / 60+ Products",
+    subcategories: [
+      {
+        id: "hex-bolts",
+        title: "High-Tensile Hex Bolts & Heavy Nuts",
+        badge: "20+ Sizes",
+        highlight: "Grade 8.8 & 10.9 | ISO 898-1",
+        image: "/product-bolts.jpg",
+        description:
+          "Black oxide and zinc-coated structural bolts engineered for heavy machinery, steel trusses, and PEB sheds.",
+        specs: "M6 to M36 | Lengths up to 300mm in Stock",
+        ctaLabel: "Inquire Structural Bolts",
+      },
+      {
+        id: "foundation-anchors",
+        title: "Foundation Anchor J-Bolts & L-Bolts",
+        badge: "Custom M12-M42",
+        highlight: "Custom Sized | Hot-Dip Galvanized",
+        image: "/akshara-real-bolt.png",
+        description:
+          "Foundation anchor bolts manufactured to custom civil blueprint specifications for concrete column embedding.",
+        specs: "Diameters: M12 to M42 | Straight, J, and L Shapes",
+        ctaLabel: "Inquire Foundation Anchors",
+      },
+      {
+        id: "chemical-anchors",
+        title: "Chemical Anchors & Threaded Studs",
+        badge: "8+ Products",
+        highlight: "Epoxy Capsule | Extreme Pull-Out",
+        image: "/product-threaded-rods.jpg",
+        description:
+          "High-load chemical anchor studs, dispensing nozzles, and all-thread zinc rods for post-installed concrete anchoring.",
+        specs: "Grade 5.8 & 8.8 Rods | Pure Epoxy Cartridges",
+        ctaLabel: "Inquire Chemical Anchors",
+      },
+      {
+        id: "stainless-fasteners",
+        title: "Stainless Steel Fasteners (SS 304 / 316)",
+        badge: "15+ Products",
+        highlight: "Marine Grade | Zero Corrosion",
+        image: "/akshara-real-nuts.png",
+        description:
+          "Austenitic stainless steel allen cap screws, carriage bolts, plain washers, and nyloc lock nuts.",
+        specs: "A2-70 & A4-80 Specs | Bulk Contractor Bags",
+        ctaLabel: "Inquire Stainless Fasteners",
+      },
+      {
+        id: "flange-bolts-serrated",
+        title: "Grade 10.9 Heavy Flange Bolts",
+        badge: "High Torque",
+        highlight: "Integrated Washer | Vibration Proof",
+        image: "/akshara-real-bolt.png",
+        description:
+          "High-tensile serrated flange bolts distributing clamping load uniformly across high-vibration motors and steel brackets.",
+        specs: "M8 to M24 Diameters | High Salt-Spray Zinc Flake",
+        ctaLabel: "Inquire Flange Bolts",
+      },
+      {
+        id: "concrete-wedge-anchors",
+        title: "Concrete Expansion Wedge Anchors",
+        badge: "Heavy Shear",
+        highlight: "Through-Bolt Anchor | Seismic Rated",
+        image: "/akshara-real-bolt.png",
+        description:
+          "Wedge anchor studs with stainless steel expansion collars for anchoring pallet racking and structural baseplates.",
+        specs: "Diameters: M10 to M24 | Lengths 60mm to 200mm",
+        ctaLabel: "Inquire Wedge Anchors",
+      },
+      {
+        id: "unistrut-channel-nuts",
+        title: "Unistrut Spring Channel Nuts",
+        badge: "Zinc Plated",
+        highlight: "Instant Locking | Grooved Teeth",
+        image: "/akshara-real-nuts.png",
+        description:
+          "Spring channel nuts for strut channels, cable tray suspensions, solar panel framing, and MEP brackets.",
+        specs: "Thread Tappings: M6, M8, M10, M12 | Packs of 100",
+        ctaLabel: "Inquire Channel Nuts",
+      },
+      {
+        id: "spring-flat-washers",
+        title: "DIN 127 Spring & Flat Washers",
+        badge: "DIN Standard",
+        highlight: "Spring Steel | Dynamic Anti-Backing",
+        image: "/akshara-real-nuts.png",
+        description:
+          "Split helical spring lock washers and hardened structural flat washers for vibration-resistant bolt fastening.",
+        specs: "Boxes of 200, 500, 1000 Units | M6 to M36 Sizing",
+        ctaLabel: "Inquire Washers",
+      },
+      {
+        id: "threaded-stud-rods",
+        title: "Full Threaded Steel Rods (1m & 2m)",
+        badge: "Continuous Thread",
+        highlight: "Grade 8.8 High Pull-Out Strength",
+        image: "/product-threaded-rods.jpg",
+        description:
+          "High-strength threaded steel studs for false ceiling framing, mechanical hanging systems, and concrete anchoring.",
+        specs: "Lengths: 1m & 2m | Diameters: M8 to M24",
+        ctaLabel: "Inquire Threaded Rods",
+      },
     ],
-    ctaText: "Shop Fasteners",
-    sloganLines: ["HIGH-TENSILE", "STRUCTURAL STEEL", "FASTENERS"],
   },
-
-  // 6. SS 304 Threaded Stud Rods (Marine Grade)
   {
-    id: "stainless-threaded-rods",
-    name: "SS 304 Threaded Rods",
-    category: "fasteners",
-    eyebrow: "A2/A4 STAINLESS STEEL",
-    tagline: "Full-thread stud rods for cable tray suspension, HVAC ducting, plumbing and architectural mounts.",
-    badge: "MARINE GRADE SS",
-    image: "/product-threaded-rods.jpg",
-    features: [
-      { icon: ShieldCheck, name: "Rust", subname: "Proof", bg: "#D8EFE4" },
-      { icon: Ruler, name: "1m & 2m", subname: "Lengths", bg: "#FCE7DF" },
-      { icon: Wrench, name: "Tray", subname: "Hanging", bg: "#E0F2FE" },
-      { icon: Sparkles, name: "SS 304", subname: "Marine", bg: "#E5DEFA" },
+    id: "waterproofing",
+    title: "Moisture & Waterproofing Solutions",
+    shortTitle: "Waterproofing",
+    highlight: "Dr Fixit & Birla Opus | Site Guaranteed",
+    image: "/product-waterproofing.jpg",
+    description:
+      "High-performance terrace coatings, dampness barrier slurries, structural crack fillers, and mortar admixtures.",
+    subcategoriesCountText: "9 Subcategories / 30+ Products",
+    subcategories: [
+      {
+        id: "terrace-waterproofing",
+        title: "Terrace & Roof Waterproofing Membranes",
+        badge: "6+ Products",
+        highlight: "Heat Reflective | Elastomeric",
+        image: "/product-waterproofing.jpg",
+        description:
+          "Seamless solar-reflective liquid membranes bridging thermal micro-cracks and keeping roof slabs watertight.",
+        specs: "Packs: 10L, 20L | Elongation Capacity: > 300%",
+        ctaLabel: "Inquire Roof Membranes",
+      },
+      {
+        id: "basement-barriers",
+        title: "Basement & Retaining Wall Barriers",
+        badge: "5+ Products",
+        highlight: "Crystalline Slurry | Negative Side",
+        image: "/akshara-paint-can-obsidian.png",
+        description:
+          "Two-component polymer-modified cementitious coatings stopping positive and negative water pressure in basements.",
+        specs: "Packs: 15kg & 30kg Kits | Direct Brush Coat",
+        ctaLabel: "Inquire Basement Coatings",
+      },
+      {
+        id: "integral-admixtures",
+        title: "Integral Waterproofing Admixtures",
+        badge: "4+ Products",
+        highlight: "IS:2645 Certified | Zero Porosity",
+        image: "/akshara-paint-can.png",
+        description:
+          "Concentrated liquid plasticizers mixed directly into concrete and plaster mortars to eliminate capillary dampness.",
+        specs: "Dosage: 200ml per 50kg Cement Bag",
+        ctaLabel: "Inquire Integral Admixtures",
+      },
+      {
+        id: "crack-sealants",
+        title: "Masonry Crack Fillers & PU Sealants",
+        badge: "8+ Products",
+        highlight: "Non-Shrink | High Elasticity",
+        image: "/product-building.jpg",
+        description:
+          "Polyurethane gun-grade sealants and acrylic pastes for sealing external wall expansion joints and window frames.",
+        specs: "Cartridges: 600ml Sausages & 310ml Tubes",
+        ctaLabel: "Inquire Crack Sealants",
+      },
+      {
+        id: "sunken-slab-barriers",
+        title: "Sunken Bathroom & Wet Area Slurries",
+        badge: "Zero Leaks",
+        highlight: "Submerged Resistance | Seamless Membrane",
+        image: "/product-waterproofing.jpg",
+        description:
+          "High-flexibility polymer-cement slurry providing permanent waterproofing under tile beds in bathrooms and utility balconies.",
+        specs: "Packs: 10kg & 20kg Buckets | Two-Coat Application",
+        ctaLabel: "Inquire Bathroom Slurries",
+      },
+      {
+        id: "silicone-water-repellent",
+        title: "Silicone Masonry Water Repellents",
+        badge: "Natural Look",
+        highlight: "Invisible Protection | Breathable Guard",
+        image: "/akshara-paint-can-clean.png",
+        description:
+          "Clear penetrating siloxane impregnator shielding exposed brickwork, natural stone cladding, and porous plaster from water absorption.",
+        specs: "Packs: 1L, 5L, 20L | Direct Brush & Spray Coat",
+        ctaLabel: "Inquire Silicone Guards",
+      },
+      {
+        id: "structural-bonding-epoxy",
+        title: "Structural Bonding Agents & SBR Latex",
+        badge: "High Adhesion",
+        highlight: "Old to New Concrete | Polymer Enriched",
+        image: "/product-building.jpg",
+        description:
+          "Styrene-butadiene latex bonding slurries ensuring crack-free cold joint bonding, polymer concrete repairs, and screed coats.",
+        specs: "Packs: 1L, 5L, 20L, 50L Containers",
+        ctaLabel: "Inquire Bonding Latex",
+      },
+      {
+        id: "expansion-joint-tapes",
+        title: "Expansion Joint Tapes & Flashing Rolls",
+        badge: "Extreme Movement",
+        highlight: "Hypalon Membrane | Heavy Duty",
+        image: "/product-waterproofing.jpg",
+        description:
+          "High-elongation thermoplastic elastomeric tapes bonded over building expansion joints and parapet construction cracks.",
+        specs: "Rolls: 20-Meter Lengths | Widths: 150mm & 200mm",
+        ctaLabel: "Inquire Joint Tapes",
+      },
+      {
+        id: "damp-proof-primer-sealer",
+        title: "Efflorescence & Anti-Damp Primers",
+        badge: "Deep Sealer",
+        highlight: "Locks Plaster Salts | Alkali Resistant",
+        image: "/product-paints.jpg",
+        description:
+          "Substrate stabilizing primers blocking salt efflorescence and damp moisture migration prior to exterior paint application.",
+        specs: "Packs: 1L, 4L, 10L, 20L | Spreading: 110 sq.ft/L",
+        ctaLabel: "Inquire Anti-Damp Primers",
+      },
     ],
-    ctaText: "Shop Stud Rods",
-    sloganLines: ["HEAVY SUSPENSION", "CORROSION PROOF", "RODS"],
   },
-
-  // 7. Pro Glide Paint Rollers (Contractor Pick)
   {
-    id: "pro-glide-rollers",
-    name: "Pro Glide Paint Rollers",
-    category: "tools",
-    eyebrow: "CONTRACTOR GRADE",
-    tagline: "9-inch high-density lint-free microfiber sleeves with ergonomic stainless steel cage frames & trays.",
-    badge: "CONTRACTOR PICK",
+    id: "tools",
+    title: "Power Tools & Airless Sprayers",
+    shortTitle: "Power Tools",
+    highlight: "Commercial Grade | Sales & Rental",
     image: "/product-rollers.jpg",
-    features: [
-      { icon: Sparkles, name: "Zero", subname: "Splatter", bg: "#FCE7DF" },
-      { icon: Paintbrush, name: "Lint-Free", subname: "Fabric", bg: "#D8EFE4" },
-      { icon: RefreshCw, name: "Quick", subname: "Rinse", bg: "#F3EDE2" },
-      { icon: Wrench, name: "Ergo", subname: "Grip", bg: "#E5DEFA" },
+    description:
+      "Professional airless paint spray rigs, rotary demolition hammers, angle grinders, and applicator accessories.",
+    subcategoriesCountText: "9 Subcategories / 45+ Products",
+    subcategories: [
+      {
+        id: "airless-sprayers",
+        title: "Commercial Airless Paint Sprayers",
+        badge: "3+ Models",
+        highlight: "Graco & Wagner | Piston Duty",
+        image: "/product-rollers.jpg",
+        description:
+          "High-pressure electric airless paint pumps delivering rapid, uniform coverage on commercial and industrial walls.",
+        specs: "Flow Rates: 1.8 to 4.2 L/min | 220V Electric",
+        ctaLabel: "Inquire Spray Equipment",
+      },
+      {
+        id: "rotary-hammers",
+        title: "Rotary Hammers & SDS Drills",
+        badge: "5+ Models",
+        highlight: "Heavy Impact | Bosch & Makita",
+        image: "/akshara-tools.png",
+        description:
+          "Multi-mode rotary hammer drills designed for concrete anchor drilling, core cutting, and light chiseling work.",
+        specs: "Capacities: 20mm to 32mm | SDS Plus & Max",
+        ctaLabel: "Inquire Rotary Drills",
+      },
+      {
+        id: "roller-brush-kits",
+        title: "Master Rollers & Precision Brushes",
+        badge: "12+ Products",
+        highlight: "Microfiber Core | Shed-Resistant",
+        image: "/product-rollers.jpg",
+        description:
+          "Pro-finish paint roller sleeves, aluminum extension poles, sash angle brushes, and paint trays for painters.",
+        specs: "Rollers: 4-inch & 9-inch | Poles up to 12ft",
+        ctaLabel: "Inquire Applicator Kits",
+      },
+      {
+        id: "grinders-cutters",
+        title: "Angle Grinders & Metal Cutters",
+        badge: "4+ Models",
+        highlight: "High Torque | Safety Clutch",
+        image: "/akshara-tools.png",
+        description:
+          "Heavy-duty 4-inch and 7-inch angle grinders with diamond cutting wheels for steel rebar and masonry chasing.",
+        specs: "Power: 850W to 2200W | Heavy Industrial Duty",
+        ctaLabel: "Inquire Power Grinders",
+      },
+      {
+        id: "cordless-impact-drivers",
+        title: "20V Cordless Brushless Impact Drivers",
+        badge: "Brushless Motor",
+        highlight: "High Torque 65 Nm | Dual 4.0Ah Batteries",
+        image: "/akshara-tools.png",
+        description:
+          "Heavy-duty cordless hammer drills engineered for fast metal roof self-drilling screws and electrical panel mounting.",
+        specs: "Variable 2-Speed Gearbox | LED Worklight Integrated",
+        ctaLabel: "Inquire Cordless Tools",
+      },
+      {
+        id: "telescopic-extension-poles",
+        title: "Anodized Telescopic Extension Poles",
+        badge: "Heavy Gauge",
+        highlight: "2m to 4m Reach | Universal Acme Thread",
+        image: "/product-rollers.jpg",
+        description:
+          "Lightweight fluted aluminum extension poles with twist-lock collar for painting high ceilings, atriums, and stairwells.",
+        specs: "Collapsible 1.5m to 3.6m | Anti-Slip Grip",
+        ctaLabel: "Inquire Extension Poles",
+      },
+      {
+        id: "precision-trim-sash-brushes",
+        title: "Professional Sash & Angle Cut Brushes",
+        badge: "Zero Shedding",
+        highlight: "Pure Bristle & Synthetic Blend",
+        image: "/akshara-real-brush.png",
+        description:
+          "Contractor-grade angled sash brushes for crisp straight cutting lines along baseboards, door frames, and cornices.",
+        specs: "Sizes: 1-inch, 1.5-inch, 2-inch, 3-inch, 4-inch",
+        ctaLabel: "Inquire Trim Brushes",
+      },
+      {
+        id: "power-paint-mortar-mixers",
+        title: "Electric Paint & Putty Stirrer Mixers",
+        badge: "Dual Speed",
+        highlight: "1200W High Torque | Spiral Paddle",
+        image: "/akshara-tools.png",
+        description:
+          "Heavy-duty double-handled electric paddles for lump-free mixing of acrylic putties, cementitious grouts, and thick paints.",
+        specs: "140mm Spiral Stirrer Rod Included | 220V Heavy Duty",
+        ctaLabel: "Inquire Power Mixers",
+      },
+      {
+        id: "heavy-duty-surface-sanders",
+        title: "Wall Putty Drywall Sanders with Vacuum",
+        badge: "Dustless Tech",
+        highlight: "800W Rotary Head | LED Ring Light",
+        image: "/akshara-tools.png",
+        description:
+          "Electric telescopic drywall sanders connecting directly to industrial dust extractors for ultra-smooth wall leveling.",
+        specs: "Disc Diameter: 225mm | Variable Speed 800-1750 RPM",
+        ctaLabel: "Inquire Drywall Sanders",
+      },
     ],
-    ctaText: "Shop Rollers",
-    sloganLines: ["EFFORTLESS GLIDE", "MICROFIBER", "FINISH"],
   },
-
-  // 8. Master Touch Artisan Brushes
   {
-    id: "master-touch-brushes",
-    name: "Master Touch Brushes",
-    category: "tools",
-    eyebrow: "HANDCRAFTED TOOLS",
-    tagline: "Chiseled synthetic and natural tapered bristles for razor-sharp cutting-in and uniform paint laydown.",
-    badge: "HANDCRAFTED WOOD",
-    image: "/product-hardware.jpg",
-    features: [
-      { icon: Feather, name: "Sharp", subname: "Cut-In", bg: "#FCE7DF" },
-      { icon: Layers, name: "Hardwood", subname: "Handle", bg: "#F3EDE2" },
-      { icon: ShieldCheck, name: "Zero", subname: "Shedding", bg: "#D8EFE4" },
-      { icon: Ruler, name: "1\" to 4\"", subname: "Sizes", bg: "#E5DEFA" },
-    ],
-    ctaText: "Shop Brushes",
-    sloganLines: ["PRECISION EDGES", "SURGICAL CUT-IN", "BRUSHES"],
-  },
-
-  // 9. Building & Masonry Materials (Cement, Rebar, Blocks)
-  {
-    id: "building-masonry-materials",
-    name: "Building Materials",
-    category: "materials",
-    eyebrow: "CONSTRUCTION ESSENTIALS",
-    tagline: "Cement, M-sand, binding wire, TMT rebar steel rods, solid concrete blocks and structural supplies.",
-    badge: "SITE DELIVERY",
+    id: "materials",
+    title: "Core Building & Structural Materials",
+    shortTitle: "Building Materials",
+    highlight: "Wholesale Supplies | Direct Site Dispatch",
     image: "/product-building.jpg",
-    features: [
-      { icon: Package, name: "Cement", subname: "50kg Bags", bg: "#D8EFE4" },
-      { icon: Anchor, name: "TMT", subname: "Steel Rods", bg: "#FCE7DF" },
-      { icon: Zap, name: "Binding", subname: "Wire Coils", bg: "#F3EDE2" },
-      { icon: Building2, name: "Solid", subname: "Blocks", bg: "#FEF3C7" },
+    description:
+      "Heavy structural steel channels, TMT binding wires, high-pressure PVC plumbing, and tile bonding adhesives.",
+    subcategoriesCountText: "9 Subcategories / 50+ Products",
+    subcategories: [
+      {
+        id: "structural-steel",
+        title: "Structural Steel Sections & Channels",
+        badge: "Prime Mill",
+        highlight: "MS Angle, C-Channel & Box Pipes",
+        image: "/product-building.jpg",
+        description:
+          "Prime quality mild steel channels, angles, and hollow rectangular tubes for fabrication and canopy framing.",
+        specs: "Lengths: 6 Meters | Prime Tested Mill Material",
+        ctaLabel: "Inquire Structural Steel",
+      },
+      {
+        id: "binding-nails",
+        title: "TMT Binding Wire & Wire Nails",
+        badge: "Site Dispatch",
+        highlight: "Annealed Mild Steel | High Ductility",
+        image: "/product-building.jpg",
+        description:
+          "Rust-resistant soft annealed 18-gauge binding wire bundles and hardened concrete steel nails for formwork.",
+        specs: "Wire Bundles: 25kg | Nails: 1-inch to 4-inch",
+        ctaLabel: "Inquire Binding Wire",
+      },
+      {
+        id: "pvc-plumbing",
+        title: "PVC Plumbing & Drainage Pipes",
+        badge: "10+ Sizes",
+        highlight: "Schedule 40 & 80 | Lead-Free",
+        image: "/product-pipes.jpg",
+        description:
+          "Rigid UPVC and CPVC potable water supply pipes, solvent cements, and sanitary multi-floor drainage fittings.",
+        specs: "Sizes: 1/2-inch to 4-inch | Complete Fittings",
+        ctaLabel: "Inquire Plumbing Pipes",
+      },
+      {
+        id: "tile-adhesives",
+        title: "Polymer Tile Adhesives & Epoxy Grouts",
+        badge: "Type 2 & 4",
+        highlight: "Type 2 & Type 4 | Zero Slip",
+        image: "/product-building.jpg",
+        description:
+          "High-adhesion cementitious tile glues for vitrified floor tiles, granite cladding, and anti-fungal epoxy grout joints.",
+        specs: "Bags: 20kg & 50kg | Epoxy Resin Kits",
+        ctaLabel: "Inquire Tile Adhesives",
+      },
+      {
+        id: "portland-cement-53",
+        title: "53 Grade Ordinary Portland Cement",
+        badge: "IS:12269 Certified",
+        highlight: "High Early Strength | Tested Quality",
+        image: "/product-building.jpg",
+        description:
+          "Prime 53 Grade Portland cement for RCC column casting, heavy foundation footings, and structural engineering projects.",
+        specs: "50kg HDPE Tamper-Evident Bags | Truckload Dispatch",
+        ctaLabel: "Inquire Cement Supply",
+      },
+      {
+        id: "cpvc-hot-water-pipes",
+        title: "CPVC Hot & Cold Pressure Plumbing",
+        badge: "SDR 11 & 13.5",
+        highlight: "Withstands up to 93°C | Zero Corrosion",
+        image: "/product-pipes.jpg",
+        description:
+          "Chlorinated PVC hot and cold drinking water pipes and brass-threaded fittings for solar heaters and geyser lines.",
+        specs: "Standard 3-Meter & 5-Meter Commercial Lengths",
+        ctaLabel: "Inquire CPVC Systems",
+      },
+      {
+        id: "concrete-hardware-nails",
+        title: "Hardened Carbon Steel Concrete Nails",
+        badge: "High Impact",
+        highlight: "Zinc Coated | Shatter-Proof",
+        image: "/akshara-real-bolt.png",
+        description:
+          "Tempered carbon steel grooved nails designed to pierce high-strength concrete slabs, brick masonry, and timber framing.",
+        specs: "Sizes: 1-inch, 1.5-inch, 2-inch, 3-inch | 1kg & 25kg Boxes",
+        ctaLabel: "Inquire Concrete Nails",
+      },
+      {
+        id: "steel-trowels-floats",
+        title: "Plastering Steel Trowels & Finishing Floats",
+        badge: "Pro Mason",
+        highlight: "Spring Steel Blade | Ergonomic Handle",
+        image: "/akshara-real-trowel.png",
+        description:
+          "Precision balanced notched and flat stainless steel trowels for plastering walls, leveling screeds, and laying floor tiles.",
+        specs: "Sizes: 10-inch, 12-inch, 14-inch | Flat & Notched",
+        ctaLabel: "Inquire Masonry Tools",
+      },
+      {
+        id: "tmt-steel-rebar",
+        title: "High-Yield Fe-550D TMT Reinforcement Bars",
+        badge: "BIS Certified",
+        highlight: "Seismic Resistant | High Ductility",
+        image: "/product-building.jpg",
+        description:
+          "Thermo-mechanically treated reinforcement steel bars engineered for residential, commercial, and industrial RCC structures.",
+        specs: "Diameters: 8mm, 10mm, 12mm, 16mm, 20mm, 25mm",
+        ctaLabel: "Inquire TMT Rebar",
+      },
     ],
-    ctaText: "Shop Materials",
-    sloganLines: ["DIRECT SITE LOAD", "CONSTRUCTION", "SUPPLY"],
-  },
-];
-
-function blendHexColors(hex1: string, hex2: string, ratio: number = 0.5): string {
-  const cleanHex = (h: string) => (h.startsWith("#") ? h.slice(1) : h);
-  const h1 = cleanHex(hex1);
-  const h2 = cleanHex(hex2);
-
-  const r1 = parseInt(h1.slice(0, 2), 16) || 0;
-  const g1 = parseInt(h1.slice(2, 4), 16) || 0;
-  const b1 = parseInt(h1.slice(4, 6), 16) || 0;
-
-  const r2 = parseInt(h2.slice(0, 2), 16) || 0;
-  const g2 = parseInt(h2.slice(2, 4), 16) || 0;
-  const b2 = parseInt(h2.slice(4, 6), 16) || 0;
-
-  // Gamma-corrected perceptual color blending for realistic pigment mixing
-  const r = Math.round(Math.sqrt((1 - ratio) * r1 * r1 + ratio * r2 * r2));
-  const g = Math.round(Math.sqrt((1 - ratio) * g1 * g1 + ratio * g2 * g2));
-  const b = Math.round(Math.sqrt((1 - ratio) * b1 * b1 + ratio * b2 * b2));
-
-  const toHex = (c: number) => Math.min(255, Math.max(0, c)).toString(16).padStart(2, "0");
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-}
-
-function calculateLrv(hex: string): string {
-  const clean = hex.startsWith("#") ? hex.slice(1) : hex;
-  const r = (parseInt(clean.slice(0, 2), 16) || 0) / 255;
-  const g = (parseInt(clean.slice(2, 4), 16) || 0) / 255;
-  const b = (parseInt(clean.slice(4, 6), 16) || 0) / 255;
-  const lrv = Math.round((0.2126 * r + 0.7152 * g + 0.0722 * b) * 100);
-  return `${Math.max(6, Math.min(92, lrv))}%`;
-}
-
-interface MixingPigment {
-  id: string;
-  name: string;
-  shortName: string;
-  hex: string;
-  code: string;
-  family: string;
-}
-
-const basePigments: MixingPigment[] = [
-  { id: "azure", name: "Royal Cobalt Blue", shortName: "Cobalt Blue", hex: "#1e3a8a", code: "BLU", family: "Deep Mineral" },
-  { id: "gold", name: "Sunlight Ochre Yellow", shortName: "Sun Ochre", hex: "#eab308", code: "YEL", family: "Warm Earth" },
-  { id: "crimson", name: "Terracotta Crimson Red", shortName: "Terracotta", hex: "#dc2626", code: "RED", family: "Warm Earth" },
-  { id: "titanium", name: "Titanium Pure White", shortName: "Pure White", hex: "#f8fafc", code: "WHT", family: "Base White" },
-  { id: "emerald", name: "Phthalo Botanical Green", shortName: "Phthalo Green", hex: "#059669", code: "GRN", family: "Botanical" },
-  { id: "charcoal", name: "Carbon Velvet Charcoal", shortName: "Charcoal", hex: "#1e293b", code: "BLK", family: "Deep Mineral" },
-  { id: "sand", name: "Raw Umber Sandstone", shortName: "Raw Umber", hex: "#d97706", code: "AMB", family: "Heritage Stone" },
-  { id: "tangerine", name: "Vibrant Orange Zest", shortName: "Orange Zest", hex: "#ea580c", code: "ORG", family: "Accent Glow" },
-];
-
-interface MixPreset {
-  id: string;
-  name: string;
-  code: string;
-  pigment1Id: string;
-  pigment2Id: string;
-  ratio: number;
-  resultHex: string;
-  tagline: string;
-  substrate: string;
-}
-
-const curatedPresets: MixPreset[] = [
-  {
-    id: "emerald-glade",
-    name: "Emerald Glade",
-    code: "OP-GRN-09",
-    pigment1Id: "azure",
-    pigment2Id: "gold",
-    ratio: 0.5,
-    resultHex: "#065f46",
-    tagline: "Lush botanical jewel tone engineered for calming master bedrooms and feature walls.",
-    substrate: "Master Bedrooms & Living Accent Walls",
-  },
-  {
-    id: "vibrant-tangerine",
-    name: "Vibrant Tangerine",
-    code: "OP-ORG-07",
-    pigment1Id: "crimson",
-    pigment2Id: "gold",
-    ratio: 0.45,
-    resultHex: "#ea580c",
-    tagline: "Warm sun-drenched terracotta energizing dining zones and architectural entryways.",
-    substrate: "Dining Rooms & Kitchen Alcoves",
-  },
-  {
-    id: "coastal-sky",
-    name: "Coastal Sky Breeze",
-    code: "OP-BLU-18",
-    pigment1Id: "azure",
-    pigment2Id: "titanium",
-    ratio: 0.7,
-    resultHex: "#38bdf8",
-    tagline: "Crisp oceanic atmosphere providing spatial expansion and high daylight reflection.",
-    substrate: "Living Rooms & Open Foyers",
-  },
-  {
-    id: "heritage-sandstone",
-    name: "Heritage Sandstone",
-    code: "OP-WHT-14",
-    pigment1Id: "sand",
-    pigment2Id: "titanium",
-    ratio: 0.65,
-    resultHex: "#e2d7c5",
-    tagline: "Timeless limestone warmth inspired by South Indian heritage stone architecture.",
-    substrate: "Full Home & Hallways",
-  },
-  {
-    id: "midnight-slate",
-    name: "Midnight Slate",
-    code: "OP-DK-09",
-    pigment1Id: "azure",
-    pigment2Id: "charcoal",
-    ratio: 0.5,
-    resultHex: "#0f172a",
-    tagline: "Deep dramatic backdrop providing rich contrast for brass fixtures and media walls.",
-    substrate: "Media Lounges & Study Nooks",
-  },
-  {
-    id: "mint-botanical",
-    name: "Fresh Mint Glade",
-    code: "OP-GRN-04",
-    pigment1Id: "emerald",
-    pigment2Id: "titanium",
-    ratio: 0.65,
-    resultHex: "#6ee7b7",
-    tagline: "Airy rejuvenating botanical pastel reflecting daylight with soothing clarity.",
-    substrate: "Kids Bedrooms & Balconies",
   },
 ];
 
 function ProductsPage() {
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [pigment1, setPigment1] = useState<MixingPigment>(basePigments[0]); // Cobalt Blue
-  const [pigment2, setPigment2] = useState<MixingPigment>(basePigments[1]); // Gold Ochre
-  const [mixRatio, setMixRatio] = useState<number>(0.5); // 50:50
-  const [activePresetId, setActivePresetId] = useState<string | null>("emerald-glade");
-  const [selectedFinish, setSelectedFinish] = useState<string>("Satin Silk");
-  const [copiedHex, setCopiedHex] = useState(false);
 
-  // Derive blended color from either matched preset or real-time gamma-space blend
-  const activePreset = useMemo(() => {
-    return curatedPresets.find(
-      (p) =>
-        ((p.pigment1Id === pigment1.id && p.pigment2Id === pigment2.id) ||
-         (p.pigment1Id === pigment2.id && p.pigment2Id === pigment1.id)) &&
-        Math.abs(p.ratio - (p.pigment1Id === pigment1.id ? mixRatio : 1 - mixRatio)) < 0.08
+  const activeCategory = catalogCategories.find((c) => c.id === selectedCategoryId);
+
+  // Top-level categories filtering for State A
+  const filteredCategories = catalogCategories.filter((cat) => {
+    const q = searchQuery.toLowerCase().trim();
+    if (q === "") return true;
+
+    const matchesCat =
+      cat.title.toLowerCase().includes(q) ||
+      cat.description.toLowerCase().includes(q) ||
+      cat.highlight.toLowerCase().includes(q);
+
+    const matchesSub = cat.subcategories.some(
+      (sub) =>
+        sub.title.toLowerCase().includes(q) ||
+        sub.description.toLowerCase().includes(q) ||
+        sub.highlight.toLowerCase().includes(q) ||
+        sub.specs.toLowerCase().includes(q)
     );
-  }, [pigment1, pigment2, mixRatio]);
 
-  const blendedHex = useMemo(() => {
-    if (activePreset) return activePreset.resultHex;
-    return blendHexColors(pigment1.hex, pigment2.hex, mixRatio);
-  }, [pigment1, pigment2, mixRatio, activePreset]);
-
-  const computedLrv = useMemo(() => calculateLrv(blendedHex), [blendedHex]);
-
-  const shadeTitle = useMemo(() => {
-    if (activePreset) return activePreset.name;
-    if (pigment1.id === pigment2.id) return pigment1.name;
-    return `${pigment1.shortName} & ${pigment2.shortName}`;
-  }, [pigment1, pigment2, activePreset]);
-
-  const shadeDescription = useMemo(() => {
-    if (activePreset) return activePreset.tagline;
-    return `Custom dual-pigment blend combining ${Math.round((1 - mixRatio) * 100)}% ${pigment1.name} with ${Math.round(mixRatio * 100)}% ${pigment2.name} for bespoke spatial depth.`;
-  }, [pigment1, pigment2, mixRatio, activePreset]);
-
-  const formulaCode = useMemo(() => {
-    if (activePreset) return activePreset.code;
-    const r1 = Math.round((1 - mixRatio) * 100);
-    const r2 = Math.round(mixRatio * 100);
-    return `OP-${pigment1.code}${r1}-${pigment2.code}${r2}`;
-  }, [pigment1, pigment2, mixRatio, activePreset]);
-
-  const companionAccent = useMemo(() => {
-    const lrvNum = parseInt(computedLrv.replace("%", ""), 10) || 30;
-    if (lrvNum < 35) {
-      return { name: "Heritage Sandstone", hex: "#E2D7C5" };
-    }
-    return { name: "Velvet Charcoal", hex: "#1E293B" };
-  }, [computedLrv]);
-
-  const canisterBase = useMemo(() => {
-    const lrvNum = parseInt(computedLrv.replace("%", ""), 10) || 30;
-    if (lrvNum < 25) return "Extra-Deep Base 01";
-    if (lrvNum < 55) return "Mid-Tone Base 02";
-    return "Pure White Base 03";
-  }, [computedLrv]);
-
-  const handleCopyHex = (hex: string) => {
-    if (typeof navigator !== "undefined" && navigator.clipboard) {
-      navigator.clipboard.writeText(hex);
-      setCopiedHex(true);
-      setTimeout(() => setCopiedHex(false), 2000);
-    }
-  };
-
-  const categories = [
-    { id: "all", label: "All (9)" },
-    { id: "paints", label: "Birla Paints" },
-    { id: "waterproofing", label: "Waterproofing" },
-    { id: "pipes", label: "Conduit Pipes" },
-    { id: "fasteners", label: "Fasteners" },
-    { id: "tools", label: "Tools" },
-    { id: "materials", label: "Materials" },
-  ];
-
-  const filteredProducts = productsCatalog.filter((p) => {
-    const matchesCategory = selectedCategory === "all" || p.category === selectedCategory;
-    const matchesSearch =
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.tagline.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.eyebrow.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    return matchesCat || matchesSub;
   });
+
+  // Active category's subcategories filtering for State B
+  const filteredSubcategories = activeCategory
+    ? activeCategory.subcategories.filter((sub) => {
+        const q = searchQuery.toLowerCase().trim();
+        if (q === "") return true;
+        return (
+          sub.title.toLowerCase().includes(q) ||
+          sub.description.toLowerCase().includes(q) ||
+          sub.highlight.toLowerCase().includes(q) ||
+          sub.specs.toLowerCase().includes(q)
+        );
+      })
+    : [];
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SiteHeader />
 
-      {/* Hero Header Section - Centered Luxury Architectural Showcase (Matching Reference Image 1:1) */}
-      <section className="relative pt-12 sm:pt-14 pb-14 sm:pb-16 px-4 sm:px-7 lg:px-10 border-b border-primary/10 overflow-hidden bg-gradient-to-b from-stone-50/80 via-white to-background">
+      {/* Hero Header Section */}
+      <section className="relative pt-12 sm:pt-14 pb-12 sm:pb-14 px-4 sm:px-6 border-b border-primary/10 overflow-hidden bg-gradient-to-b from-stone-50/80 via-white to-background">
         <div className="absolute left-1/2 -top-28 -translate-x-1/2 size-[650px] rounded-full bg-radial from-accent/12 via-primary/5 to-transparent blur-3xl pointer-events-none" />
 
-        <div className="mx-auto max-w-5xl text-center relative z-10">
-          {/* Centered Kicker matching Reference Image */}
+        <div className="mx-auto max-w-4xl text-center relative z-10">
           <span className="text-[0.68rem] sm:text-[0.74rem] font-bold uppercase tracking-[0.26em] text-accent block mb-3.5 select-none">
-            &mdash; EVERYTHING UNDER ONE ROOF &mdash;
+            &mdash; COMMERCIAL WHOLESALE &amp; RETAIL CATALOG &mdash;
           </span>
 
-          {/* Centered Serif Main Heading matching Reference Image */}
           <h1 className="font-display font-serif text-4xl sm:text-5xl lg:text-6xl tracking-tight text-primary font-normal leading-[1.12] mb-4 sm:mb-5">
-            What We Sell
+            {activeCategory ? activeCategory.title : "Product Categories"}
           </h1>
 
-          {/* Centered Subtitle Paragraph - Distinct from home page & balanced across 2 lines */}
-          <p className="text-xs sm:text-sm md:text-[15px] text-muted-foreground tracking-wide leading-relaxed max-w-3xl mx-auto">
-            Direct showroom inventory, certified Birla Opus coatings, and contractor-grade hardware under one roof.
-            <br className="hidden sm:inline" />
-            {" "}Explore architectural paints, electrical conduit systems, and structural fasteners with same-day site dispatch across Erode.
+          <p className="text-xs sm:text-sm md:text-[15px] text-muted-foreground tracking-wide leading-relaxed max-w-3xl lg:max-w-4xl mx-auto">
+            {activeCategory
+              ? activeCategory.description
+              : "Explore our wholesale showroom inventory across 6 commercial product lines. Select any category to view specialized subcategories, technical specifications, and contractor trade supplies."}
           </p>
 
-          {/* Centered Authority Trust Badges Strip (Grouped with Brand Credibility) */}
-          <div className="mt-3.5 flex flex-wrap items-center justify-center gap-3.5 sm:gap-5 text-[11px] sm:text-xs font-medium text-stone-500 select-none">
-            <span className="inline-flex items-center gap-1.5">
-              <Package className="size-3.5 text-accent" /> Over 450+ SKUs in stock
-            </span>
-            <span className="hidden sm:inline opacity-30">&bull;</span>
-            <span className="inline-flex items-center gap-1.5">
-              <CheckCircle2 className="size-3.5 text-emerald-600" /> Genuine Factory Warranties
-            </span>
-            <span className="hidden sm:inline opacity-30">&bull;</span>
-            <span className="inline-flex items-center gap-1.5">
-              <ShieldCheck className="size-3.5 text-primary" /> Authorized Birla Opus Dealer
-            </span>
-          </div>
+          <p className="mt-3 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-accent/90">
+            Same-Day Site Dispatch across Erode / Perundurai SIPCOT / Bhavani
+          </p>
 
-          {/* Combined Search & Segmented Category Filter in a Single Line */}
-          <div className="mt-7 flex flex-col md:flex-row items-center justify-center gap-2.5 sm:gap-3 w-full max-w-5xl mx-auto">
-            {/* Search Input Bar */}
-            <div className="relative w-full md:w-64 lg:w-72 shrink-0">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-3.5 text-stone-400 pointer-events-none" />
+          {/* Controls Level 1: Centered Luxury Search Bar */}
+          <div className="mt-8 max-w-lg mx-auto w-full">
+            <div className="relative w-full">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-stone-400 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search paints, conduits, tools..."
-                className="w-full h-[40px] rounded-full border border-stone-200/90 bg-white/95 pl-9 pr-9 text-xs sm:text-[13px] text-foreground placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-2xs hover:border-stone-300"
+                placeholder={
+                  activeCategory
+                    ? `Search in ${activeCategory.title}`
+                    : "Search categories, products, or technical specs"
+                }
+                className="w-full h-11 rounded-full border border-stone-200/90 bg-white/95 pl-11 pr-10 text-xs sm:text-sm text-foreground placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-xs"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-700 cursor-pointer font-medium"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-stone-400 hover:text-stone-800 cursor-pointer p-1"
                 >
                   Clear
                 </button>
               )}
             </div>
+          </div>
 
-            {/* Segmented Category Filter Capsule */}
-            <div className="inline-flex items-center p-1 rounded-full bg-stone-100/90 border border-stone-200/80 shadow-2xs max-w-full overflow-x-auto no-scrollbar shrink-0 h-[40px]">
-              {categories.map((cat) => {
-                const isActive = selectedCategory === cat.id;
-                return (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`h-[32px] rounded-full px-3.5 sm:px-4 text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center ${
-                      isActive
-                        ? "bg-[#0A2234] text-white shadow-xs"
-                        : "text-stone-600 hover:text-stone-950 hover:bg-white/60"
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                );
-              })}
-            </div>
+          {/* Discrete Category Filter Chips (Row 2) */}
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto">
+            {catalogCategories.map((cat) => {
+              const isActive = selectedCategoryId === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedCategoryId(isActive ? null : cat.id);
+                    setSearchQuery("");
+                  }}
+                  className={`h-[34px] rounded-full px-4 text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center border ${
+                    isActive
+                      ? "bg-[#0A2234] text-white border-[#0A2234] shadow-xs"
+                      : "bg-white/95 text-stone-600 border-stone-200/90 hover:text-stone-950 hover:bg-stone-50 hover:border-stone-300 shadow-2xs"
+                  }`}
+                >
+                  {cat.shortTitle}
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Main 3x3 Product Cards Section */}
-      <section className="py-12 px-4 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full flex-1">
-        <div className="flex items-center justify-between mb-8">
-          <p className="text-sm font-semibold text-stone-600">
-            Showing <strong className="text-stone-900">{filteredProducts.length}</strong> catalog items
-          </p>
-        </div>
+      {/* Main Content Area */}
+      <section className="py-10 sm:py-14 px-4 sm:px-6 mx-auto max-w-[1200px] w-full flex-1">
+        {/* State A: Top-Level Category Grid (selectedCategoryId === null) */}
+        {selectedCategoryId === null && (
+          <div>
+            <div className="flex items-center justify-between mb-7">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                Displaying {filteredCategories.length} Primary Categories
+              </span>
+            </div>
 
-        {filteredProducts.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-stone-300 bg-white p-12 text-center my-12">
-            <Package className="size-12 mx-auto text-muted-foreground/50 mb-3" />
-            <h3 className="text-lg font-bold text-stone-900">No products match your search</h3>
-            <p className="text-sm text-stone-500 mt-1">
-              Try adjusting your search query or reset the category filter.
-            </p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setSelectedCategory("all");
-                setSearchQuery("");
-              }}
-              className="mt-4 cursor-pointer"
-            >
-              Reset Filters
-            </Button>
-          </div>
-        ) : (
-          /* 3x3 Responsive Grid */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 lg:gap-8 justify-items-center">
-            {filteredProducts.map((product) => {
-              const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(
-                `Hello Akshara Paints & Hardware, I am interested in inquiring about ${product.name} (${product.eyebrow}). Please share current stock, trade pricing, and dispatch details.`
-              )}`;
-
-              return (
-                <article
-                  key={product.id}
-                  className="group relative flex flex-col justify-between rounded-[32px] border border-[#EAE5DA] bg-[#FAFAF8] shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_45px_rgba(0,0,0,0.08)] transition-all duration-300 overflow-hidden hover:-translate-y-1.5 w-[calc(100%-5px)] mx-auto"
+            {filteredCategories.length === 0 ? (
+              <div className="text-center py-16 rounded-[28px] border border-stone-200 bg-[#FAF8F5] p-8 max-w-md mx-auto">
+                <h3 className="font-display font-serif text-lg font-normal text-primary">No categories found</h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Try another search term or reset your filter
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSearchQuery("")}
+                  className="mt-4 rounded-full cursor-pointer"
                 >
-                  {/* 1 ── Upper Product Image with Organic Wave Divider */}
-                  <div className="relative h-[250px] sm:h-[270px] w-full overflow-hidden bg-[#F6F3ED]">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
-                      loading="lazy"
-                    />
+                  Reset Search
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 justify-items-center">
+                {filteredCategories.map((cat) => (
+                  <article
+                    key={cat.id}
+                    onClick={() => {
+                      setSelectedCategoryId(cat.id);
+                      setSearchQuery("");
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                    className="group relative flex flex-col justify-between rounded-[24px] sm:rounded-[28px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer max-w-[370px] w-full"
+                  >
+                    {/* Visual Header */}
+                    <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-stone-100">
+                      <img
+                        src={cat.image}
+                        alt={cat.title}
+                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
 
-                    {/* Ambient lighting gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/15 pointer-events-none" />
-
-                    {/* Clean Status Badge (Top-Right) */}
-                    <div className="absolute top-3.5 right-3.5 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#1c1c1e]/85 backdrop-blur-md text-white font-bold text-[10px] sm:text-[10.5px] tracking-wider uppercase shadow-md border border-white/10 select-none">
-                      <span className="size-3.5 rounded-full bg-white/20 flex items-center justify-center">
-                        <Check className="size-2 text-white stroke-[3]" />
-                      </span>
-                      <span>{product.badge}</span>
+                      {/* Badge count on image */}
+                      <div className="absolute bottom-3 left-3.5 z-10 pointer-events-none">
+                        <span className="inline-block rounded-md bg-black/65 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-xs">
+                          {cat.subcategoriesCountText}
+                        </span>
+                      </div>
                     </div>
 
-                    {/* Organic Wave Divider (Exact Match to Reference Design) */}
-                    <div className="absolute -bottom-[1px] left-0 w-full h-[40px] pointer-events-none z-10">
-                      <svg
-                        viewBox="0 0 500 80"
-                        preserveAspectRatio="none"
-                        className="w-full h-full block fill-[#FAFAF8]"
-                      >
-                        <path d="M 0,35 C 100,65 190,55 280,26 C 360,0 440,8 500,24 L 500,80 L 0,80 Z" />
-                      </svg>
+                    {/* Card Body */}
+                    <div className="px-[15px] py-4 sm:py-5 flex-1 flex flex-col justify-between">
+                      <div>
+                        {/* Highlight Tag */}
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-accent block mb-1">
+                          {cat.highlight}
+                        </span>
+
+                        <h3 className="font-display font-serif text-lg sm:text-xl font-normal text-primary tracking-tight leading-snug group-hover:text-paint-deep transition-colors">
+                          {cat.title}
+                        </h3>
+
+                        <p className="mt-2 text-xs sm:text-[13px] text-muted-foreground leading-relaxed">
+                          {cat.description}
+                        </p>
+                      </div>
+
+                      {/* Card Action */}
+                      <div className="mt-5 pt-3.5 border-t border-stone-200/80">
+                        <Button
+                          variant="hero"
+                          size="sm"
+                          type="button"
+                          className="w-full h-9 rounded-full text-xs font-semibold cursor-pointer shadow-xs justify-center"
+                        >
+                          <span>Explore Subcategories</span>
+                        </Button>
+                      </div>
                     </div>
-                  </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
-                  {/* 2 ── Card Body */}
-                  <div className="px-5 sm:px-6 pt-1 pb-3 flex flex-col flex-1 relative z-20 bg-[#FAFAF8]">
-                    {/* Eyebrow */}
-                    <span className="text-[10.5px] sm:text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#8C7A6B] block mb-1">
-                      {product.eyebrow}
-                    </span>
+        {/* State B: Active Category Subcategories Drilldown (selectedCategoryId !== null) */}
+        {selectedCategoryId !== null && activeCategory && (
+          <div className="w-full">
+            {/* Breadcrumb & Return Bar */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-7 pb-4 border-b border-stone-200">
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedCategoryId(null);
+                    setSearchQuery("");
+                  }}
+                  className="rounded-full text-xs font-semibold cursor-pointer shadow-2xs hover:bg-stone-100"
+                >
+                  <span>&larr; Back to All Categories</span>
+                </Button>
+                <span className="text-stone-300 font-light text-sm">/</span>
+                <span className="text-xs sm:text-sm font-serif font-bold text-primary">
+                  {activeCategory.title}
+                </span>
+              </div>
 
-                    {/* Main Title */}
-                    <h2 className="font-display text-[21px] sm:text-[23px] font-bold text-stone-900 tracking-tight leading-snug">
-                      {product.name}
-                    </h2>
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                Showing {filteredSubcategories.length} Subcategories
+              </span>
+            </div>
 
-                    {/* Description */}
-                    <p className="text-[12.5px] sm:text-[13px] text-[#59534B] leading-relaxed mt-1.5 min-h-[38px]">
-                      {product.tagline}
-                    </p>
+            {filteredSubcategories.length === 0 ? (
+              <div className="text-center py-16 rounded-[28px] border border-stone-200 bg-[#FAF8F5] p-8 max-w-md mx-auto">
+                <h3 className="font-display font-serif text-lg font-normal text-primary">No subcategories match</h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Try another search query or clear your keyword
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSearchQuery("")}
+                  className="mt-4 rounded-full cursor-pointer"
+                >
+                  Clear Search
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 justify-items-center">
+                {filteredSubcategories.map((sub) => {
+                  const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(
+                    `Hello Akshara Paints, I would like to inquire about ${activeCategory.title} - ${sub.title}. Please share available grades and pricing.`
+                  )}`;
 
-                    {/* 4 Feature Circular Badges (Horizontal Row) */}
-                    <div className="grid grid-cols-4 gap-1.5 pt-4 pb-2 my-auto">
-                      {product.features.map((feat, idx) => {
-                        const IconComp = feat.icon;
-                        return (
-                          <div key={idx} className="flex flex-col items-center text-center">
-                            <div
-                              className="size-11 sm:size-12 rounded-full flex items-center justify-center shadow-xs transition-transform duration-300 group-hover:scale-105 shrink-0"
-                              style={{ backgroundColor: feat.bg }}
-                            >
-                              <IconComp className="size-4 sm:size-4.5 stroke-[1.6] text-[#1C1917]" />
-                            </div>
-                            <span className="text-[10px] sm:text-[10.5px] font-medium text-[#292524] leading-[1.2] mt-2 block text-center min-h-[26px]">
-                              {feat.name}
-                              {feat.subname && (
-                                <>
-                                  <br />
-                                  {feat.subname}
-                                </>
-                              )}
+                  return (
+                    <article
+                      key={sub.id}
+                      className="group relative flex flex-col justify-between rounded-[24px] sm:rounded-[28px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 max-w-[370px] w-full"
+                    >
+                      {/* Visual Header with Image and Badge */}
+                      <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-stone-100 flex items-center justify-center">
+                        <img
+                          src={sub.image}
+                          alt={sub.title}
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+
+                        {/* Subcategory Count Badge on bottom-left */}
+                        <div className="absolute bottom-3 left-3.5 z-10 pointer-events-none">
+                          <span className="inline-block rounded-md bg-black/65 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-xs">
+                            {sub.badge}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Card Body with Full Content */}
+                      <div className="px-[15px] py-4 sm:py-5 flex-1 flex flex-col justify-between">
+                        <div>
+                          {/* Highlight Tag */}
+                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-accent block mb-1">
+                            {sub.highlight}
+                          </span>
+
+                          {/* Subcategory Title */}
+                          <h3 className="font-display font-serif text-lg sm:text-xl font-normal text-primary tracking-tight leading-snug group-hover:text-paint-deep transition-colors">
+                            {sub.title}
+                          </h3>
+
+                          {/* Description */}
+                          <p className="mt-2 text-xs sm:text-[13px] text-muted-foreground leading-relaxed">
+                            {sub.description}
+                          </p>
+
+                          {/* Specifications Ribbon */}
+                          <div className="mt-3.5 rounded-xl border border-stone-200/90 bg-stone-100/70 p-3 text-[11px] leading-relaxed text-stone-700">
+                            <span className="font-mono font-bold text-[10px] uppercase tracking-wider text-stone-500 block mb-0.5">
+                              Technical Scope &amp; Packaging
+                            </span>
+                            <span className="font-medium text-stone-900">
+                              {sub.specs}
                             </span>
                           </div>
-                        );
-                      })}
-                    </div>
-                                  {/* 3 ── Bottom Bar: Dark CTA Pill + Mild Warm Sand Paint Swoosh */}
-                  <div className="relative overflow-hidden pt-3 pb-4 px-5 sm:px-6 mt-auto flex items-center justify-between min-h-[58px] bg-[#FAFAF8]">
-                    {/* Sweeping Mild Paint Texture Wave */}
-                    <div className="absolute -bottom-1 -left-2 -right-2 h-[72px] pointer-events-none overflow-hidden select-none z-0">
-                      <svg
-                        viewBox="0 0 300 70"
-                        preserveAspectRatio="none"
-                        className="w-full h-full block"
-                      >
-                        <defs>
-                          {/* Mild Soft Cashmere / Warm Sand Paint Gradient */}
-                          <linearGradient
-                            id={`yellow-base-grad-${product.id}`}
-                            x1="0%"
-                            y1="100%"
-                            x2="100%"
-                            y2="0%"
+                        </div>
+
+                        {/* Card Action Button */}
+                        <div className="mt-5 pt-3.5 border-t border-stone-200/80">
+                          <Button
+                            variant="hero"
+                            size="sm"
+                            asChild
+                            className="w-full h-9 rounded-full text-xs font-semibold cursor-pointer shadow-xs justify-center"
                           >
-                            <stop offset="0%" stopColor="#D5C9B7" stopOpacity="0.55" />
-                            <stop offset="35%" stopColor="#E5DCce" stopOpacity="0.65" />
-                            <stop offset="70%" stopColor="#EEE6DA" stopOpacity="0.75" />
-                            <stop offset="100%" stopColor="#F6F0E6" stopOpacity="0.85" />
-                          </linearGradient>
-
-                          {/* Subtle Soft Glaze for Gentle Depth */}
-                          <linearGradient
-                            id={`yellow-glaze-grad-${product.id}`}
-                            x1="20%"
-                            y1="100%"
-                            x2="100%"
-                            y2="10%"
-                          >
-                            <stop offset="0%" stopColor="#C4B7A2" stopOpacity="0.18" />
-                            <stop offset="50%" stopColor="#DBD0BF" stopOpacity="0.15" />
-                            <stop offset="100%" stopColor="#F2ECE0" stopOpacity="0.25" />
-                          </linearGradient>
-
-                          {/* Gentle Bristle Streaks */}
-                          <linearGradient
-                            id={`yellow-streak-grad-${product.id}`}
-                            x1="0%"
-                            y1="50%"
-                            x2="100%"
-                            y2="50%"
-                          >
-                            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.5" />
-                            <stop offset="50%" stopColor="#FAF7F2" stopOpacity="0.35" />
-                            <stop offset="100%" stopColor="#E8DFD0" stopOpacity="0.12" />
-                          </linearGradient>
-                        </defs>
-
-                        {/* Main curved paint sweep rising from bottom-left up to top-right */}
-                        <path
-                          d="M 0,44 C 55,42 110,48 170,26 C 220,10 260,3 300,0 L 300,70 L 0,70 Z"
-                          fill={`url(#yellow-base-grad-${product.id})`}
-                        />
-
-                        {/* Secondary glazed acrylic flow for physical paint body */}
-                        <path
-                          d="M 10,49 C 65,46 125,50 185,27 C 235,11 270,4 300,0 L 300,70 L 10,70 Z"
-                          fill={`url(#yellow-glaze-grad-${product.id})`}
-                        />
-
-                        {/* Top rim highlight */}
-                        <path
-                          d="M 0,44 C 55,42 110,48 170,26 C 220,10 260,3 300,0"
-                          fill="none"
-                          stroke="#FFFFFF"
-                          strokeOpacity="0.35"
-                          strokeWidth="1.2"
-                        />
-
-                        {/* Primary acrylic brush bristle highlight streak */}
-                        <path
-                          d="M 20,50 C 75,47 140,43 210,18 C 250,7 275,3 300,1"
-                          fill="none"
-                          stroke={`url(#yellow-streak-grad-${product.id})`}
-                          strokeWidth="1.8"
-                        />
-
-                        {/* Secondary fine bristle streak */}
-                        <path
-                          d="M 45,59 C 105,55 175,46 240,23 C 270,12 288,7 300,5"
-                          fill="none"
-                          stroke="#FFFFFF"
-                          strokeOpacity="0.2"
-                          strokeWidth="1"
-                        />
-
-                        {/* Lower soft shadow contour along the base edge */}
-                        <path
-                          d="M 0,65 C 60,63 130,57 200,43 C 250,33 280,24 300,18"
-                          fill="none"
-                          stroke="#B8AA96"
-                          strokeOpacity="0.15"
-                          strokeWidth="1.2"
-                        />
-                      </svg>
-                    </div>
-
-                    {/* Left Dark Action Button without Arrow */}
-                    <Button
-                      asChild
-                      className="relative z-10 rounded-full bg-[#18181B] hover:bg-black text-white px-5 sm:px-6 py-2.5 text-xs sm:text-[13px] font-bold shadow-md transition-transform duration-200 hover:scale-105 cursor-pointer shrink-0"
-                    >
-                      <a href={whatsappUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center">
-                        <span>{product.ctaText}</span>
-                      </a>
-                    </Button>
-
-                    {/* Slogan over the mild wave on the right */}
-                    <div className="relative z-10 text-right pr-1 max-w-[145px] select-none pointer-events-none">
-                      <div className="text-[7.5px] sm:text-[8px] font-extrabold uppercase tracking-[0.06em] text-[#63574A] leading-[1.15] drop-shadow-[0_1px_0_rgba(255,255,255,0.6)]">
-                        {product.sloganLines.map((line, li) => (
-                          <span key={li} className="block">
-                            {line}
-                          </span>
-                        ))}
+                            <a
+                              href={whatsappUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="flex items-center justify-center"
+                            >
+                              <span>{sub.ctaLabel}</span>
+                            </a>
+                          </Button>
+                        </div>
                       </div>
-                      <div className="w-3.5 h-[1.5px] bg-[#8A7C6D]/40 ml-auto mt-1 rounded-full" />
-                    </div>
-                  </div>
-                </div>
-              </article>
-              );
-            })}
+                    </article>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
       </section>
 
-      {/* Signature Architectural Shades & Computerized Tinting Studio */}
-      <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-10 bg-[#FAF8F5] border-t border-b border-[#E8E2D7]">
-        <div className="mx-auto max-w-[1370px]">
-          {/* Section Header */}
-          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
-            <span className="text-[0.68rem] sm:text-[0.74rem] font-bold uppercase tracking-[0.24em] text-accent block mb-2 select-none">
-              &mdash; COMPUTERIZED COLOR LAB &mdash;
-            </span>
-            <h2 className="font-display font-serif text-2xl sm:text-3xl lg:text-4xl text-primary font-normal tracking-tight">
-              Dual-Pigment Color Formulation Studio
-            </h2>
-            <p className="mt-2 text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              Blend certified Birla Opus architectural pigments in real-time. Calculate spectral recipes, light reflectance values (LRV), and dispense custom shades on demand.
+      {/* Streamlined Bottom Consultation Strip */}
+      <section className="pb-16 px-4 sm:px-6 mx-auto max-w-[1200px] w-full">
+        <div className="rounded-[24px] sm:rounded-[28px] border border-[#E7E2D6] bg-gradient-to-r from-stone-50 via-white to-stone-50 p-6 sm:p-7 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+          <div className="space-y-1">
+            <h3 className="font-display font-serif text-lg sm:text-xl font-normal text-primary">
+              Looking for Wholesale Contractor Quotes or Direct Site Dispatch?
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Contact our trade materials desk for volume estimates, mill test reports, and scheduled site drops
             </p>
           </div>
-
-          {/* Studio Container */}
-          <div className="max-w-[1370px] mx-auto rounded-[2rem] border border-[#E6DFD5] bg-[#FCFAF7] p-5 sm:p-7 lg:p-8 shadow-2xl shadow-stone-900/5 relative overflow-hidden">
-            {/* Ambient tinted background glow */}
-            <div
-              className="absolute -right-24 -top-24 w-[450px] h-[450px] rounded-full blur-3xl pointer-events-none transition-colors duration-1000 opacity-15"
-              style={{ backgroundColor: blendedHex }}
-            />
-            <div
-              className="absolute -left-20 -bottom-20 w-[380px] h-[380px] rounded-full blur-3xl pointer-events-none transition-colors duration-1000 opacity-10"
-              style={{ backgroundColor: pigment1.hex }}
-            />
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch relative z-10">
-              {/* Left Column: Architectural Specimen Swatch Slab & Formulation Specs */}
-              <div className="lg:col-span-5 flex flex-col justify-between space-y-3.5 rounded-3xl border border-[#E7E0D6] bg-white p-4 sm:p-5 shadow-xs relative overflow-hidden">
-                {/* Hero Swatch Canvas Slab */}
-                <div
-                  className="relative w-full rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden p-5 sm:p-6 flex flex-col justify-between min-h-[220px] sm:min-h-[245px] transition-colors duration-500"
-                  style={{ backgroundColor: blendedHex }}
-                >
-                  {/* Subtle directional satin sheen highlight */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-white/30 pointer-events-none" />
-
-                  {/* Top Pill Badges */}
-                  <div className="relative z-10 flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/95 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/15 shadow-xs">
-                        {selectedFinish}
-                      </span>
-                      <span className="text-[10.5px] font-mono font-medium text-white/90 bg-black/30 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10">
-                        {computedLrv} LRV
-                      </span>
-                    </div>
-
-                    {/* 1-Click Copy Hex */}
-                    <button
-                      type="button"
-                      onClick={() => handleCopyHex(blendedHex)}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md px-3 py-1 text-xs font-mono font-bold text-white transition-all cursor-pointer border border-white/15 shadow-xs active:scale-95"
-                      title="Click to copy hex code"
-                    >
-                      <span>{blendedHex.toUpperCase()}</span>
-                      {copiedHex ? (
-                        <Check className="size-3 text-emerald-400" />
-                      ) : (
-                        <Copy className="size-3 text-white/75" />
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Bottom Shade Typography */}
-                  <div className="relative z-10 text-white drop-shadow-sm pt-4">
-                    <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-white/70 block mb-1">
-                      {formulaCode}
-                    </span>
-                    <h3 className="font-display font-serif text-2xl sm:text-3xl text-white font-normal tracking-tight leading-tight">
-                      {shadeTitle}
-                    </h3>
-                  </div>
-                </div>
-
-                {/* Live Proportion Formulation Ribbon */}
-                <div className="bg-[#FAF8F5] rounded-2xl p-3 sm:p-3.5 border border-stone-200/80 shadow-2xs space-y-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="flex items-center gap-1.5 text-stone-700">
-                      <span className="size-2.5 rounded-full border border-black/15 shadow-2xs" style={{ backgroundColor: pigment1.hex }} />
-                      <span className="font-semibold text-stone-900">{pigment1.name}</span>
-                      <span className="text-stone-500 font-mono text-[11px]">({Math.round((1 - mixRatio) * 100)}%)</span>
-                    </span>
-                    <span className="flex items-center gap-1.5 text-stone-700">
-                      <span className="text-stone-500 font-mono text-[11px]">({Math.round(mixRatio * 100)}%)</span>
-                      <span className="font-semibold text-stone-900">{pigment2.name}</span>
-                      <span className="size-2.5 rounded-full border border-black/15 shadow-2xs" style={{ backgroundColor: pigment2.hex }} />
-                    </span>
-                  </div>
-                  <div className="w-full h-2 rounded-full overflow-hidden flex bg-stone-200/60 p-0.5 border border-stone-200/70">
-                    <div
-                      className="h-full rounded-l-full transition-all duration-300"
-                      style={{
-                        width: `${(1 - mixRatio) * 100}%`,
-                        backgroundColor: pigment1.hex,
-                      }}
-                    />
-                    <div
-                      className="h-full rounded-r-full transition-all duration-300"
-                      style={{
-                        width: `${mixRatio * 100}%`,
-                        backgroundColor: pigment2.hex,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* Architectural Technical Specs Strip */}
-                <div className="bg-[#FAF8F5] rounded-2xl p-3.5 sm:p-4 border border-stone-200/80 shadow-2xs flex items-center gap-4">
-                  <div className="relative shrink-0 w-16 sm:w-20 flex items-center justify-center">
-                    <img
-                      src="/akshara-paint-can.png?v=emerald-can"
-                      alt="Akshara Emerald & Gold Paint Can"
-                      className="relative z-10 w-16 sm:w-20 h-auto object-contain drop-shadow-md"
-                    />
-                  </div>
-
-                  {/* Minimalist Spec Table with Hairline Dividers */}
-                  <div className="flex-1 grid grid-cols-2 gap-x-5 gap-y-2 text-xs">
-                    <div className="space-y-0.5">
-                      <span className="text-[9.5px] font-bold uppercase tracking-[0.14em] text-stone-400 font-mono block">
-                        Canister Base
-                      </span>
-                      <span className="text-xs sm:text-[12.5px] font-bold text-stone-800 truncate block">
-                        {canisterBase}
-                      </span>
-                    </div>
-                    <div className="space-y-0.5">
-                      <span className="text-[9.5px] font-bold uppercase tracking-[0.14em] text-stone-400 font-mono block">
-                        Spreading Rate
-                      </span>
-                      <span className="text-xs sm:text-[12.5px] font-bold text-stone-800 truncate block">
-                        140–160 sq.ft / L
-                      </span>
-                    </div>
-                    <div className="space-y-0.5 border-t border-stone-200/60 pt-1.5">
-                      <span className="text-[9.5px] font-bold uppercase tracking-[0.14em] text-stone-400 font-mono block">
-                        Recoat Window
-                      </span>
-                      <span className="text-xs sm:text-[12.5px] font-bold text-stone-800 truncate block">
-                        3–4 Hours
-                      </span>
-                    </div>
-                    <div className="space-y-0.5 border-t border-stone-200/60 pt-1.5">
-                      <span className="text-[9.5px] font-bold uppercase tracking-[0.14em] text-stone-400 font-mono block">
-                        Emission Level
-                      </span>
-                      <span className="text-xs sm:text-[12.5px] font-bold text-stone-800 truncate block">
-                        &lt; 15 g/L Low VOC
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Architectural Companion Trim Accent */}
-                <div className="rounded-2xl bg-[#FAF8F5] border border-stone-200/80 p-3 sm:p-3.5 shadow-2xs flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="size-8 rounded-xl border border-black/10 shadow-xs shrink-0"
-                      style={{ backgroundColor: companionAccent.hex }}
-                    />
-                    <div>
-                      <span className="text-[9.5px] font-bold uppercase tracking-[0.14em] text-stone-400 block font-mono">
-                        Recommended Companion Trim
-                      </span>
-                      <span className="font-semibold text-stone-900 text-xs sm:text-[13px] block">
-                        {companionAccent.name}
-                      </span>
-                    </div>
-                  </div>
-                  <span className="font-mono text-[11px] font-semibold text-stone-600 bg-white px-2.5 py-1 rounded-md border border-stone-200/70">
-                    {companionAccent.hex}
-                  </span>
-                </div>
-
-                {/* Dispense CTA Button */}
-                <div className="pt-1 space-y-2">
-                  <Button
-                    variant="default"
-                    size="lg"
-                    asChild
-                    className="w-full justify-center rounded-full bg-stone-900 hover:bg-black text-white text-sm font-semibold py-3 sm:py-3.5 shadow-md hover:shadow-lg transition-all cursor-pointer tracking-wide"
-                  >
-                    <a
-                      href={`https://wa.me/919944747199?text=${encodeURIComponent(
-                        `Hello Akshara Paints, I would like to dispense the custom blend "${shadeTitle}" (${blendedHex}) created from ${pigment1.name} (${Math.round((1 - mixRatio) * 100)}%) + ${pigment2.name} (${Math.round(mixRatio * 100)}%) in ${selectedFinish} at your Perundurai Road branch. Base: ${canisterBase}.`
-                      )}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center justify-center gap-2"
-                    >
-                      <span>Dispense This Formulation in Store</span>
-                    </a>
-                  </Button>
-                  <div className="flex items-center justify-center gap-2 text-center text-[11px] text-stone-500">
-                    <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>Instant computerized tinting &bull; All 3 Erode branches</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Column: Intuitive 3-Step Formulation Atelier */}
-              <div className="lg:col-span-7 flex flex-col justify-between space-y-4">
-                {/* 01 ── Designer Curated Formulas (Iconic Presets) */}
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="size-5 rounded-full bg-stone-900 text-white text-[10px] font-bold flex items-center justify-center">
-                        1
-                      </span>
-                      <span className="text-xs font-bold uppercase tracking-[0.16em] text-stone-900">
-                        Curated Designer Presets
-                      </span>
-                    </div>
-                    <span className="text-[11px] text-stone-500 font-medium">Click any preset to load formula</span>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5">
-                    {curatedPresets.map((preset) => {
-                      const isPresetActive = activePreset?.id === preset.id;
-                      const p1 = basePigments.find((p) => p.id === preset.pigment1Id) || basePigments[0];
-                      const p2 = basePigments.find((p) => p.id === preset.pigment2Id) || basePigments[1];
-
-                      return (
-                        <button
-                          key={preset.id}
-                          type="button"
-                          onClick={() => {
-                            setPigment1(p1);
-                            setPigment2(p2);
-                            setMixRatio(preset.ratio);
-                            setActivePresetId(preset.id);
-                            setCopiedHex(false);
-                          }}
-                          className={`p-2.5 sm:p-3 rounded-2xl text-left transition-all duration-200 flex items-center gap-2.5 cursor-pointer border ${
-                            isPresetActive
-                              ? "border-stone-900 bg-white ring-2 ring-stone-900/10 shadow-sm"
-                              : "border-stone-200/80 bg-white/70 hover:bg-white hover:border-stone-300 hover:shadow-xs"
-                          }`}
-                        >
-                          <div
-                            className="size-8 rounded-xl shrink-0 border border-black/10 shadow-2xs relative"
-                            style={{ backgroundColor: preset.resultHex }}
-                          >
-                            {isPresetActive && (
-                              <span className="absolute inset-0 flex items-center justify-center text-white text-[12px] font-bold drop-shadow-xs">
-                                &bull;
-                              </span>
-                            )}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <span className={`block text-xs font-semibold truncate ${isPresetActive ? "text-stone-900 font-bold" : "text-stone-700"}`}>
-                              {preset.name}
-                            </span>
-                            <span className="block text-[10px] font-mono text-stone-400 truncate mt-0.5">
-                              {preset.code}
-                            </span>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* 02 ── Dual-Pigment Blender & Continuous Ratio Slider */}
-                <div className="rounded-3xl border border-[#E7E0D6] bg-white p-4 sm:p-5 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="size-5 rounded-full bg-stone-900 text-white text-[10px] font-bold flex items-center justify-center">
-                        2
-                      </span>
-                      <span className="text-xs font-bold uppercase tracking-[0.16em] text-stone-900">
-                        Dual-Pigment Blender &amp; Ratio
-                      </span>
-                    </div>
-                    <span className="text-xs font-mono font-bold text-stone-800 bg-[#FAF8F5] px-3 py-1 rounded-full border border-stone-200/80">
-                      {Math.round((1 - mixRatio) * 100)}% A &bull; {Math.round(mixRatio * 100)}% B
-                    </span>
-                  </div>
-
-                  {/* Dual Tone Palette Selectors */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    {/* Tone A */}
-                    <div className="rounded-2xl p-3.5 bg-[#FAF8F5] border border-stone-200/70 space-y-2.5">
-                      <div className="flex items-center justify-between text-xs pb-2 border-b border-stone-200/60">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className="size-3 rounded-full border border-black/15 shadow-2xs shrink-0"
-                            style={{ backgroundColor: pigment1.hex }}
-                          />
-                          <span className="font-bold text-stone-500 uppercase text-[9.5px] tracking-wider font-mono">
-                            Primary Tone A
-                          </span>
-                        </div>
-                        <span className="font-semibold text-stone-900 text-xs truncate max-w-[130px]">
-                          {pigment1.shortName}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-8 gap-1.5 w-full py-1">
-                        {basePigments.map((pig) => {
-                          const isSelected = pigment1.id === pig.id;
-                          return (
-                            <button
-                              key={`p1-${pig.id}`}
-                              type="button"
-                              onClick={() => {
-                                setPigment1(pig);
-                                setActivePresetId(null);
-                                setCopiedHex(false);
-                              }}
-                              className={`w-full aspect-square max-w-[32px] mx-auto rounded-full border transition-all cursor-pointer relative flex items-center justify-center ${
-                                isSelected
-                                  ? "ring-2 ring-stone-900 ring-offset-2 scale-110 border-white shadow-sm"
-                                  : "border-black/15 hover:scale-105 hover:shadow-2xs opacity-85 hover:opacity-100"
-                              }`}
-                              style={{ backgroundColor: pig.hex }}
-                              title={`${pig.name} (${pig.shortName})`}
-                            >
-                              {isSelected && (
-                                <span className="size-1.5 rounded-full bg-white shadow-xs" />
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      <div className="flex items-center justify-between pt-1 text-[10px] text-stone-400 font-mono">
-                        <span className="truncate">{pigment1.family}</span>
-                        <span className="shrink-0">{pigment1.hex.toUpperCase()}</span>
-                      </div>
-                    </div>
-
-                    {/* Tone B */}
-                    <div className="rounded-2xl p-3.5 bg-[#FAF8F5] border border-stone-200/70 space-y-2.5">
-                      <div className="flex items-center justify-between text-xs pb-2 border-b border-stone-200/60">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className="size-3 rounded-full border border-black/15 shadow-2xs shrink-0"
-                            style={{ backgroundColor: pigment2.hex }}
-                          />
-                          <span className="font-bold text-stone-500 uppercase text-[9.5px] tracking-wider font-mono">
-                            Blend Tone B
-                          </span>
-                        </div>
-                        <span className="font-semibold text-stone-900 text-xs truncate max-w-[130px]">
-                          {pigment2.shortName}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-8 gap-1.5 w-full py-1">
-                        {basePigments.map((pig) => {
-                          const isSelected = pigment2.id === pig.id;
-                          return (
-                            <button
-                              key={`p2-${pig.id}`}
-                              type="button"
-                              onClick={() => {
-                                setPigment2(pig);
-                                setActivePresetId(null);
-                                setCopiedHex(false);
-                              }}
-                              className={`w-full aspect-square max-w-[32px] mx-auto rounded-full border transition-all cursor-pointer relative flex items-center justify-center ${
-                                isSelected
-                                  ? "ring-2 ring-stone-900 ring-offset-2 scale-110 border-white shadow-sm"
-                                  : "border-black/15 hover:scale-105 hover:shadow-2xs opacity-85 hover:opacity-100"
-                              }`}
-                              style={{ backgroundColor: pig.hex }}
-                              title={`${pig.name} (${pig.shortName})`}
-                            >
-                              {isSelected && (
-                                <span className="size-1.5 rounded-full bg-white shadow-xs" />
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      <div className="flex items-center justify-between pt-1 text-[10px] text-stone-400 font-mono">
-                        <span className="truncate">{pigment2.family}</span>
-                        <span className="shrink-0">{pigment2.hex.toUpperCase()}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Dynamic Gradient Mix Slider */}
-                  <div className="pt-1 space-y-2">
-                    <div className="flex items-center justify-between text-xs font-semibold text-stone-700">
-                      <span className="flex items-center gap-1.5">
-                        <span className="size-2 rounded-full" style={{ backgroundColor: pigment1.hex }} />
-                        {pigment1.shortName} ({Math.round((1 - mixRatio) * 100)}%)
-                      </span>
-                      <span className="text-[10.5px] font-mono text-stone-400">Continuous Color Blend Track</span>
-                      <span className="flex items-center gap-1.5">
-                        {pigment2.shortName} ({Math.round(mixRatio * 100)}%)
-                        <span className="size-2 rounded-full" style={{ backgroundColor: pigment2.hex }} />
-                      </span>
-                    </div>
-
-                    <div className="relative flex items-center py-1">
-                      <input
-                        type="range"
-                        min="0.1"
-                        max="0.9"
-                        step="0.02"
-                        value={mixRatio}
-                        onChange={(e) => {
-                          setMixRatio(parseFloat(e.target.value));
-                          setActivePresetId(null);
-                          setCopiedHex(false);
-                        }}
-                        className="w-full h-3 rounded-full appearance-none cursor-pointer shadow-inner border border-black/10 focus:outline-none accent-stone-900"
-                        style={{
-                          background: `linear-gradient(to right, ${pigment1.hex} 0%, ${blendedHex} 50%, ${pigment2.hex} 100%)`,
-                        }}
-                      />
-                    </div>
-
-                    {/* 3 Quick Snap Ratios */}
-                    <div className="flex items-center justify-center gap-2 pt-1">
-                      {[
-                        { ratio: 0.3, label: "70% A : 30% B" },
-                        { ratio: 0.5, label: "50% : 50% Balanced" },
-                        { ratio: 0.7, label: "30% A : 70% B" },
-                      ].map((opt) => {
-                        const isSelectedRatio = Math.abs(mixRatio - opt.ratio) < 0.04;
-                        return (
-                          <button
-                            key={opt.ratio}
-                            type="button"
-                            onClick={() => {
-                              setMixRatio(opt.ratio);
-                              setActivePresetId(null);
-                              setCopiedHex(false);
-                            }}
-                            className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer border ${
-                              isSelectedRatio
-                                ? "bg-stone-900 text-white border-stone-900 font-semibold shadow-xs"
-                                : "bg-[#FAF8F5] border-stone-200/80 text-stone-700 hover:bg-stone-100 hover:border-stone-300"
-                            }`}
-                          >
-                            {opt.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-
-                {/* 03 ── Select Sheen Finish */}
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="size-5 rounded-full bg-stone-900 text-white text-[10px] font-bold flex items-center justify-center">
-                        3
-                      </span>
-                      <span className="text-xs font-bold uppercase tracking-[0.16em] text-stone-900">
-                        Select Sheen Finish
-                      </span>
-                    </div>
-                    <span className="text-[11px] text-stone-500 font-medium">Certified Birla Opus surface sheens</span>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {[
-                      { id: "Satin Silk", label: "Satin Silk", sheen: "30% Soft Luster" },
-                      { id: "Velvet Matte", label: "Velvet Matte", sheen: "5% Chalk Matte" },
-                      { id: "High Gloss", label: "High Gloss", sheen: "75% Mirror Gloss" },
-                      { id: "Rain-Shield", label: "Rain-Shield", sheen: "Exterior Ultra" },
-                    ].map((fin) => {
-                      const isSelected = selectedFinish === fin.id;
-                      return (
-                        <button
-                          key={fin.id}
-                          type="button"
-                          onClick={() => setSelectedFinish(fin.id)}
-                          className={`py-2.5 px-3 rounded-2xl text-center transition-all cursor-pointer border ${
-                            isSelected
-                              ? "bg-stone-900 text-white border-stone-900 shadow-sm"
-                              : "bg-white/80 border-stone-200/80 text-stone-700 hover:bg-white hover:border-stone-300 hover:shadow-xs"
-                          }`}
-                        >
-                          <span className="block text-xs font-bold">{fin.label}</span>
-                          <span
-                            className={`block text-[10px] mt-0.5 ${
-                              isSelected ? "text-stone-300" : "text-stone-400"
-                            }`}
-                          >
-                            {fin.sheen}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Concierge Hallmark Note */}
-                <div className="rounded-2xl border border-[#E7DFD4] bg-[#FAF7F2] p-3.5 sm:p-4 flex items-center gap-3 text-stone-800 shadow-2xs">
-                  <div className="size-8 rounded-xl bg-accent/15 border border-accent/25 flex items-center justify-center shrink-0 text-accent">
-                    <Sparkles className="size-4" />
-                  </div>
-                  <div className="text-xs leading-relaxed">
-                    <span className="font-semibold text-stone-900 mr-1.5">
-                      Bespoke Spectrophotometer Formulation:
-                    </span>
-                    <span className="text-stone-600">
-                      Bring any physical sample, tile, fabric, or paint chip to our Perundurai Road laboratory for complimentary 3-minute computerized color matching.
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Button
+            variant="hero"
+            size="default"
+            asChild
+            className="rounded-full px-6 py-2.5 text-xs font-semibold cursor-pointer shadow-md shrink-0"
+          >
+            <a
+              href="https://wa.me/919876543210?text=Hello%20Akshara%20Paints,%20I%20have%20a%20commercial%20materials%20inquiry%20regarding%20products%20in%20Erode"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center justify-center"
+            >
+              <span>Chat with Technical Desk</span>
+            </a>
+          </Button>
         </div>
       </section>
 

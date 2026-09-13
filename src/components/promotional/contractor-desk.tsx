@@ -14,6 +14,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 
 interface TradeOption {
   id: string;
@@ -348,7 +349,7 @@ export function ContractorDesk() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2.5 w-full rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white px-5 py-3.5 font-display font-semibold text-sm shadow-lg hover:shadow-xl transition-all duration-150 cursor-pointer"
               >
-                <MessageSquare className="size-5 fill-white text-[#25D366]" />
+                <WhatsAppIcon variant="white" className="size-5 shrink-0" />
                 <span>Send Material List via WhatsApp for Wholesale Quote</span>
                 <ArrowRight className="size-4" />
               </a>

@@ -6,6 +6,7 @@ import {
   Clock,
   ChevronRight,
 } from "lucide-react";
+import { MovablePaintRibbon } from "./movable-paint-ribbon";
 
 // ── BESPOKE PRODUCT OUTLINE ICONS (Matching reference design 1:1) ──
 
@@ -169,120 +170,8 @@ export function SiteFooter({ className }: { className?: string } = {}) {
       role="contentinfo"
       className={`relative w-full bg-background mt-[100px] overflow-hidden select-none ${className || ""}`}
     >
-      {/* ── 1. REALISTIC ARCHITECTURAL PAINT BRUSH STROKE RIBBON (Matching Reference Wave) ── */}
-      <div className="relative w-full overflow-hidden select-none bg-transparent -mb-1">
-        <svg
-          viewBox="0 0 1440 110"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          preserveAspectRatio="none"
-          className="w-full h-16 sm:h-22 lg:h-28 block"
-          aria-hidden="true"
-        >
-          <defs>
-            {/* Main Gradient: Terracotta Crimson -> Birla Opus Orange -> Golden Amber */}
-            <linearGradient id="paintRibbonBodyGrad" x1="0%" y1="50%" x2="100%" y2="50%">
-              <stop offset="0%" stopColor="#C2410C" stopOpacity="0.8" />
-              <stop offset="10%" stopColor="#D9531E" stopOpacity="0.95" />
-              <stop offset="25%" stopColor="#EA580C" stopOpacity="1" />
-              <stop offset="50%" stopColor="#EB6014" stopOpacity="1" />
-              <stop offset="70%" stopColor="#F97316" stopOpacity="0.98" />
-              <stop offset="85%" stopColor="#F59E0B" stopOpacity="0.95" />
-              <stop offset="100%" stopColor="#FB923C" stopOpacity="0.8" />
-            </linearGradient>
-
-            {/* Top Gloss Highlight Gradient */}
-            <linearGradient id="paintRibbonGlossGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#FED7AA" stopOpacity="0.25" />
-              <stop offset="20%" stopColor="#FFF7ED" stopOpacity="0.85" />
-              <stop offset="48%" stopColor="#FFEDD5" stopOpacity="0.7" />
-              <stop offset="78%" stopColor="#FEF08A" stopOpacity="0.85" />
-              <stop offset="100%" stopColor="#FED7AA" stopOpacity="0.3" />
-            </linearGradient>
-
-            {/* Deep Warm Shadow Gradient */}
-            <linearGradient id="paintRibbonShadowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#7C2D12" stopOpacity="0.12" />
-              <stop offset="25%" stopColor="#9A3412" stopOpacity="0.25" />
-              <stop offset="55%" stopColor="#C2410C" stopOpacity="0.3" />
-              <stop offset="85%" stopColor="#EA580C" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.08" />
-            </linearGradient>
-
-            {/* Soft Diffuse Shadow Filter */}
-            <filter id="ribbonDropShadow" x="-5%" y="-30%" width="110%" height="180%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="4.5" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-
-          {/* 1. Deep Soft Blurred Underbody Drop Shadow (Offset dy=6) */}
-          <path
-            d="M -20,62 C 100,26 190,20 270,20 C 420,20 540,94 720,94 C 900,94 1020,26 1170,26 C 1280,26 1380,56 1460,68"
-            stroke="url(#paintRibbonShadowGrad)"
-            strokeWidth="28"
-            strokeLinecap="round"
-            filter="url(#ribbonDropShadow)"
-            opacity="0.75"
-          />
-
-          {/* 2. Main Filled Dynamic Ribbon Body (Thinner at crests, broader juicy paint in central dip) */}
-          <path
-            d="M -20,53 C 100,19 190,12 270,12 C 420,12 540,73 720,73 C 900,73 1010,15 1170,15 C 1280,15 1380,48 1460,56 L 1460,68 C 1380,60 1280,33 1170,33 C 1010,33 900,103 720,103 C 540,103 420,26 270,26 C 190,26 100,33 -20,65 Z"
-            fill="url(#paintRibbonBodyGrad)"
-          />
-
-          {/* 3. Authentic Bristle Filaments (Layer A: Deep Sienna Grain) */}
-          <path
-            d="M -15,59 C 102,23 192,18 270,18 C 420,18 540,86 720,86 C 900,86 1015,22 1170,22 C 1280,22 1380,54 1455,62"
-            stroke="#9A3412"
-            strokeWidth="2"
-            strokeLinecap="round"
-            opacity="0.4"
-          />
-
-          {/* 4. Authentic Bristle Filaments (Layer B: Mid Terracotta) */}
-          <path
-            d="M -10,61 C 104,25 194,22 270,22 C 420,22 540,92 720,92 C 900,92 1015,27 1170,27 C 1280,27 1380,58 1450,65"
-            stroke="#C2410C"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            opacity="0.35"
-          />
-
-          {/* 5. Top Crest Specular Highlight (Fresh Wet Paint Luminous Sheen) */}
-          <path
-            d="M 50,42 C 120,21 195,14 270,14 C 420,14 540,75 720,75 C 900,75 1012,17 1170,17 C 1280,17 1360,38 1420,52"
-            stroke="url(#paintRibbonGlossGrad)"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-            opacity="0.85"
-          />
-
-          {/* 6. Razor-Sharp Fine Ridge Core Light */}
-          <path
-            d="M 120,31 C 170,18 220,14 270,14 C 380,14 500,60 620,75 M 820,75 C 940,60 1060,18 1170,18 C 1240,18 1300,28 1360,40"
-            stroke="#FFF7ED"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-            opacity="0.75"
-          />
-
-          {/* 7. Flared Dry-Brush Whisps on Left Entry */}
-          <path d="M -25,48 C 15,48 55,42 95,35" stroke="#C2410C" strokeWidth="1.5" strokeLinecap="round" opacity="0.45" />
-          <path d="M -20,54 C 20,52 60,46 105,38" stroke="#EA580C" strokeWidth="1.2" strokeLinecap="round" opacity="0.4" />
-          <path d="M -30,62 C 10,64 50,58 90,48" stroke="#D9531E" strokeWidth="1.5" strokeLinecap="round" opacity="0.35" />
-          <path d="M -15,70 C 25,72 65,65 110,55" stroke="#9A3412" strokeWidth="1.2" strokeLinecap="round" opacity="0.3" />
-
-          {/* 8. Tapered Brush Exit Whisps on Right Edge */}
-          <path d="M 1370,44 C 1400,48 1430,54 1465,60" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
-          <path d="M 1385,48 C 1410,52 1435,58 1460,64" stroke="#F97316" strokeWidth="1.5" strokeLinecap="round" opacity="0.45" />
-          <path d="M 1400,54 C 1420,58 1445,64 1470,70" stroke="#FB923C" strokeWidth="1.2" strokeLinecap="round" opacity="0.4" />
-        </svg>
-      </div>
+      {/* ── 1. REALISTIC ARCHITECTURAL MOVABLE PAINT BRUSH STROKE RIBBON ── */}
+      <MovablePaintRibbon />
 
       {/* ── MAIN 4-COLUMN BODY (Warm Ivory Canvas #FAF8F5) ── */}
       <div className="mx-auto max-w-[1400px] px-6 sm:px-10 lg:px-14 pt-6 pb-10 sm:pb-12">
