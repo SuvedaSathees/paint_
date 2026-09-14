@@ -72,8 +72,8 @@ export function ColorPaletteDrawer({
   return (
     <div className="flex flex-col gap-3.5 rounded-2xl border border-stone-200/80 bg-white p-3.5 shadow-xs">
       {/* Search & Custom Color Controls */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative flex-1 min-w-[170px]">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+        <div className="relative flex-1">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-stone-400" />
           <input
             type="text"
@@ -84,52 +84,55 @@ export function ColorPaletteDrawer({
           />
         </div>
 
-        {/* Custom Color Input */}
-        <div className="flex items-center gap-1.5 rounded-xl border border-stone-200 bg-stone-50/70 px-2 py-1 text-xs">
-          <input
-            type="color"
-            value={customHex}
-            onChange={(e) => handleCustomColorApply(e.target.value)}
-            className="size-5 cursor-pointer rounded border-0 bg-transparent"
-            title="Choose custom HEX color"
-          />
-          <span className="font-mono text-[10px] font-bold text-stone-700 uppercase">
-            {customHex}
-          </span>
-          {typeof window !== "undefined" && "EyeDropper" in window && (
+        {/* Desktop-Only Custom Color Input & View Mode Toggle */}
+        <div className="hidden sm:flex items-center justify-between sm:justify-start gap-2">
+          {/* Custom Color Input */}
+          <div className="flex items-center gap-1.5 rounded-xl border border-stone-200 bg-stone-50/70 px-2.5 py-1 text-xs">
+            <input
+              type="color"
+              value={customHex}
+              onChange={(e) => handleCustomColorApply(e.target.value)}
+              className="size-5 cursor-pointer rounded border-0 bg-transparent"
+              title="Choose custom HEX color"
+            />
+            <span className="font-mono text-[10px] font-bold text-stone-700 uppercase">
+              {customHex}
+            </span>
+            {typeof window !== "undefined" && "EyeDropper" in window && (
+              <button
+                type="button"
+                onClick={handleEyeDropper}
+                className="rounded p-0.5 text-stone-500 hover:bg-stone-200 hover:text-stone-800 cursor-pointer"
+                title="Pick color from screen"
+              >
+                <Pipette className="size-3" />
+              </button>
+            )}
+          </div>
+
+          {/* View Mode Toggle */}
+          <div className="flex items-center rounded-xl bg-stone-100 p-0.5 border border-stone-200/70">
             <button
               type="button"
-              onClick={handleEyeDropper}
-              className="rounded p-0.5 text-stone-500 hover:bg-stone-200 hover:text-stone-800 cursor-pointer"
-              title="Pick color from screen"
+              onClick={() => setViewMode("cards")}
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                viewMode === "cards" ? "bg-white text-stone-900 shadow-xs" : "text-stone-500 hover:text-stone-800"
+              }`}
+              title="Card View (Shade Name & Code)"
             >
-              <Pipette className="size-3" />
+              <LayoutGrid className="size-3.5" />
             </button>
-          )}
-        </div>
-
-        {/* View Mode Toggle */}
-        <div className="flex items-center rounded-xl bg-stone-100 p-0.5 border border-stone-200/70">
-          <button
-            type="button"
-            onClick={() => setViewMode("cards")}
-            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-              viewMode === "cards" ? "bg-white text-stone-900 shadow-xs" : "text-stone-500 hover:text-stone-800"
-            }`}
-            title="Card View (Shade Name & Code)"
-          >
-            <LayoutGrid className="size-3.5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewMode("compact")}
-            className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-              viewMode === "compact" ? "bg-white text-stone-900 shadow-xs" : "text-stone-500 hover:text-stone-800"
-            }`}
-            title="Compact Palette Dots"
-          >
-            <Grid3X3 className="size-3.5" />
-          </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("compact")}
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                viewMode === "compact" ? "bg-white text-stone-900 shadow-xs" : "text-stone-500 hover:text-stone-800"
+              }`}
+              title="Compact Palette Dots"
+            >
+              <Grid3X3 className="size-3.5" />
+            </button>
+          </div>
         </div>
       </div>
 

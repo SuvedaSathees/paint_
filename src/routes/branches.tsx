@@ -394,28 +394,28 @@ function BranchesPage() {
       <SiteHeader />
 
       {/* Hero Header */}
-      <section className="relative pt-12 pb-14 px-4 sm:px-7 lg:px-10 border-b border-primary/10 overflow-hidden bg-gradient-to-b from-stone-50 via-white to-[#FAF8F5]">
+      <section className="relative pt-10 sm:pt-16 pb-5 sm:pb-14 px-3 sm:px-7 lg:px-10 border-b border-primary/10 overflow-hidden bg-gradient-to-b from-stone-50 via-white to-[#FAF8F5]">
         <div className="absolute -right-24 -top-24 size-96 rounded-full bg-amber-200/20 blur-3xl pointer-events-none" />
         <div className="absolute left-10 top-1/2 size-80 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
 
         <div className="mx-auto max-w-4xl text-center relative z-10">
           {/* Centered Kicker */}
-          <span className="text-[0.68rem] sm:text-[0.74rem] font-bold uppercase tracking-[0.26em] text-accent block mb-3.5 select-none">
+          <span className="text-[9px] sm:text-[0.74rem] font-bold uppercase tracking-[0.22em] text-accent block mb-1.5 sm:mb-3.5 select-none">
             &mdash; STRATEGIC ERODE NETWORK &amp; FACTORY LOGISTICS &mdash;
           </span>
 
           {/* Centered Serif Main Heading */}
-          <h1 className="font-display font-serif text-4xl sm:text-5xl lg:text-6xl tracking-tight text-primary font-normal leading-[1.12] mb-4 sm:mb-5">
+          <h1 className="font-display font-serif text-2xl sm:text-5xl lg:text-6xl tracking-tight text-primary font-normal leading-tight mb-1.5 sm:mb-5">
             Our Store Locations &amp; Warehouses in Erode
           </h1>
 
           {/* Centered Subtitle Paragraph */}
-          <p className="text-xs sm:text-sm md:text-[15px] text-muted-foreground tracking-wide leading-relaxed max-w-3xl mx-auto">
-            Whether you need a luxury Birla Opus color consultation, truckload conduit pipe dispatch, or quick fasteners on the go &mdash; our purpose-built branch facilities are fully staffed and equipped to serve you.
+          <p className="text-xs sm:text-sm md:text-[15px] text-muted-foreground tracking-wide leading-relaxed max-w-xl mx-auto">
+            Visit our luxury Birla Opus studio, bulk conduit logistics depot, or central market counter across Erode.
           </p>
 
-          {/* Centered Authority Badges */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-[11px] sm:text-xs font-semibold text-muted-foreground select-none">
+          {/* Centered Authority Badges (Hidden on mobile to eliminate clutter) */}
+          <div className="hidden sm:flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-[11px] sm:text-xs font-semibold text-muted-foreground select-none mt-6">
             <span className="inline-flex items-center gap-1.5">
               <Building className="size-3.5 text-accent" /> 3 Strategic Erode Showrooms
             </span>
@@ -440,19 +440,20 @@ function BranchesPage() {
       </section>
 
       {/* Branch Cards List - Luxury Architectural Visual Cards */}
-      <section className="py-12 sm:py-16 px-4 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full flex-1">
-        <div className="text-center mb-8 sm:mb-9 max-w-xl mx-auto">
-          <h2 className="font-display font-serif text-2xl sm:text-3xl text-primary font-normal tracking-tight">
+      <section className="py-6 sm:py-16 px-3 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full flex-1">
+        <div className="text-center mb-5 sm:mb-9 max-w-xl mx-auto">
+          <h2 className="font-display font-serif text-xl sm:text-3xl text-primary font-normal tracking-tight">
             Select a Branch
           </h2>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1.5 leading-relaxed">
-            Click on any location below for live operating hours, directions, and direct trade desk contacts.
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1 leading-relaxed">
+            Direct phone lines, Google Maps navigation, and WhatsApp trade desks for each hub.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 items-stretch max-w-[1080px] mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 items-stretch max-w-[1080px] mx-auto">
           {branchList.map((branch) => {
             const isSelected = activeBranchId === branch.id;
+            const primaryPhone = branch.phone[0]?.replace(/\s+/g, "") || "919876543210";
             const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(
               `Hello Akshara Paints & Hardware, I am inquiring with your ${branch.name}. Please share stock availability and directions.`
             )}`;
@@ -461,14 +462,14 @@ function BranchesPage() {
               <div
                 key={branch.id}
                 onClick={() => setActiveBranchId(branch.id)}
-                className={`group relative flex flex-col rounded-2xl border bg-[#FAF8F5] overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer ${
+                className={`group relative flex flex-col rounded-2xl border bg-[#FAF8F5] overflow-hidden shadow-2xs hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer ${
                   isSelected
-                    ? "border-primary ring-2 ring-primary/20 shadow-md"
+                    ? "border-primary ring-2 ring-primary/20 shadow-sm"
                     : "border-[#E7E2D6] hover:border-primary/30"
                 }`}
               >
                 {/* Visual Header with Real Architectural Photograph */}
-                <div className="relative h-38 sm:h-42 w-full overflow-hidden bg-stone-100 shrink-0">
+                <div className="relative h-32 sm:h-42 w-full overflow-hidden bg-stone-100 shrink-0">
                   <img
                     src={branch.image}
                     alt={branch.name}
@@ -478,7 +479,7 @@ function BranchesPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
 
                   {/* Bottom Image Overlay: Reviews & Type */}
-                  <div className="absolute bottom-2.5 left-3.5 right-3.5 flex items-center justify-between text-white">
+                  <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between text-white">
                     <div className="flex items-center gap-1.5 bg-black/50 backdrop-blur-md px-2 py-0.5 rounded text-[10.5px] font-semibold">
                       <Star className="size-3 fill-amber-400 text-amber-400" />
                       <span>{branch.rating}</span>
@@ -490,48 +491,48 @@ function BranchesPage() {
                   </div>
                 </div>
 
-                {/* Card Body (Ultra-clean, minimal, essential SEO details) */}
-                <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between">
+                {/* Card Body */}
+                <div className="p-3.5 sm:p-5 flex flex-col flex-1 justify-between">
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#8C7A6B]">
-                        {branch.type}
+                      <span className="text-[9.5px] sm:text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#8C7A6B]">
+                        {branch.badge}
                       </span>
-                      <span className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1">
+                      <span className="text-[10.5px] sm:text-[11px] font-semibold text-emerald-700 flex items-center gap-1">
                         <Clock className="size-3" /> {branch.status.split("•")[0].trim()}
                       </span>
                     </div>
 
-                    <h3 className="font-display font-serif text-lg sm:text-[20px] font-normal text-primary tracking-tight leading-snug group-hover:text-paint-deep transition-colors">
+                    <h3 className="font-display font-serif text-base sm:text-[20px] font-normal text-primary tracking-tight leading-snug group-hover:text-paint-deep transition-colors">
                       {branch.name}
                     </h3>
 
-                    {/* Essential Local SEO Info: NAP (Name, Address, Phone, Hours) */}
-                    <div className="mt-3 space-y-2 text-xs text-muted-foreground border-t border-stone-200/80 pt-3">
+                    {/* Essential Local SEO Info */}
+                    <div className="mt-2.5 sm:mt-3 space-y-1.5 sm:space-y-2 text-xs text-muted-foreground border-t border-stone-200/80 pt-2.5 sm:pt-3">
                       {/* Address & Landmark */}
-                      <div className="flex items-start gap-2.5">
+                      <div className="flex items-start gap-2">
                         <MapPin className="size-3.5 text-accent shrink-0 mt-0.5" />
                         <div>
-                          <p className="text-foreground font-semibold text-[12px] leading-snug">{branch.address}</p>
-                          <p className="text-[11px] text-stone-500 mt-0.5">
+                          <p className="text-foreground font-semibold text-[11.5px] sm:text-[12px] leading-snug">{branch.address}</p>
+                          <p className="text-[10.5px] sm:text-[11px] text-stone-500 mt-0.5">
                             <span className="text-accent font-bold">Landmark:</span> {branch.landmark}
                           </p>
                         </div>
                       </div>
 
                       {/* Timings */}
-                      <div className="flex items-start gap-2.5">
+                      <div className="flex items-start gap-2">
                         <Clock className="size-3.5 text-accent shrink-0 mt-0.5" />
                         <div className="space-y-0.5">
-                          <p className="text-foreground font-semibold text-[11.5px] leading-snug">{branch.timing}</p>
-                          <p className="text-[11px] text-stone-500">{branch.sundayTiming}</p>
+                          <p className="text-foreground font-semibold text-[11px] sm:text-[11.5px] leading-snug">{branch.timing}</p>
+                          <p className="text-[10.5px] text-stone-500">{branch.sundayTiming}</p>
                         </div>
                       </div>
 
-                      {/* Direct Phone Numbers (Clickable) */}
-                      <div className="flex items-start gap-2.5">
+                      {/* Direct Phone Numbers */}
+                      <div className="flex items-start gap-2">
                         <Phone className="size-3.5 text-accent shrink-0 mt-0.5" />
-                        <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11.5px]">
+                        <div className="flex flex-wrap gap-x-2.5 text-[11px] sm:text-[11.5px]">
                           {branch.phone.map((ph) => (
                             <a
                               key={ph}
@@ -546,29 +547,32 @@ function BranchesPage() {
                     </div>
                   </div>
 
-                  {/* Clean Bottom Action Bar: Get Directions & WhatsApp Only */}
-                  <div className="pt-3 mt-4 border-t border-stone-200/80 flex items-center gap-2">
-                    <Button
-                      variant="hero"
-                      size="sm"
-                      asChild
-                      className="flex-1 h-9 justify-center cursor-pointer rounded-full text-xs font-semibold shadow-xs"
+                  {/* Clean 3-Button Action Bar: Call, Directions & WhatsApp */}
+                  <div className="pt-2.5 sm:pt-3 mt-3 sm:mt-4 border-t border-stone-200/80 grid grid-cols-3 gap-1.5">
+                    <a
+                      href={`tel:${primaryPhone}`}
+                      className="inline-flex items-center justify-center gap-1 h-8 sm:h-9 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-900 text-[11px] font-bold transition-all shadow-2xs cursor-pointer"
                     >
-                      <a href={branch.mapUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center">
-                        <span>Get Directions</span>
-                      </a>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      asChild
-                      className="flex-1 h-9 cursor-pointer rounded-full border-stone-300 bg-white hover:bg-stone-50 px-3 text-xs font-semibold text-emerald-700"
-                      title="Direct WhatsApp"
+                      <Phone className="size-3 text-[#F05323]" />
+                      <span>Call</span>
+                    </a>
+                    <a
+                      href={branch.mapUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center justify-center gap-1 h-8 sm:h-9 rounded-full bg-[#F05323] hover:bg-[#E04006] text-white text-[11px] font-bold transition-all shadow-2xs cursor-pointer"
                     >
-                      <a href={whatsappUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center">
-                        <span>WhatsApp</span>
-                      </a>
-                    </Button>
+                      <MapPin className="size-3" />
+                      <span>Map</span>
+                    </a>
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center justify-center gap-1 h-8 sm:h-9 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-[11px] font-bold transition-all shadow-2xs cursor-pointer"
+                    >
+                      <span>WhatsApp</span>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -577,75 +581,83 @@ function BranchesPage() {
         </div>
       </section>
 
-      {/* Facilities & Amenities Matrix */}
-      <section className="py-14 sm:py-16 px-4 sm:px-7 lg:px-10 bg-stone-100/70 border-t border-b border-primary/10">
+      {/* Facilities & Amenities Matrix - Flipkart Style 2-in-a-Row on Mobile */}
+      <section className="py-8 sm:py-16 px-3 sm:px-7 lg:px-10 bg-stone-100/70 border-t border-b border-primary/10">
         <div className="mx-auto max-w-[1440px]">
-          <div className="text-center max-w-2xl mx-auto mb-10">
-            <span className="text-[0.68rem] sm:text-[0.74rem] font-bold uppercase tracking-[0.24em] text-accent block mb-2 select-none">
+          <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-10">
+            <span className="text-[9px] sm:text-[0.74rem] font-bold uppercase tracking-[0.24em] text-accent block mb-1.5 select-none">
               &mdash; THE AKSHARA NETWORK PROMISE &mdash;
             </span>
-            <h2 className="font-display font-serif text-3xl sm:text-4xl text-primary font-normal tracking-tight">
+            <h2 className="font-display font-serif text-xl sm:text-4xl text-primary font-normal tracking-tight">
               Showroom &amp; Warehouse Amenities
             </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-2">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xl mx-auto leading-relaxed">
               Every facility is customized to give builders, contractors, and homeowners the fastest, most reliable service in Erode.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="rounded-[24px] border border-[#E7E2D6] bg-[#FAF8F5] p-6 shadow-xs hover:shadow-md transition-all">
-              <div className="size-12 rounded-2xl bg-amber-100 text-amber-900 grid place-items-center mb-3">
-                <Palette className="size-6" />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
+            <div className="rounded-2xl border border-[#E7E2D6] bg-[#FAF8F5] p-3.5 sm:p-6 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between">
+              <div>
+                <div className="size-9 sm:size-12 rounded-xl sm:rounded-2xl bg-amber-100 text-amber-900 grid place-items-center mb-2.5 sm:mb-3">
+                  <Palette className="size-4.5 sm:size-6" />
+                </div>
+                <h3 className="font-display font-bold text-xs sm:text-base text-primary leading-snug">Instant Color Tinting</h3>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 leading-snug sm:leading-relaxed">
+                  Computerized Datacolor dispensers match and dispense custom Birla Opus shades in under 3 minutes.
+                </p>
               </div>
-              <h3 className="font-display font-bold text-base text-primary">Instant Color Tinting</h3>
-              <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                Computerized Datacolor dispensers match and dispense custom Birla Opus shades in under 3 minutes.
-              </p>
             </div>
 
-            <div className="rounded-[24px] border border-[#E7E2D6] bg-[#FAF8F5] p-6 shadow-xs hover:shadow-md transition-all">
-              <div className="size-12 rounded-2xl bg-sky-100 text-sky-900 grid place-items-center mb-3">
-                <Truck className="size-6" />
+            <div className="rounded-2xl border border-[#E7E2D6] bg-[#FAF8F5] p-3.5 sm:p-6 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between">
+              <div>
+                <div className="size-9 sm:size-12 rounded-xl sm:rounded-2xl bg-sky-100 text-sky-900 grid place-items-center mb-2.5 sm:mb-3">
+                  <Truck className="size-4.5 sm:size-6" />
+                </div>
+                <h3 className="font-display font-bold text-xs sm:text-base text-primary leading-snug">Site Dispatch Logistics</h3>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 leading-snug sm:leading-relaxed">
+                  Dedicated fleet transporting 3m conduit bundles, bulk 20L paint pails, and fastener boxes directly to site gates.
+                </p>
               </div>
-              <h3 className="font-display font-bold text-base text-primary">Site Dispatch Logistics</h3>
-              <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                Dedicated fleet transporting 3m conduit bundles, bulk 20L paint pails, and fastener boxes directly to site gates.
-              </p>
             </div>
 
-            <div className="rounded-[24px] border border-[#E7E2D6] bg-[#FAF8F5] p-6 shadow-xs hover:shadow-md transition-all">
-              <div className="size-12 rounded-2xl bg-emerald-100 text-emerald-900 grid place-items-center mb-3">
-                <ShieldCheck className="size-6" />
+            <div className="rounded-2xl border border-[#E7E2D6] bg-[#FAF8F5] p-3.5 sm:p-6 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between">
+              <div>
+                <div className="size-9 sm:size-12 rounded-xl sm:rounded-2xl bg-emerald-100 text-emerald-900 grid place-items-center mb-2.5 sm:mb-3">
+                  <ShieldCheck className="size-4.5 sm:size-6" />
+                </div>
+                <h3 className="font-display font-bold text-xs sm:text-base text-primary leading-snug">Certified Quality</h3>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 leading-snug sm:leading-relaxed">
+                  Authorized dealer certificates, authentic batch test reports, and ISI-certified electrical conduits.
+                </p>
               </div>
-              <h3 className="font-display font-bold text-base text-primary">Certified Quality</h3>
-              <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                Authorized dealer certificates, authentic batch test reports, and ISI-certified electrical conduits.
-              </p>
             </div>
 
-            <div className="rounded-[24px] border border-[#E7E2D6] bg-[#FAF8F5] p-6 shadow-xs hover:shadow-md transition-all">
-              <div className="size-12 rounded-2xl bg-stone-200 text-stone-900 grid place-items-center mb-3">
-                <Car className="size-6" />
+            <div className="rounded-2xl border border-[#E7E2D6] bg-[#FAF8F5] p-3.5 sm:p-6 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between">
+              <div>
+                <div className="size-9 sm:size-12 rounded-xl sm:rounded-2xl bg-stone-200 text-stone-900 grid place-items-center mb-2.5 sm:mb-3">
+                  <Car className="size-4.5 sm:size-6" />
+                </div>
+                <h3 className="font-display font-bold text-xs sm:text-base text-primary leading-snug">Easy Access &amp; Parking</h3>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 leading-snug sm:leading-relaxed">
+                  Spacious highway-front parking bays, wide gates, and covered loading ramps for quick vehicle trunk loading.
+                </p>
               </div>
-              <h3 className="font-display font-bold text-base text-primary">Easy Access &amp; Parking</h3>
-              <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                Spacious highway-front parking bays, wide gates, and covered loading ramps for quick vehicle trunk loading.
-              </p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Local Store & Services FAQ Section (Balanced Split 2-Column Layout) */}
-      <section className="py-14 sm:py-18 px-4 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full border-t border-[#E7E2D6]/70">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start max-w-[1080px] mx-auto">
+      <section className="py-8 sm:py-18 px-3 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full border-t border-[#E7E2D6]/70">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start max-w-[1080px] mx-auto">
           
           {/* Left Column (5 Cols): Editorial Title, Context & Direct Support */}
-          <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-3.5">
-            <span className="text-[0.68rem] sm:text-[0.74rem] font-bold uppercase tracking-[0.24em] text-accent block select-none">
+          <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-3">
+            <span className="text-[9px] sm:text-[0.74rem] font-bold uppercase tracking-[0.24em] text-accent block select-none">
               &mdash; STORE &amp; SERVICES FAQS &mdash;
             </span>
-            <h2 className="font-display font-serif text-3xl sm:text-4xl text-primary font-normal tracking-tight leading-[1.15]">
+            <h2 className="font-display font-serif text-xl sm:text-4xl text-primary font-normal tracking-tight leading-[1.15]">
               Frequently Asked Questions
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
@@ -654,23 +666,23 @@ function BranchesPage() {
 
             {/* Quick Helpline Box */}
             <div className="pt-2">
-              <div className="rounded-2xl border border-[#E7E2D6] bg-white p-4 sm:p-5 shadow-2xs space-y-2">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#8C7A6B] block">
+              <div className="rounded-2xl border border-stone-200/90 bg-gradient-to-br from-white to-stone-50 p-4 sm:p-5 shadow-2xs space-y-2">
+                <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-[#8C7A6B] block">
                   TRADE COUNTER DESK
                 </span>
                 <p className="text-xs font-semibold text-primary">
                   Have a specific tint code or bulk inquiry?
                 </p>
-                <p className="text-[11.5px] text-muted-foreground leading-relaxed">
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
                   Call directly to speak with our technical tinting specialists or dispatch coordinators.
                 </p>
-                <div className="pt-1">
+                <div className="pt-1.5">
                   <a
-                    href="tel:+919876543210"
-                    className="text-xs font-bold text-accent hover:text-paint-deep transition-colors inline-flex items-center gap-1.5"
+                    href="tel:+919443722255"
+                    className="inline-flex items-center justify-center gap-1.5 w-full sm:w-auto h-9 px-4 rounded-full bg-[#F05323] hover:bg-[#E04006] text-white text-xs font-bold transition-all shadow-2xs cursor-pointer"
                   >
                     <Phone className="size-3.5" />
-                    <span>Call Central Desk: +91 98765 43210</span>
+                    <span>Call Central Desk: +91 94437 22255</span>
                   </a>
                 </div>
               </div>

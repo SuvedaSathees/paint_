@@ -1281,10 +1281,10 @@ function BlogPage() {
   }
 
   const categories: { id: BlogCategory; label: string }[] = [
-    { id: "all", label: `All (${articlesData.length})` },
-    { id: "paints", label: `Birla Paints (${articlesData.filter((a) => a.category === "paints").length})` },
-    { id: "pipes", label: `Conduit Pipes (${articlesData.filter((a) => a.category === "pipes").length})` },
-    { id: "fasteners", label: `Fasteners (${articlesData.filter((a) => a.category === "fasteners").length})` },
+    { id: "all", label: "All" },
+    { id: "paints", label: "Birla Paints" },
+    { id: "pipes", label: "Conduit Pipes" },
+    { id: "fasteners", label: "Fasteners" },
   ];
 
   const featuredArticle: Article = articlesData.find((a) => a.featured) ?? articlesData[0]!;
@@ -1304,27 +1304,27 @@ function BlogPage() {
       <SiteHeader />
 
       {/* Hero Header Section - Centered Luxury Architectural Showcase */}
-      <section className="relative pt-12 sm:pt-14 pb-14 sm:pb-16 px-4 sm:px-7 lg:px-10 border-b border-primary/10 overflow-hidden bg-gradient-to-b from-stone-50/80 via-white to-background">
+      <section className="relative pt-10 sm:pt-16 pb-5 sm:pb-16 px-3 sm:px-7 lg:px-10 border-b border-primary/10 overflow-hidden bg-gradient-to-b from-stone-50/80 via-white to-background">
         <div className="absolute left-1/2 -top-28 -translate-x-1/2 size-[650px] rounded-full bg-radial from-accent/12 via-primary/5 to-transparent blur-3xl pointer-events-none" />
 
         <div className="mx-auto max-w-4xl text-center relative z-10">
           {/* Centered Kicker */}
-          <span className="text-[0.68rem] sm:text-[0.74rem] font-bold uppercase tracking-[0.26em] text-accent block mb-3.5 select-none">
+          <span className="text-[9px] sm:text-[0.74rem] font-bold uppercase tracking-[0.22em] text-accent block mb-1.5 sm:mb-3.5 select-none">
             &mdash; TECHNICAL DISPATCHES &amp; INDUSTRY INSIGHTS &mdash;
           </span>
 
           {/* Centered Serif Main Heading */}
-          <h1 className="font-display font-serif text-4xl sm:text-5xl lg:text-6xl tracking-tight text-primary font-normal leading-[1.12] mb-4 sm:mb-5">
+          <h1 className="font-display font-serif text-2xl sm:text-5xl lg:text-6xl tracking-tight text-primary font-normal leading-tight mb-1.5 sm:mb-5">
             Knowledge &amp; Insights
           </h1>
 
           {/* Centered Subtitle Paragraph */}
-          <p className="text-xs sm:text-sm md:text-[15px] text-muted-foreground tracking-wide leading-relaxed max-w-2xl mx-auto">
-            Practical engineering guides, Birla Opus shade theory, waterproofing chemistry, and electrical conduit compliance &mdash; authored by Akshara&apos;s technical specialists and site consultants.
+          <p className="text-xs sm:text-sm md:text-[15px] text-muted-foreground tracking-wide leading-relaxed max-w-xl mx-auto">
+            Practical engineering guides, Birla Opus shade theory, waterproofing chemistry, and electrical standards by technical specialists.
           </p>
 
-          {/* Centered Authority Badges */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-[11px] sm:text-xs font-semibold text-muted-foreground select-none">
+          {/* Centered Authority Badges (Hidden on mobile to eliminate clutter) */}
+          <div className="hidden sm:flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-[11px] sm:text-xs font-semibold text-muted-foreground select-none mt-6">
             <span className="inline-flex items-center gap-1.5">
               <BookOpen className="size-3.5 text-accent" /> 25+ Technical Publications
             </span>
@@ -1342,8 +1342,8 @@ function BlogPage() {
             </span>
           </div>
 
-          {/* Combined Search & Segmented Category Filter */}
-          <div className="mt-7 flex flex-col md:flex-row items-center justify-center gap-2.5 sm:gap-3 w-full max-w-5xl mx-auto">
+          {/* Combined Search & Segmented Category Filter (Single-Row Horizontal Scroll on Mobile) */}
+          <div className="mt-4 sm:mt-7 flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-3 w-full max-w-5xl mx-auto">
             {/* Search Input Bar */}
             <div className="relative w-full md:w-64 lg:w-72 shrink-0">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-3.5 text-stone-400 pointer-events-none" />
@@ -1352,7 +1352,7 @@ function BlogPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search guides, standards..."
-                className="w-full h-[40px] rounded-full border border-stone-200/90 bg-white/95 pl-9 pr-9 text-xs sm:text-[13px] text-foreground placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-2xs hover:border-stone-300"
+                className="w-full h-9 sm:h-[40px] rounded-full border border-stone-200/90 bg-white/95 pl-9 pr-9 text-xs sm:text-[13px] text-foreground placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-2xs hover:border-stone-300"
               />
               {searchQuery && (
                 <button
@@ -1365,8 +1365,8 @@ function BlogPage() {
               )}
             </div>
 
-            {/* Segmented Category Filter Capsule */}
-            <div className="inline-flex items-center p-1 rounded-full bg-stone-100/90 border border-stone-200/80 shadow-2xs max-w-full overflow-x-auto no-scrollbar shrink-0 h-[40px]">
+            {/* Discrete Category Filter Chips (Single-Row Horizontal Scroll on Mobile) */}
+            <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1 px-1 justify-start sm:justify-center max-w-4xl mx-auto w-full sm:w-auto">
               {categories.map((cat) => {
                 const isActive = selectedCategory === cat.id;
                 return (
@@ -1374,10 +1374,10 @@ function BlogPage() {
                     key={cat.id}
                     type="button"
                     onClick={() => setSelectedCategory(cat.id)}
-                    className={`h-[32px] rounded-full px-3.5 sm:px-4 text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center ${
+                    className={`h-[30px] sm:h-[34px] rounded-full px-3.5 sm:px-4 text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center shrink-0 border ${
                       isActive
-                        ? "bg-[#0A2234] text-white shadow-xs"
-                        : "text-stone-600 hover:text-stone-950 hover:bg-white/60"
+                        ? "bg-[#0A2234] text-white border-[#0A2234] shadow-xs"
+                        : "bg-white/95 text-stone-600 border-stone-200/90 hover:text-stone-950 hover:bg-stone-50 hover:border-stone-300 shadow-2xs"
                     }`}
                   >
                     {cat.label}
@@ -1389,36 +1389,36 @@ function BlogPage() {
         </div>
       </section>
 
-      {/* Featured Master Guide Showcase (Visible on All without search query) */}
+      {/* Featured Master Guide Showcase (Hidden on Mobile, Visible on Desktop) */}
       {selectedCategory === "all" && !searchQuery && (
-        <section className="py-12 sm:py-14 px-4 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full">
-          <div className="relative rounded-[32px] sm:rounded-[36px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-lg group hover:shadow-2xl transition-all duration-300">
+        <section className="hidden md:block py-6 sm:py-14 px-3 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full">
+          <div className="relative rounded-2xl sm:rounded-[36px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
             <div className="grid grid-cols-1 lg:grid-cols-12 items-center">
               {/* Left Visual Half */}
-              <div className="lg:col-span-6 relative h-72 sm:h-96 lg:h-full min-h-[320px] overflow-hidden">
+              <div className="lg:col-span-6 relative h-48 sm:h-96 lg:h-full min-h-[220px] sm:min-h-[320px] overflow-hidden">
                 <img
                   src={featuredArticle.image}
                   alt={featuredArticle.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                <div className="absolute top-5 left-5">
-                  <span className="rounded-full bg-accent text-white px-3 py-1 text-[0.68rem] font-bold uppercase tracking-wider shadow-sm">
+                <div className="absolute top-3 sm:top-5 left-3 sm:left-5">
+                  <span className="rounded-full bg-accent text-white px-2.5 sm:px-3 py-0.5 sm:py-1 text-[0.62rem] sm:text-[0.68rem] font-bold uppercase tracking-wider shadow-sm">
                     Featured Master Dispatch
                   </span>
                 </div>
-                <div className="absolute bottom-5 left-5 right-5 text-white/90 text-xs flex items-center justify-between">
+                <div className="absolute bottom-3 sm:bottom-5 left-3 sm:left-5 right-3 sm:right-5 text-white/90 text-[10px] sm:text-xs flex items-center justify-between">
                   <span className="flex items-center gap-1.5">
-                    <User className="size-3.5 text-accent" /> {featuredArticle.author} ({featuredArticle.authorRole})
+                    <User className="size-3 sm:size-3.5 text-accent" /> {featuredArticle.author}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Clock className="size-3.5" /> {featuredArticle.readTime}
+                    <Clock className="size-3 sm:size-3.5" /> {featuredArticle.readTime}
                   </span>
                 </div>
               </div>
 
               {/* Right Editorial Half */}
-              <div className="lg:col-span-6 p-8 sm:p-12 space-y-5">
+              <div className="lg:col-span-6 p-4 sm:p-12 space-y-3 sm:space-y-5">
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1.5 font-medium">
                     <Calendar className="size-3.5 text-accent" /> {featuredArticle.date}

@@ -38,7 +38,7 @@ function VisualizerPage() {
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF9F5] text-stone-900 selection:bg-accent/30 selection:text-stone-900">
       <SiteHeader />
-      <main className="flex-1 pt-20 sm:pt-24 pb-16">
+      <main className="flex-1 pt-14 sm:pt-20 pb-20 sm:pb-16 overflow-x-hidden">
         <ColorVisualizer />
       </main>
       <SiteFooter />

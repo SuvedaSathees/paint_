@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback, useEffect } from "react";
-import { Paintbrush, CheckCircle2, MoveHorizontal, RefreshCw } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
+import { Paintbrush, CheckCircle2 } from "lucide-react";
 
 interface BeforeAfterSliderProps {
   beforeImage?: string;
@@ -30,7 +30,13 @@ export function BeforeAfterSlider({
   const handlePointerDown = (e: React.PointerEvent) => {
     setIsDragging(true);
     handleMove(e.clientX);
-    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    if (containerRef.current) {
+      try {
+        containerRef.current.setPointerCapture(e.pointerId);
+      } catch {
+        // ignore fallback
+      }
+    }
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
@@ -40,10 +46,12 @@ export function BeforeAfterSlider({
 
   const handlePointerUp = (e: React.PointerEvent) => {
     setIsDragging(false);
-    try {
-      (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);
-    } catch {
-      // ignore
+    if (containerRef.current) {
+      try {
+        containerRef.current.releasePointerCapture(e.pointerId);
+      } catch {
+        // ignore fallback
+      }
     }
   };
 
@@ -57,22 +65,22 @@ export function BeforeAfterSlider({
   };
 
   return (
-    <section className="pt-[50px] pb-[50px] px-4 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full">
-      {/* Header matching reference aesthetic */}
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <span className="text-xs font-bold uppercase tracking-[0.24em] text-accent block mb-2">
+    <section className="pt-8 sm:pt-[50px] pb-8 sm:pb-[50px] px-3 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full">
+      {/* Header */}
+      <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-12">
+        <span className="text-[0.68rem] sm:text-xs font-bold uppercase tracking-[0.24em] text-accent block mb-1.5">
           &mdash; PROVEN SURFACE EXCELLENCE &mdash;
         </span>
-        <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-serif tracking-tight text-primary">
+        <h2 className="font-display text-2xl sm:text-4xl lg:text-5xl font-serif font-semibold tracking-tight text-primary">
           {title}
         </h2>
-        <p className="mt-3 text-sm sm:text-base text-muted-foreground tracking-wide leading-relaxed">
+        <p className="mt-2 text-xs sm:text-sm md:text-base text-muted-foreground tracking-wide leading-relaxed max-w-2xl mx-auto">
           {subtitle}
         </p>
       </div>
 
       {/* Main Interactive Comparison Card */}
-      <div className="relative rounded-3xl border border-primary/15 bg-card/60 p-4 sm:p-7 shadow-2xl backdrop-blur-sm">
+      <div className="relative rounded-2xl sm:rounded-3xl border border-primary/15 bg-card/75 p-3 sm:p-6 lg:p-7 shadow-xl backdrop-blur-sm">
         {/* Comparison Stage Container */}
         <div
           ref={containerRef}
@@ -87,7 +95,7 @@ export function BeforeAfterSlider({
           aria-valuemin={0}
           aria-valuemax={100}
           aria-label="Before and after transformation slider"
-          className="relative aspect-[16/9] w-full max-h-[640px] overflow-hidden rounded-2xl shadow-inner select-none cursor-ew-resize touch-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="relative aspect-[4/3] sm:aspect-[16/9] w-full max-h-[600px] overflow-hidden rounded-xl sm:rounded-2xl shadow-inner select-none cursor-ew-resize touch-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           {/* 1. Base Layer: BEFORE AKSHARA (Full frame) */}
           <div className="absolute inset-0 w-full h-full bg-stone-900">
@@ -119,27 +127,27 @@ export function BeforeAfterSlider({
 
           {/* 3. Badges */}
           {/* "BEFORE AKSHARA" Badge (pinned to top-left) */}
-          <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 pointer-events-none">
-            <div className="flex items-center gap-2 rounded-full bg-black/75 backdrop-blur-md px-4 py-1.5 border border-white/20 text-white shadow-xl">
-              <span className="size-2 rounded-full bg-red-400 animate-pulse" />
-              <span className="text-[0.68rem] sm:text-xs font-bold uppercase tracking-wider">
-                Before Akshara
+          <div className="absolute top-2.5 left-2.5 sm:top-5 sm:left-5 z-20 pointer-events-none">
+            <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-black/80 backdrop-blur-md px-2.5 py-1 sm:px-4 sm:py-1.5 border border-white/20 text-white shadow-lg">
+              <span className="size-1.5 sm:size-2 rounded-full bg-red-400 animate-pulse shrink-0" />
+              <span className="text-[0.6rem] sm:text-xs font-bold uppercase tracking-wider">
+                Before
               </span>
-              <span className="hidden md:inline text-[0.65rem] text-white/70 font-normal">
+              <span className="hidden sm:inline text-[0.65rem] text-white/70 font-normal">
                 (Damp &amp; Peeling)
               </span>
             </div>
           </div>
 
           {/* "AFTER AKSHARA" Badge (pinned to top-right) */}
-          <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 pointer-events-none">
-            <div className="flex items-center gap-2 rounded-full bg-primary/90 backdrop-blur-md px-4 py-1.5 border border-white/25 text-white shadow-xl">
-              <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[0.68rem] sm:text-xs font-bold uppercase tracking-wider text-white">
-                After Akshara
+          <div className="absolute top-2.5 right-2.5 sm:top-5 sm:right-5 z-20 pointer-events-none">
+            <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-primary/95 backdrop-blur-md px-2.5 py-1 sm:px-4 sm:py-1.5 border border-white/25 text-white shadow-lg">
+              <span className="size-1.5 sm:size-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <span className="text-[0.6rem] sm:text-xs font-bold uppercase tracking-wider text-white">
+                After
               </span>
-              <span className="hidden md:inline text-[0.65rem] text-white/85 font-normal">
-                (Birla Opus Luxury)
+              <span className="hidden sm:inline text-[0.65rem] text-white/85 font-normal">
+                (Birla Opus)
               </span>
             </div>
           </div>
@@ -153,80 +161,111 @@ export function BeforeAfterSlider({
             }}
           >
             {/* Vertical Line */}
-            <div className="h-full w-[2.5px] bg-gradient-to-b from-white/90 via-accent to-white/90 shadow-[0_0_12px_rgba(255,255,255,0.8)]" />
+            <div className="h-full w-[2px] sm:w-[2.5px] bg-gradient-to-b from-white/90 via-accent to-white/90 shadow-[0_0_12px_rgba(255,255,255,0.8)]" />
 
             {/* Brush Drag Handle Button */}
             <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 left-1/2 flex items-center justify-center">
-              <div className="group/handle relative flex items-center justify-center size-12 sm:size-14 rounded-full bg-gradient-to-br from-white via-stone-100 to-amber-100 text-stone-900 border-2 border-accent shadow-[0_8px_25px_rgba(0,0,0,0.4)] transition-transform duration-150 hover:scale-110 active:scale-95">
+              <div className="group/handle relative flex items-center justify-center size-10 sm:size-14 rounded-full bg-gradient-to-br from-white via-stone-100 to-amber-100 text-stone-900 border-2 border-accent shadow-[0_6px_20px_rgba(0,0,0,0.35)] transition-transform duration-150 hover:scale-105 active:scale-95">
                 {/* Horizontal Drag Arrows */}
-                <div className="absolute inset-0 flex items-center justify-between px-1.5 text-stone-400">
-                  <span className="text-[0.6rem] font-bold select-none">&lt;</span>
-                  <span className="text-[0.6rem] font-bold select-none">&gt;</span>
+                <div className="absolute inset-0 flex items-center justify-between px-1 sm:px-1.5 text-stone-400">
+                  <span className="text-[0.55rem] sm:text-[0.65rem] font-bold select-none">&lt;</span>
+                  <span className="text-[0.55rem] sm:text-[0.65rem] font-bold select-none">&gt;</span>
                 </div>
 
                 {/* Center Brush Icon */}
                 <div className="flex flex-col items-center justify-center">
-                  <Paintbrush className="size-5 text-accent fill-accent/20" />
+                  <Paintbrush className="size-4 sm:size-5 text-accent fill-accent/20" />
                 </div>
 
                 {/* Subtle outer pulsing ring */}
-                <div className="absolute inset-0 rounded-full border-2 border-accent/50 animate-ping opacity-40 pointer-events-none" />
+                <div className="absolute inset-0 rounded-full border-2 border-accent/50 animate-ping opacity-30 pointer-events-none" />
               </div>
             </div>
 
             {/* Drag Cue Bubble under brush */}
-            <div className="absolute top-[calc(50%+36px)] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-black/80 backdrop-blur-md px-3 py-1 text-[0.62rem] sm:text-[0.68rem] font-semibold text-white/90 border border-white/20 shadow-lg pointer-events-none">
-              Drag brush to paint
+            <div className="absolute top-[calc(50%+28px)] sm:top-[calc(50%+36px)] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-black/85 backdrop-blur-md px-2.5 py-0.5 sm:px-3 sm:py-1 text-[0.55rem] sm:text-[0.68rem] font-semibold text-white/90 border border-white/20 shadow-md pointer-events-none">
+              Drag to compare
             </div>
           </div>
         </div>
 
-        {/* Quick Transformation Highlights */}
-        <div className="mt-6 pt-5 border-t border-primary/10">
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 w-full">
-            <div className="inline-flex items-center gap-2.5 rounded-2xl bg-secondary/60 hover:bg-secondary/90 px-4 py-2.5 border border-primary/10 shadow-xs transition-all hover:scale-[1.02]">
-              <CheckCircle2 className="size-4 text-accent shrink-0" />
-              <div className="text-left">
-                <span className="block text-[0.68rem] font-bold uppercase tracking-wider text-primary leading-tight">
+        {/* Mobile Quick Tap Controls */}
+        <div className="flex sm:hidden items-center justify-center gap-1.5 mt-2.5">
+          <button
+            type="button"
+            onClick={() => setSliderPos(5)}
+            className={`px-2.5 py-1 rounded-full text-[0.62rem] font-bold border transition-colors cursor-pointer ${
+              sliderPos < 25 ? "bg-primary text-white border-primary" : "bg-stone-100 text-stone-700 border-stone-200"
+            }`}
+          >
+            Show Before
+          </button>
+          <button
+            type="button"
+            onClick={() => setSliderPos(50)}
+            className={`px-2.5 py-1 rounded-full text-[0.62rem] font-bold border transition-colors cursor-pointer ${
+              sliderPos >= 25 && sliderPos <= 75 ? "bg-accent text-white border-accent shadow-xs" : "bg-stone-100 text-stone-700 border-stone-200"
+            }`}
+          >
+            50/50 Split
+          </button>
+          <button
+            type="button"
+            onClick={() => setSliderPos(95)}
+            className={`px-2.5 py-1 rounded-full text-[0.62rem] font-bold border transition-colors cursor-pointer ${
+              sliderPos > 75 ? "bg-primary text-white border-primary" : "bg-stone-100 text-stone-700 border-stone-200"
+            }`}
+          >
+            Show After
+          </button>
+        </div>
+
+        {/* Transformation Highlights (Clean 2x2 Grid on Mobile, 4-Column on Desktop) */}
+        <div className="mt-4 sm:mt-6 pt-3.5 sm:pt-5 border-t border-primary/10">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 w-full">
+            <div className="flex items-center gap-2 sm:gap-2.5 rounded-xl sm:rounded-2xl bg-secondary/50 p-2.5 sm:p-3 border border-primary/10 shadow-2xs">
+              <CheckCircle2 className="size-3.5 sm:size-4 text-accent shrink-0" />
+              <div className="text-left min-w-0">
+                <span className="block text-[0.68rem] sm:text-xs font-bold uppercase tracking-wider text-primary leading-tight truncate">
                   Teflon™ Shield
                 </span>
-                <span className="block text-[0.62rem] text-muted-foreground leading-tight mt-0.5">
+                <span className="block text-[0.58rem] sm:text-[0.65rem] text-muted-foreground leading-tight mt-0.5 truncate">
                   Stains wipe off easily
                 </span>
               </div>
             </div>
 
-            <div className="inline-flex items-center gap-2.5 rounded-2xl bg-secondary/60 hover:bg-secondary/90 px-4 py-2.5 border border-primary/10 shadow-xs transition-all hover:scale-[1.02]">
-              <CheckCircle2 className="size-4 text-accent shrink-0" />
-              <div className="text-left">
-                <span className="block text-[0.68rem] font-bold uppercase tracking-wider text-primary leading-tight">
+            <div className="flex items-center gap-2 sm:gap-2.5 rounded-xl sm:rounded-2xl bg-secondary/50 p-2.5 sm:p-3 border border-primary/10 shadow-2xs">
+              <CheckCircle2 className="size-3.5 sm:size-4 text-accent shrink-0" />
+              <div className="text-left min-w-0">
+                <span className="block text-[0.68rem] sm:text-xs font-bold uppercase tracking-wider text-primary leading-tight truncate">
                   100k Scrub Life
                 </span>
-                <span className="block text-[0.62rem] text-muted-foreground leading-tight mt-0.5">
+                <span className="block text-[0.58rem] sm:text-[0.65rem] text-muted-foreground leading-tight mt-0.5 truncate">
                   High abrasion tested
                 </span>
               </div>
             </div>
 
-            <div className="inline-flex items-center gap-2.5 rounded-2xl bg-secondary/60 hover:bg-secondary/90 px-4 py-2.5 border border-primary/10 shadow-xs transition-all hover:scale-[1.02]">
-              <CheckCircle2 className="size-4 text-accent shrink-0" />
-              <div className="text-left">
-                <span className="block text-[0.68rem] font-bold uppercase tracking-wider text-primary leading-tight">
+            <div className="flex items-center gap-2 sm:gap-2.5 rounded-xl sm:rounded-2xl bg-secondary/50 p-2.5 sm:p-3 border border-primary/10 shadow-2xs">
+              <CheckCircle2 className="size-3.5 sm:size-4 text-accent shrink-0" />
+              <div className="text-left min-w-0">
+                <span className="block text-[0.68rem] sm:text-xs font-bold uppercase tracking-wider text-primary leading-tight truncate">
                   Micro-Crack Seal
                 </span>
-                <span className="block text-[0.62rem] text-muted-foreground leading-tight mt-0.5">
+                <span className="block text-[0.58rem] sm:text-[0.65rem] text-muted-foreground leading-tight mt-0.5 truncate">
                   Flawless plaster hide
                 </span>
               </div>
             </div>
 
-            <div className="inline-flex items-center gap-2.5 rounded-2xl bg-secondary/60 hover:bg-secondary/90 px-4 py-2.5 border border-primary/10 shadow-xs transition-all hover:scale-[1.02]">
-              <CheckCircle2 className="size-4 text-accent shrink-0" />
-              <div className="text-left">
-                <span className="block text-[0.68rem] font-bold uppercase tracking-wider text-primary leading-tight">
+            <div className="flex items-center gap-2 sm:gap-2.5 rounded-xl sm:rounded-2xl bg-secondary/50 p-2.5 sm:p-3 border border-primary/10 shadow-2xs">
+              <CheckCircle2 className="size-3.5 sm:size-4 text-accent shrink-0" />
+              <div className="text-left min-w-0">
+                <span className="block text-[0.68rem] sm:text-xs font-bold uppercase tracking-wider text-primary leading-tight truncate">
                   Zero Odor VOC
                 </span>
-                <span className="block text-[0.62rem] text-muted-foreground leading-tight mt-0.5">
+                <span className="block text-[0.58rem] sm:text-[0.65rem] text-muted-foreground leading-tight mt-0.5 truncate">
                   Move-in same evening
                 </span>
               </div>

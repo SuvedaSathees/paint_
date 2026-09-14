@@ -131,38 +131,39 @@ export function ServiceSwatchDeck() {
   };
 
   return (
-    <section className="pt-[60px] pb-6 px-4 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full overflow-hidden">
+    <section className="pt-8 sm:pt-[60px] pb-8 px-2 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full overflow-hidden">
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <span className="text-xs font-bold uppercase tracking-[0.24em] text-accent block mb-2">
-          &mdash; THE GOLD STANDARD IN PAINTS &amp; HARDWARE &mdash;
+      <div className="text-center max-w-3xl mx-auto mb-5 sm:mb-14">
+        <span className="text-[8.5px] sm:text-xs font-bold uppercase tracking-[0.16em] sm:tracking-[0.24em] text-accent block mb-1.5 whitespace-nowrap select-none">
+          <span className="sm:hidden">&mdash; GOLD STANDARD IN PAINTS &amp; HARDWARE &mdash;</span>
+          <span className="hidden sm:inline">&mdash; THE GOLD STANDARD IN PAINTS &amp; HARDWARE &mdash;</span>
         </span>
-        <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-serif tracking-tight text-primary">
+        <h2 className="font-display text-2xl sm:text-5xl lg:text-6xl font-serif tracking-tight text-primary">
           Why Choose Akshara
         </h2>
-        <p className="mt-3 text-sm sm:text-base text-muted-foreground tracking-wide leading-relaxed">
-          Combining official Birla Opus color excellence with an unmatched industrial hardware supply chain built for residential and commercial sites. Click any card to flip and inspect full specifications.
+        <p className="mt-2 text-xs sm:text-sm md:text-base text-muted-foreground tracking-wide leading-relaxed max-w-xl mx-auto">
+          Official Birla Opus color excellence with an unmatched industrial hardware supply chain. Tap any card to flip and inspect full specifications.
         </p>
       </div>
 
-      {/* Fanned Cards Display with 3D Flip */}
-      <div className="relative pt-6 pb-12 sm:pb-20 max-w-6xl mx-auto flex items-center justify-center">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-4 w-full place-items-center">
+      {/* 4 Cards Display: 2 in a Row on Mobile (Like Flipkart), 4 in a Row on Desktop */}
+      <div className="relative pt-1 sm:pt-6 pb-4 sm:pb-20 max-w-6xl mx-auto w-full">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-5 w-full place-items-center">
           {SERVICE_CARDS.map((card) => {
             const isFlipped = flippedCardId === card.id;
 
             return (
               <div
                 key={card.id}
-                className="perspective-1000 w-full max-w-[295px] sm:max-w-[305px] h-[490px] sm:h-[510px]"
+                className="perspective-1000 w-full h-[285px] sm:h-[400px] lg:h-[500px]"
               >
                 {/* Flippable Card Container */}
                 <div
                   onClick={() => handleCardClick(card.id)}
                   className={`relative w-full h-full transform-style-3d transition-transform duration-700 ease-out cursor-pointer select-none ${
                     isFlipped
-                      ? "rotate-y-180 rotate-0 -translate-y-2 z-40"
-                      : `${card.rotationClass} ${card.translateHover} z-10 hover:z-30`
+                      ? "rotate-y-180 rotate-0 -translate-y-1 sm:-translate-y-2 z-40"
+                      : `rotate-0 sm:${card.rotationClass} ${card.translateHover} z-10 hover:z-30`
                   }`}
                   style={{
                     transformStyle: "preserve-3d",
@@ -171,77 +172,69 @@ export function ServiceSwatchDeck() {
                   }}
                 >
                   {/* ==================================================== */}
-                  {/* FRONT FACE OF CARD (Paint Swatch Look - HD)         */}
+                  {/* FRONT FACE OF CARD (Paint Swatch Look - 2 in a Row) */}
                   {/* ==================================================== */}
                   <div
-                    className="backface-hidden absolute inset-0 w-full h-full flex flex-col justify-between rounded-3xl overflow-hidden border border-stone-200/90 bg-[#FAF7F2] text-stone-950 shadow-xl transition-shadow duration-300 hover:shadow-2xl hd-text"
+                    className="backface-hidden absolute inset-0 w-full h-full flex flex-col justify-between rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-200/90 bg-[#FAF7F2] text-stone-950 shadow-sm sm:shadow-xl transition-shadow duration-300 hover:shadow-2xl"
                     style={{
                       transform: "translateZ(1px)",
                       WebkitFontSmoothing: "antialiased",
-                      MozOsxFontSmoothing: "grayscale",
                       textRendering: "optimizeLegibility",
                     }}
                   >
-                    {/* Top Colored Swatch Section (approx 65% of card height) */}
+                    {/* Top Colored Swatch Section */}
                     <div
-                      className="relative p-6 flex flex-col justify-between flex-1 text-white transition-transform duration-300 hover:brightness-105"
+                      className="relative p-2.5 sm:p-5 lg:p-6 flex flex-col justify-between flex-1 text-white transition-transform duration-300 hover:brightness-105"
                       style={{ backgroundColor: card.color }}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-[0.65rem] font-bold tracking-widest uppercase text-white/95 drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)]">
+                        <span className="text-[0.55rem] sm:text-[0.62rem] lg:text-[0.65rem] font-bold tracking-wider uppercase text-white/95 drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)]">
                           {card.num}
                         </span>
-
-                        {/* Flip Hint Pill */}
-                        <div className="flex items-center gap-1.5 rounded-full bg-black/20 backdrop-blur-md px-2.5 py-1 text-[0.6rem] font-bold uppercase tracking-wider text-white border border-white/30 shadow-sm">
-                          <RotateCw className="size-2.5 stroke-[2.2]" />
-                          <span>Flip</span>
-                        </div>
                       </div>
 
                       {/* Subtitle tag */}
                       <div className="mt-auto">
-                        <span className="text-[0.7rem] tracking-wider uppercase font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)] block">
+                        <span className="text-[0.58rem] sm:text-[0.68rem] lg:text-[0.7rem] tracking-wider uppercase font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)] block leading-tight line-clamp-2">
                           {card.category}
                         </span>
                       </div>
                     </div>
 
-                    {/* Bottom Cream Card Section (approx 35% of card height - HD Text) */}
-                    <div className="p-5 sm:p-6 bg-[#FAF7F2] border-t border-stone-200/90 flex flex-col justify-between hd-text">
+                    {/* Bottom Cream Card Section */}
+                    <div className="p-2.5 sm:p-4 lg:p-5 bg-[#FAF7F2] border-t border-stone-200/90 flex flex-col justify-between min-h-[95px] sm:min-h-[135px] lg:min-h-[165px]">
                       <div>
-                        <h3 className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-stone-950 antialiased">
+                        <h3 className="font-serif text-[0.88rem] sm:text-lg lg:text-2xl font-bold tracking-tight text-stone-950 antialiased leading-tight">
                           {card.title}
                         </h3>
-                        <p className="text-[12px] sm:text-[12.5px] font-semibold text-stone-800 mt-1.5 leading-snug antialiased">
+                        <p className="text-[0.65rem] sm:text-[11px] lg:text-[12.5px] font-semibold text-stone-800 mt-1 leading-snug antialiased line-clamp-2">
                           {card.tagline}
                         </p>
                       </div>
 
-                      <div className="mt-4 pt-3 border-t border-stone-200/80 flex items-center justify-between text-xs font-bold text-accent antialiased">
-                        <span className="tracking-wide font-bold">Flip for details</span>
-                        <RotateCw className="size-3.5 text-accent stroke-[2.2]" />
+                      <div className="mt-2 pt-1.5 sm:pt-2.5 border-t border-stone-200/80 flex items-center justify-between text-[0.6rem] sm:text-[10px] lg:text-xs font-bold text-accent antialiased">
+                        <span className="tracking-wide">Flip for details</span>
+                        <RotateCw className="size-2.5 sm:size-3 text-accent stroke-[2.2]" />
                       </div>
                     </div>
                   </div>
 
                   {/* ==================================================== */}
-                  {/* BACK FACE OF CARD (Crisp HD Designer Back)          */}
+                  {/* BACK FACE OF CARD                                    */}
                   {/* ==================================================== */}
                   <div
-                    className="backface-hidden rotate-y-180 absolute inset-0 w-full h-full flex flex-col justify-between rounded-3xl overflow-hidden border border-stone-300/80 bg-[#FCFBF8] p-4 sm:p-5 shadow-2xl text-stone-950 hd-text"
+                    className="backface-hidden rotate-y-180 absolute inset-0 w-full h-full flex flex-col justify-between rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-300/80 bg-[#FCFBF8] p-2.5 sm:p-4 lg:p-5 shadow-lg sm:shadow-2xl text-stone-950"
                     style={{
                       transform: "rotateY(180deg) translateZ(1px)",
                       WebkitFontSmoothing: "antialiased",
-                      MozOsxFontSmoothing: "grayscale",
                       textRendering: "geometricPrecision",
-                      boxShadow: `0 20px 40px -10px ${card.color}30, 0 10px 20px -5px rgba(0,0,0,0.08)`,
+                      boxShadow: `0 16px 32px -8px ${card.color}30, 0 8px 16px -4px rgba(0,0,0,0.08)`,
                     }}
                   >
-                    {/* Header: Tag + Sleek Close/Flip Button */}
-                    <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+                    {/* Header: Tag + Flip Back Button */}
+                    <div className="flex items-center justify-between pb-1.5 sm:pb-2.5 border-b border-stone-200">
                       <span
-                        className="text-[0.62rem] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border"
+                        className="text-[0.52rem] sm:text-[0.62rem] font-bold uppercase tracking-wider px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border"
                         style={{
                           backgroundColor: card.accentBg,
                           borderColor: `${card.color}50`,
@@ -257,93 +250,122 @@ export function ServiceSwatchDeck() {
                           e.stopPropagation();
                           handleCardClick(card.id);
                         }}
-                        className="flex items-center gap-1 size-7 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 transition-colors cursor-pointer justify-center"
-                        title="Flip back to front"
+                        className="flex items-center justify-center size-6 sm:size-7 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 transition-colors cursor-pointer"
+                        title="Flip back"
                       >
-                        <RotateCw className="size-3" />
+                        <RotateCw className="size-2.5 sm:size-3" />
                       </button>
                     </div>
 
-                    {/* Title & High-Contrast Summary */}
-                    <div className="space-y-1 pt-1">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="size-2 rounded-full shrink-0"
-                          style={{ backgroundColor: card.color }}
-                        />
-                        <h4 className="font-serif text-xl sm:text-2xl font-bold text-stone-950 leading-tight">
+                    {/* Mobile Back Face Content */}
+                    <div className="flex sm:hidden flex-col justify-between flex-1 py-1.5">
+                      <div>
+                        <h4 className="font-serif text-[0.82rem] font-bold text-stone-950 leading-tight">
                           {card.title}
                         </h4>
+                        <p className="text-[0.62rem] text-stone-700 font-medium leading-tight mt-1 line-clamp-2">
+                          {card.summary}
+                        </p>
                       </div>
-                      <p className="text-xs text-stone-700 font-medium leading-relaxed pt-0.5">
-                        {card.summary}
-                      </p>
-                    </div>
 
-                    {/* Clean Key Feature Highlights List */}
-                    <div className="space-y-1.5 my-auto">
-                      {card.features.map((feat, i) => (
-                        <div
-                          key={i}
-                          className="flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-stone-200/80 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
-                        >
-                          <div className="flex items-center gap-2 pr-1">
-                            <span
-                              className="size-1.5 rounded-full shrink-0"
-                              style={{ backgroundColor: card.color }}
-                            />
-                            <span className="text-xs font-semibold text-stone-900 whitespace-nowrap">
-                              {feat.title}
-                            </span>
+                      <div className="space-y-1 my-1.5">
+                        {card.features.slice(0, 2).map((feat, i) => (
+                          <div key={i} className="text-[0.58rem] font-semibold text-stone-800 bg-white px-1.5 py-0.5 rounded-md border border-stone-200/80 truncate">
+                            &bull; {feat.title}
                           </div>
-                          <span
-                            className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 whitespace-nowrap"
-                            style={{
-                              backgroundColor: card.accentBg,
-                              color: card.color,
-                            }}
-                          >
-                            {feat.badge}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
 
-                    {/* 3-Column Horizontal Specs Strip */}
-                    <div className="rounded-xl bg-stone-100/90 px-2 py-2 border border-stone-200/80 grid grid-cols-3 gap-1 text-center">
-                      {card.specs.map((spec, i) => (
-                        <div
-                          key={i}
-                          className={i > 0 ? "border-l border-stone-300/80 pl-1" : ""}
-                        >
-                          <span className="block text-[9px] font-bold tracking-wider text-stone-500 uppercase">
-                            {spec.label}
-                          </span>
-                          <strong className="block text-[11px] font-bold text-stone-900 mt-0.5 whitespace-nowrap">
-                            {spec.value}
-                          </strong>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Bottom CTA Action Button (No Arrow) */}
-                    <div className="pt-2">
                       <Button
                         size="sm"
                         asChild
-                        className="w-full justify-center rounded-full text-xs font-bold cursor-pointer h-9 text-white shadow-md transition-all hover:brightness-110 active:scale-98"
+                        className="w-full justify-center rounded-full text-[0.65rem] font-bold cursor-pointer h-6 text-white shadow-xs"
                         style={{ backgroundColor: card.color }}
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Link to={card.link}>
-                          <span>{card.ctaText}</span>
+                          <span>Open Details &rarr;</span>
                         </Link>
                       </Button>
+                    </div>
 
-                      <div className="mt-2 text-center">
-                        <span className="text-[11px] text-stone-400 font-medium select-none">
-                          Click anywhere to flip back
-                        </span>
+                    {/* Desktop Back Face Content */}
+                    <div className="hidden sm:flex flex-col justify-between flex-1">
+                      {/* Title & Summary */}
+                      <div className="space-y-0.5 sm:space-y-1 pt-0.5 sm:pt-1">
+                        <div className="flex items-center gap-1.5 sm:gap-2">
+                          <span
+                            className="size-1.5 sm:size-2 rounded-full shrink-0"
+                            style={{ backgroundColor: card.color }}
+                          />
+                          <h4 className="font-serif text-sm sm:text-2xl font-bold text-stone-950 leading-tight">
+                            {card.title}
+                          </h4>
+                        </div>
+                        <p className="text-[10px] sm:text-xs text-stone-700 font-medium leading-tight sm:leading-relaxed line-clamp-2">
+                          {card.summary}
+                        </p>
+                      </div>
+
+                      {/* Key Features List */}
+                      <div className="space-y-1 sm:space-y-1.5 my-auto">
+                        {card.features.slice(0, 3).map((feat, i) => (
+                          <div
+                            key={i}
+                            className="flex items-center justify-between px-2 py-1 sm:px-3 sm:py-2 rounded-lg sm:rounded-xl bg-white border border-stone-200/80 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                          >
+                            <div className="flex items-center gap-1.5 pr-1">
+                              <span
+                                className="size-1 sm:size-1.5 rounded-full shrink-0"
+                                style={{ backgroundColor: card.color }}
+                              />
+                              <span className="text-[10px] sm:text-xs font-semibold text-stone-900 whitespace-nowrap truncate">
+                                {feat.title}
+                              </span>
+                            </div>
+                            <span
+                              className="text-[9px] sm:text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0 whitespace-nowrap"
+                              style={{
+                                backgroundColor: card.accentBg,
+                                color: card.color,
+                              }}
+                            >
+                              {feat.badge}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* 3-Column Specs Strip */}
+                      <div className="rounded-lg sm:rounded-xl bg-stone-100/90 px-1.5 py-1 sm:px-2 sm:py-2 border border-stone-200/80 grid grid-cols-3 gap-0.5 sm:gap-1 text-center">
+                        {card.specs.map((spec, i) => (
+                          <div
+                            key={i}
+                            className={i > 0 ? "border-l border-stone-300/80 pl-0.5 sm:pl-1" : ""}
+                          >
+                            <span className="block text-[8px] sm:text-[9px] font-bold tracking-wider text-stone-500 uppercase">
+                              {spec.label}
+                            </span>
+                            <strong className="block text-[9.5px] sm:text-[11px] font-bold text-stone-900 mt-0.5 whitespace-nowrap">
+                              {spec.value}
+                            </strong>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Bottom CTA Action Button */}
+                      <div className="pt-1 sm:pt-2">
+                        <Button
+                          size="sm"
+                          asChild
+                          className="w-full justify-center rounded-full text-[11px] sm:text-xs font-bold cursor-pointer h-7 sm:h-9 text-white shadow-sm transition-all hover:brightness-110 active:scale-98"
+                          style={{ backgroundColor: card.color }}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Link to={card.link}>
+                            <span>{card.ctaText}</span>
+                          </Link>
+                        </Button>
                       </div>
                     </div>
                   </div>

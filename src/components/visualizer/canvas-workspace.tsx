@@ -22,6 +22,7 @@ interface CanvasWorkspaceProps {
   imageSrc: string;
   selectedColor: PaintColor;
   autoFillTrigger?: number;
+  saveTrigger?: number;
   onImageChange: (src: string) => void;
   onOpenEstimate: (color: PaintColor) => void;
 }
@@ -30,6 +31,7 @@ export function CanvasWorkspace({
   imageSrc,
   selectedColor,
   autoFillTrigger,
+  saveTrigger,
   onImageChange,
   onOpenEstimate,
 }: CanvasWorkspaceProps) {
@@ -48,6 +50,7 @@ export function CanvasWorkspace({
   const [sliderPos, setSliderPos] = useState(50); // percentage
   const [isDraggingSlider, setIsDraggingSlider] = useState(false);
   const [isLoadingImage, setIsLoadingImage] = useState(false);
+  const [tapRipple, setTapRipple] = useState<{ x: number; y: number; id: number } | null>(null);
 
   // Camera modal state
   const [showCameraModal, setShowCameraModal] = useState(false);
@@ -135,11 +138,16 @@ export function CanvasWorkspace({
     setIsLoadingImage(true);
 
     const img = new Image();
-    img.crossOrigin = "anonymous";
+    if (!imageSrc.startsWith("data:")) {
+      img.crossOrigin = "anonymous";
+    }
     img.onload = () => {
       if (!isMounted) return;
 
-      const maxDim = 1440;
+      const isMobile =
+        typeof window !== "undefined" &&
+        (window.innerWidth < 768 || /Android|iPhone|iPad/i.test(navigator.userAgent));
+      const maxDim = isMobile ? 1000 : 1440;
       let w = img.naturalWidth || img.width;
       let h = img.naturalHeight || img.height;
 
@@ -243,39 +251,30 @@ export function CanvasWorkspace({
     renderComposite();
   };
 
-  // Convert mouse/touch coords to canvas internal coords
-  const getCanvasCoords = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  // Convert pointer coords to canvas internal bitmap coords
+  const getCanvasCoords = (e: React.PointerEvent<HTMLCanvasElement> | React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if (!canvas) return { x: 0, y: 0 };
+    if (!canvas) return null;
     const rect = canvas.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return null;
 
-    let clientX = 0;
-    let clientY = 0;
-
-    if ("touches" in e) {
-      if (e.touches.length > 0) {
-        clientX = e.touches[0].clientX;
-        clientY = e.touches[0].clientY;
-      } else if (e.changedTouches && e.changedTouches.length > 0) {
-        clientX = e.changedTouches[0].clientX;
-        clientY = e.changedTouches[0].clientY;
-      }
-    } else {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
+    const relX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+    const relY = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
 
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
 
+    const x = Math.round(relX * scaleX);
+    const y = Math.round(relY * scaleY);
+
     return {
-      x: Math.round((clientX - rect.left) * scaleX),
-      y: Math.round((clientY - rect.top) * scaleY),
+      x: Math.max(0, Math.min(canvas.width - 1, x)),
+      y: Math.max(0, Math.min(canvas.height - 1, y)),
     };
   };
 
-  // SMART FLOOD FILL: Luminance-preserved wall detection
-  const performSmartFill = (startX: number, startY: number) => {
+  // SMART FLOOD FILL: Luminance-preserved wall detection with fast TypedArray BFS
+  const performSmartFill = (startX: number, startY: number, colorOverride?: PaintColor) => {
     const origCanvas = originalCanvasRef.current;
     const paintCanvas = paintCanvasRef.current;
     if (!origCanvas || !paintCanvas) return;
@@ -300,12 +299,10 @@ export function CanvasWorkspace({
     const sg = oD[startIdx + 1];
     const sb = oD[startIdx + 2];
 
-    const targetColor = hexToRgb(selectedColor.hex);
-    // Target base luminance
-    const targetLum = 0.299 * targetColor.r + 0.587 * targetColor.g + 0.114 * targetColor.b;
-    const safeTargetLum = Math.max(15, targetLum);
+    const activeColor = colorOverride || selectedColor;
+    const targetColor = hexToRgb(activeColor.hex);
 
-    // Color distance function (Euclidean in RGB with luminance weight)
+    // Color distance function (Euclidean in RGB with perceptual luminance weighting)
     const colorDist = (idx: number) => {
       const dr = oD[idx] - sr;
       const dg = oD[idx + 1] - sg;
@@ -314,58 +311,67 @@ export function CanvasWorkspace({
     };
 
     const visited = new Uint8Array(w * h);
-    const queue = new Int32Array(w * h * 2);
+    const queue = new Int32Array(w * h);
     let head = 0;
     let tail = 0;
 
-    queue[tail++] = startX;
-    queue[tail++] = startY;
-    visited[startY * w + startX] = 1;
+    const startPos = startY * w + startX;
+    queue[tail++] = startPos;
+    visited[startPos] = 1;
 
-    const tol = tolerance * 1.8;
+    const tol = Math.max(16, tolerance * 1.75);
 
     while (head < tail) {
-      const cx = queue[head++];
-      const cy = queue[head++];
-      const cIdx = (cy * w + cx) * 4;
+      const pos = queue[head++];
+      const cx = pos % w;
+      const cy = (pos / w) | 0;
+      const cIdx = pos * 4;
 
-      // Calculate original pixel luminance
+      // Calculate original surface luminance (0 to 255)
       const r = oD[cIdx];
       const g = oD[cIdx + 1];
       const b = oD[cIdx + 2];
       const lum = 0.299 * r + 0.587 * g + 0.114 * b;
 
-      // Modulate paint color by original surface luminance to retain shadow & wall gradient
-      const lumFactor = lum / safeTargetLum;
-      const nr = Math.min(255, Math.max(0, Math.round(targetColor.r * lumFactor)));
-      const ng = Math.min(255, Math.max(0, Math.round(targetColor.g * lumFactor)));
-      const nb = Math.min(255, Math.max(0, Math.round(targetColor.b * lumFactor)));
+      // Authentic architectural paint lighting simulation:
+      // Preserves original room shadows, ambient light, and wall texture
+      const lightingMultiplier = 0.35 + 0.65 * (lum / 255);
+      const nr = Math.min(255, Math.max(0, Math.round(targetColor.r * lightingMultiplier)));
+      const ng = Math.min(255, Math.max(0, Math.round(targetColor.g * lightingMultiplier)));
+      const nb = Math.min(255, Math.max(0, Math.round(targetColor.b * lightingMultiplier)));
 
       pD[cIdx] = nr;
       pD[cIdx + 1] = ng;
       pD[cIdx + 2] = nb;
-      pD[cIdx + 3] = 230; // 90% opacity for natural blend
+      pD[cIdx + 3] = 230; // 90% opacity for natural depth & trim preservation
 
-      // 4-way neighbors
-      const neighbors = [
-        [cx + 1, cy],
-        [cx - 1, cy],
-        [cx, cy + 1],
-        [cx, cy - 1],
-      ];
-
-      for (let i = 0; i < 4; i++) {
-        const [nx, ny] = neighbors[i];
-        if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
-          const nPos = ny * w + nx;
-          if (!visited[nPos]) {
-            visited[nPos] = 1;
-            const nIdx = nPos * 4;
-            if (colorDist(nIdx) <= tol) {
-              queue[tail++] = nx;
-              queue[tail++] = ny;
-            }
-          }
+      // 4-way neighbors with inlined boundary checks
+      if (cx + 1 < w) {
+        const nPos = pos + 1;
+        if (!visited[nPos] && colorDist(nPos * 4) <= tol) {
+          visited[nPos] = 1;
+          queue[tail++] = nPos;
+        }
+      }
+      if (cx - 1 >= 0) {
+        const nPos = pos - 1;
+        if (!visited[nPos] && colorDist(nPos * 4) <= tol) {
+          visited[nPos] = 1;
+          queue[tail++] = nPos;
+        }
+      }
+      if (cy + 1 < h) {
+        const nPos = pos + w;
+        if (!visited[nPos] && colorDist(nPos * 4) <= tol) {
+          visited[nPos] = 1;
+          queue[tail++] = nPos;
+        }
+      }
+      if (cy - 1 >= 0) {
+        const nPos = pos - w;
+        if (!visited[nPos] && colorDist(nPos * 4) <= tol) {
+          visited[nPos] = 1;
+          queue[tail++] = nPos;
         }
       }
     }
@@ -375,15 +381,33 @@ export function CanvasWorkspace({
     renderComposite();
   };
 
-  // 1-Click Wall Auto-Fill Trigger from Step 3
+  // Find the primary unobstructed wall seed location for any room
+  const getWallSeedPoint = useCallback((src: string, w: number, h: number) => {
+    if (src.includes("linen")) return { x: Math.round(w * 0.5), y: Math.round(h * 0.24) };
+    if (src.includes("terracotta")) return { x: Math.round(w * 0.45), y: Math.round(h * 0.25) };
+    if (src.includes("forest")) return { x: Math.round(w * 0.5), y: Math.round(h * 0.26) };
+    if (src.includes("rose")) return { x: Math.round(w * 0.5), y: Math.round(h * 0.28) };
+    if (src.includes("ocean")) return { x: Math.round(w * 0.5), y: Math.round(h * 0.25) };
+    // Living room or uploaded custom photo: upper 26% center safely above furniture
+    return { x: Math.round(w * 0.5), y: Math.round(h * 0.26) };
+  }, []);
+
+  // 1-Click Wall Auto-Fill Trigger from Step 3 or "Paint Wall" button
   useEffect(() => {
     if (autoFillTrigger && autoFillTrigger > 0) {
       const canvas = canvasRef.current;
       if (!canvas) return;
-      // Smart fill targeting the center wall region
-      performSmartFill(Math.round(canvas.width / 2), Math.round(canvas.height / 2));
+      const seed = getWallSeedPoint(imageSrc, canvas.width, canvas.height);
+      performSmartFill(seed.x, seed.y, selectedColor);
     }
-  }, [autoFillTrigger]);
+  }, [autoFillTrigger, imageSrc, getWallSeedPoint, selectedColor]);
+
+  // Download Trigger from external mobile action button
+  useEffect(() => {
+    if (saveTrigger && saveTrigger > 0) {
+      handleDownload();
+    }
+  }, [saveTrigger]);
 
   // MANUAL BRUSH / ERASER DRAWING
   const drawStroke = (x: number, y: number) => {
@@ -414,36 +438,70 @@ export function CanvasWorkspace({
     renderComposite();
   };
 
-  const handlePointerDown = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (isComparing) return;
-    const { x, y } = getCanvasCoords(e);
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {}
+
+    const coords = getCanvasCoords(e);
+    if (!coords) return;
 
     if (activeTool === "smart-fill") {
-      performSmartFill(x, y);
+      performSmartFill(coords.x, coords.y);
+      // Trigger tap ripple animation for immediate mobile touch feedback
+      const containerRect = containerRef.current?.getBoundingClientRect();
+      if (containerRect) {
+        setTapRipple({
+          x: e.clientX - containerRect.left,
+          y: e.clientY - containerRect.top,
+          id: Date.now(),
+        });
+        setTimeout(() => setTapRipple(null), 600);
+      }
     } else {
       setIsDrawing(true);
-      drawStroke(x, y);
+      drawStroke(coords.x, coords.y);
     }
   };
 
-  const handlePointerMove = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!isDrawing || isComparing) return;
-    const { x, y } = getCanvasCoords(e);
-    drawStroke(x, y);
+    const coords = getCanvasCoords(e);
+    if (!coords) return;
+    drawStroke(coords.x, coords.y);
   };
 
-  const handlePointerUp = () => {
+  const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    try {
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      }
+    } catch {}
     if (isDrawing) {
       setIsDrawing(false);
       saveState();
     }
   };
 
-  // Before / After Slider dragging
+  const handlePointerCancel = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    try {
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      }
+    } catch {}
+    if (isDrawing) {
+      setIsDrawing(false);
+      saveState();
+    }
+  };
+
+  // Before / After Slider dragging with bounds clamping
   const handleSliderDrag = (clientX: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
+    if (rect.width === 0) return;
     const pos = Math.max(5, Math.min(95, ((clientX - rect.left) / rect.width) * 100));
     setSliderPos(pos);
   };
@@ -592,40 +650,110 @@ export function CanvasWorkspace({
         className="hidden"
       />
 
-      {/* Top Action Ribbon */}
-      <div className="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar whitespace-nowrap rounded-2xl border border-stone-200/80 bg-white/95 p-2 sm:p-2.5 shadow-sm backdrop-blur-md">
-        {/* Input source buttons */}
+      {/* 1. Mobile-Only Clean Action Bar (< sm) */}
+      <div className="flex sm:hidden items-center justify-between gap-1 rounded-xl border border-stone-200/90 bg-white p-1 shadow-2xs">
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTool("smart-fill");
+              setIsComparing(false);
+            }}
+            className={`flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[11px] font-bold transition-all cursor-pointer ${
+              activeTool === "smart-fill" && !isComparing
+                ? "bg-[#071624] text-white shadow-2xs"
+                : "text-stone-600 hover:text-stone-900 bg-stone-100"
+            }`}
+          >
+            <Wand2 className="size-3 text-[#F05323]" />
+            <span>Tap Wall</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTool("brush");
+              setIsComparing(false);
+            }}
+            className={`flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[11px] font-bold transition-all cursor-pointer ${
+              activeTool === "brush" && !isComparing
+                ? "bg-[#071624] text-white shadow-2xs"
+                : "text-stone-600 hover:text-stone-900 bg-stone-100"
+            }`}
+          >
+            <Paintbrush className="size-3 text-stone-700" />
+            <span>Brush</span>
+          </button>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setIsComparing(!isComparing)}
+            className={`flex items-center gap-1 rounded-lg px-2 py-1.5 text-[11px] font-bold transition-all cursor-pointer border ${
+              isComparing
+                ? "bg-stone-900 text-white border-stone-900 shadow-2xs"
+                : "bg-stone-50 text-stone-700 border-stone-200"
+            }`}
+          >
+            <SplitSquareVertical className="size-3 text-[#F05323]" />
+            <span>Compare</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleReset}
+            className="rounded-lg p-1.5 text-stone-600 hover:bg-stone-100 border border-stone-200 bg-stone-50 cursor-pointer"
+            title="Reset paint"
+          >
+            <RotateCcw className="size-3.5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={handleDownload}
+            className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[11px] font-bold bg-emerald-700 text-white shadow-2xs cursor-pointer"
+            title="Save photo"
+          >
+            <Download className="size-3" />
+            <span>Save</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 2. Desktop Full Action Ribbon (>= sm) */}
+      <div className="hidden sm:flex items-center justify-between gap-2 rounded-2xl border border-stone-200/80 bg-white/95 p-2.5 shadow-2xs backdrop-blur-md">
+        {/* Desktop-only secondary input buttons */}
         <div className="flex items-center gap-1.5 shrink-0">
           <Button
             variant="outline"
             size="sm"
             onClick={() => fileInputRef.current?.click()}
-            className="h-8.5 gap-1.5 rounded-xl border-stone-200 px-2.5 text-xs font-semibold text-stone-700 hover:bg-stone-50 shrink-0 cursor-pointer"
+            className="h-8 gap-1.5 rounded-xl border-stone-200 px-2.5 text-xs font-semibold text-stone-700 hover:bg-stone-50 shrink-0 cursor-pointer"
           >
-            <Upload className="size-3.5 text-paint-deep" />
-            <span>Upload Photo</span>
+            <Upload className="size-3.5 text-[#F05323]" />
+            <span>Upload</span>
           </Button>
 
           <Button
             variant="outline"
             size="sm"
             onClick={() => {
-              // On mobile, use native camera input; on desktop, launch live camera modal
               if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
                 cameraInputRef.current?.click();
               } else {
                 startCamera();
               }
             }}
-            className="h-8.5 gap-1.5 rounded-xl border-stone-200 px-2.5 text-xs font-semibold text-stone-700 hover:bg-stone-50 shrink-0 cursor-pointer"
+            className="h-8 gap-1.5 rounded-xl border-stone-200 px-2.5 text-xs font-semibold text-stone-700 hover:bg-stone-50 shrink-0 cursor-pointer"
           >
-            <Camera className="size-3.5 text-accent" />
-            <span>Snap Photo</span>
+            <Camera className="size-3.5 text-stone-600" />
+            <span>Camera</span>
           </Button>
         </div>
 
-        {/* Tool selector */}
-        <div className="flex items-center gap-1 rounded-xl bg-stone-100/90 p-1 border border-stone-200/50 shrink-0">
+        {/* Primary Tool selector */}
+        <div className="flex items-center gap-1 rounded-xl bg-stone-100/90 p-1 border border-stone-200/50">
           <button
             type="button"
             onClick={() => {
@@ -634,12 +762,12 @@ export function CanvasWorkspace({
             }}
             className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all shrink-0 cursor-pointer ${
               activeTool === "smart-fill" && !isComparing
-                ? "bg-white text-stone-900 shadow-sm border border-stone-200"
+                ? "bg-white text-stone-900 shadow-2xs border border-stone-200 font-bold"
                 : "text-stone-600 hover:text-stone-900"
             }`}
             title="Tap any wall to intelligently fill with selected paint color"
           >
-            <Wand2 className="size-3.5 text-accent" />
+            <Wand2 className="size-3.5 text-[#F05323]" />
             <span>Smart Tap</span>
           </button>
 
@@ -651,13 +779,13 @@ export function CanvasWorkspace({
             }}
             className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all shrink-0 cursor-pointer ${
               activeTool === "brush" && !isComparing
-                ? "bg-white text-stone-900 shadow-sm border border-stone-200"
+                ? "bg-white text-stone-900 shadow-2xs border border-stone-200 font-bold"
                 : "text-stone-600 hover:text-stone-900"
             }`}
-            title="Paint walls manually with a smooth roller brush"
+            title="Paint walls manually with a roller brush"
           >
-            <Paintbrush className="size-3.5 text-paint-deep" />
-            <span>Roller Brush</span>
+            <Paintbrush className="size-3.5 text-stone-800" />
+            <span>Brush</span>
           </button>
 
           <button
@@ -668,7 +796,7 @@ export function CanvasWorkspace({
             }}
             className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all shrink-0 cursor-pointer ${
               activeTool === "eraser" && !isComparing
-                ? "bg-white text-stone-900 shadow-sm border border-stone-200"
+                ? "bg-white text-stone-900 shadow-2xs border border-stone-200 font-bold"
                 : "text-stone-600 hover:text-stone-900"
             }`}
             title="Erase paint from window frames or furniture"
@@ -678,22 +806,22 @@ export function CanvasWorkspace({
           </button>
         </div>
 
-        {/* Secondary controls: Compare, Undo, Redo, Download */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        {/* Secondary controls: Compare, Undo, Redo, Reset, Save */}
+        <div className="flex items-center gap-1.5 shrink-0 ml-auto">
           <Button
             variant={isComparing ? "default" : "outline"}
             size="sm"
             onClick={() => setIsComparing(!isComparing)}
-            className={`h-8.5 gap-1.5 rounded-xl px-2.5 text-xs font-semibold shrink-0 cursor-pointer ${
-              isComparing ? "bg-stone-900 text-white" : "border-stone-200 text-stone-700"
+            className={`h-8 gap-1 rounded-xl px-2.5 text-xs font-semibold shrink-0 cursor-pointer ${
+              isComparing ? "bg-stone-900 text-white" : "border-stone-200 text-stone-700 hover:bg-stone-50"
             }`}
             title="Split comparison: Slide left/right to see before vs. after"
           >
-            <SplitSquareVertical className="size-3.5" />
+            <SplitSquareVertical className="size-3.5 text-[#F05323]" />
             <span>Compare</span>
           </Button>
 
-          <div className="flex items-center gap-0.5 border-l border-stone-200 pl-1.5 shrink-0">
+          <div className="flex items-center gap-0.5 border-l border-stone-200 pl-1 shrink-0">
             <button
               type="button"
               disabled={history.length <= 1}
@@ -726,92 +854,99 @@ export function CanvasWorkspace({
             variant="default"
             size="sm"
             onClick={handleDownload}
-            className="h-8.5 gap-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-sm px-3 shrink-0 cursor-pointer"
+            className="h-8 gap-1 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-2xs px-3 shrink-0 cursor-pointer"
           >
             <Download className="size-3.5" />
-            <span>Save Room</span>
+            <span>Save</span>
           </Button>
         </div>
       </div>
 
-      {/* Dynamic Tool Adjusters Bar */}
-      <div className="flex items-center justify-between gap-4 overflow-x-auto no-scrollbar whitespace-nowrap rounded-xl border border-stone-200/60 bg-stone-50/80 px-3.5 py-2 text-xs text-stone-600">
+      {/* Dynamic Tool Adjusters Bar: Desktop Only (Hidden on Mobile) */}
+      <div className="hidden sm:flex flex-wrap items-center justify-between gap-2 rounded-xl border border-stone-200/60 bg-stone-50/80 px-3.5 py-2 text-xs text-stone-600">
         <div className="flex items-center gap-4 shrink-0">
           {activeTool === "smart-fill" && (
             <div className="flex items-center gap-2">
-              <Sliders className="size-3.5 text-accent" />
-              <span className="font-semibold text-stone-700">Wall Detection Tolerance:</span>
+              <Sliders className="size-3.5 text-[#F05323]" />
+              <span className="font-semibold text-stone-700 text-xs">Wall Tolerance:</span>
               <input
                 type="range"
                 min="10"
                 max="55"
                 value={tolerance}
                 onChange={(e) => setTolerance(Number(e.target.value))}
-                className="w-28 accent-accent cursor-pointer"
+                className="w-28 accent-[#F05323] cursor-pointer"
               />
-              <span className="text-stone-500 font-mono text-[11px] w-6">{tolerance}</span>
-              <span className="text-[10px] text-stone-400 hidden md:inline">
-                (Increase for shadow areas; decrease near trims)
-              </span>
+              <span className="text-stone-500 font-mono text-[11px] w-5">{tolerance}</span>
             </div>
           )}
 
           {(activeTool === "brush" || activeTool === "eraser") && (
             <div className="flex items-center gap-2">
-              <Sliders className="size-3.5 text-paint-deep" />
-              <span className="font-semibold text-stone-700">Brush Size:</span>
+              <Sliders className="size-3.5 text-stone-800" />
+              <span className="font-semibold text-stone-700 text-xs">Size:</span>
               <input
                 type="range"
                 min="10"
                 max="90"
                 value={brushSize}
                 onChange={(e) => setBrushSize(Number(e.target.value))}
-                className="w-28 accent-primary cursor-pointer"
+                className="w-28 accent-stone-900 cursor-pointer"
               />
-              <span className="text-stone-500 font-mono text-[11px] w-6">{brushSize}px</span>
+              <span className="text-stone-500 font-mono text-[11px] w-7">{brushSize}px</span>
             </div>
           )}
         </div>
 
         {/* Selected Color Chip preview */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ml-auto">
           <div
-            className="size-4 rounded-full border border-black/20 shadow-inner"
+            className="size-4 rounded-full border border-black/20 shadow-inner shrink-0"
             style={{ backgroundColor: selectedColor.hex }}
           />
-          <span className="font-semibold text-stone-800">{selectedColor.name}</span>
-          <span className="font-mono text-[10px] text-stone-500">({selectedColor.code})</span>
+          <span className="font-semibold text-stone-800 text-xs truncate">
+            {selectedColor.name}
+          </span>
           <button
             type="button"
             onClick={() => onOpenEstimate(selectedColor)}
-            className="ml-2 underline font-semibold text-emerald-800 hover:text-emerald-900 cursor-pointer"
+            className="text-xs font-semibold text-emerald-800 hover:text-emerald-900 cursor-pointer underline shrink-0 ml-1"
           >
-            Calculate Paint Literage &rarr;
+            Estimate &rarr;
           </button>
         </div>
       </div>
 
-      {/* Main Canvas Stage */}
+      {/* Main Canvas Stage: Adaptive Mobile Height */}
       <div
+        id="canvas-stage-wrapper"
         ref={containerRef}
-        className="relative w-full overflow-hidden rounded-2xl border-2 border-stone-200/90 bg-stone-900/5 shadow-inner flex items-center justify-center min-h-[460px] max-h-[82vh]"
+        className="relative w-full overflow-hidden rounded-2xl border border-stone-200/90 bg-stone-900/5 shadow-inner flex items-center justify-center min-h-[220px] max-h-[46vh] sm:min-h-[380px] sm:max-h-[62vh] lg:min-h-[500px] lg:max-h-[72vh] touch-none"
       >
         {isLoadingImage && (
           <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
-            <div className="size-8 animate-spin rounded-full border-3 border-accent border-t-transparent" />
-            <p className="mt-3 text-xs font-semibold text-stone-700">Preparing Room Visualizer...</p>
+            <div className="size-8 animate-spin rounded-full border-3 border-[#F05323] border-t-transparent" />
+            <p className="mt-3 text-xs font-semibold text-stone-700">Loading Room Canvas...</p>
           </div>
+        )}
+
+        {/* Mobile Tap Feedback Ripple */}
+        {tapRipple && (
+          <span
+            key={tapRipple.id}
+            className="pointer-events-none absolute z-25 -translate-x-1/2 -translate-y-1/2 rounded-full ring-4 ring-[#F05323] bg-[#F05323]/30 animate-ping size-8 sm:size-10"
+            style={{ left: tapRipple.x, top: tapRipple.y }}
+          />
         )}
 
         <canvas
           ref={canvasRef}
-          onMouseDown={handlePointerDown}
-          onMouseMove={handlePointerMove}
-          onMouseUp={handlePointerUp}
-          onTouchStart={handlePointerDown}
-          onTouchMove={handlePointerMove}
-          onTouchEnd={handlePointerUp}
-          className={`w-full max-h-[82vh] object-contain rounded-xl select-none ${
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerCancel}
+          style={{ touchAction: "none" }}
+          className={`max-w-full max-h-[46vh] sm:max-h-[62vh] lg:max-h-[70vh] w-auto h-auto block mx-auto rounded-xl select-none touch-none ${
             isComparing
               ? "cursor-ew-resize"
               : activeTool === "smart-fill"
@@ -824,30 +959,45 @@ export function CanvasWorkspace({
         {isComparing && (
           <div
             className="absolute inset-0 pointer-events-none"
-            onMouseMove={(e) => {
+            onPointerMove={(e) => {
               if (isDraggingSlider) handleSliderDrag(e.clientX);
             }}
-            onMouseUp={() => setIsDraggingSlider(false)}
+            onPointerUp={() => setIsDraggingSlider(false)}
           >
             {/* Split Handle Bar */}
             <div
-              className="absolute top-0 bottom-0 w-1 bg-white shadow-xl pointer-events-auto cursor-ew-resize -translate-x-1/2 flex items-center justify-center"
+              className="absolute top-0 bottom-0 w-8 -translate-x-1/2 flex items-center justify-center cursor-ew-resize touch-none select-none z-20 pointer-events-auto"
               style={{ left: `${sliderPos}%` }}
-              onMouseDown={() => setIsDraggingSlider(true)}
-              onTouchMove={(e) => {
-                if (e.touches[0]) handleSliderDrag(e.touches[0].clientX);
+              onPointerDown={(e) => {
+                try {
+                  e.currentTarget.setPointerCapture(e.pointerId);
+                } catch {}
+                setIsDraggingSlider(true);
               }}
+              onPointerMove={(e) => {
+                if (isDraggingSlider) handleSliderDrag(e.clientX);
+              }}
+              onPointerUp={(e) => {
+                try {
+                  if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+                    e.currentTarget.releasePointerCapture(e.pointerId);
+                  }
+                } catch {}
+                setIsDraggingSlider(false);
+              }}
+              onPointerCancel={() => setIsDraggingSlider(false)}
             >
-              <div className="size-8 rounded-full bg-white shadow-lg border border-stone-300 flex items-center justify-center text-stone-700 font-bold text-xs">
+              <div className="w-0.5 h-full bg-white shadow-xl pointer-events-none" />
+              <div className="absolute size-7 sm:size-8 rounded-full bg-white shadow-lg border border-stone-300 flex items-center justify-center text-stone-700 font-bold text-xs pointer-events-none">
                 ⇄
               </div>
             </div>
 
             {/* Badges */}
-            <span className="absolute top-4 left-4 rounded-lg bg-black/60 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
-              Original Room
+            <span className="absolute top-3 sm:top-4 left-3 sm:left-4 rounded-lg bg-black/60 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
+              Original
             </span>
-            <span className="absolute top-4 right-4 rounded-lg bg-emerald-900/80 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-100 backdrop-blur-md border border-emerald-400/30">
+            <span className="absolute top-3 sm:top-4 right-3 sm:right-4 rounded-lg bg-emerald-900/80 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-emerald-100 backdrop-blur-md border border-emerald-400/30">
               Birla Opus {selectedColor.name}
             </span>
           </div>
@@ -855,12 +1005,12 @@ export function CanvasWorkspace({
 
         {/* Usage hint overlay */}
         {!isComparing && (
-          <div className="absolute bottom-3 left-3 pointer-events-none rounded-xl bg-black/50 px-3 py-1.5 text-[11px] font-medium text-white/95 backdrop-blur-md">
+          <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 pointer-events-none rounded-lg sm:rounded-xl bg-black/60 px-2.5 py-1 text-[10px] sm:text-[11px] font-medium text-white/95 backdrop-blur-md">
             {activeTool === "smart-fill"
-              ? "👉 Click or tap any wall to paint with natural lighting and shadows"
+              ? "👉 Tap wall to paint"
               : activeTool === "brush"
-              ? "🖌️ Click and drag to manually paint walls"
-              : "🧹 Click and drag to erase paint from trims and furniture"}
+              ? "🖌️ Drag to paint"
+              : "🧹 Drag to erase"}
           </div>
         )}
       </div>

@@ -768,32 +768,32 @@ function ProductsPage() {
       <SiteHeader />
 
       {/* Hero Header Section */}
-      <section className="relative pt-12 sm:pt-14 pb-12 sm:pb-14 px-4 sm:px-6 border-b border-primary/10 overflow-hidden bg-gradient-to-b from-stone-50/80 via-white to-background">
+      <section className="relative pt-10 sm:pt-16 pb-5 sm:pb-14 px-3 sm:px-6 border-b border-primary/10 overflow-hidden bg-gradient-to-b from-stone-50/80 via-white to-background">
         <div className="absolute left-1/2 -top-28 -translate-x-1/2 size-[650px] rounded-full bg-radial from-accent/12 via-primary/5 to-transparent blur-3xl pointer-events-none" />
 
         <div className="mx-auto max-w-4xl text-center relative z-10">
-          <span className="text-[0.68rem] sm:text-[0.74rem] font-bold uppercase tracking-[0.26em] text-accent block mb-3.5 select-none">
+          <span className="text-[9px] sm:text-[0.74rem] font-bold uppercase tracking-[0.22em] text-accent block mb-1.5 sm:mb-3 select-none">
             &mdash; COMMERCIAL WHOLESALE &amp; RETAIL CATALOG &mdash;
           </span>
 
-          <h1 className="font-display font-serif text-4xl sm:text-5xl lg:text-6xl tracking-tight text-primary font-normal leading-[1.12] mb-4 sm:mb-5">
+          <h1 className="font-display font-serif text-2xl sm:text-5xl lg:text-6xl tracking-tight text-primary font-normal leading-tight mb-1.5 sm:mb-4">
             {activeCategory ? activeCategory.title : "Product Categories"}
           </h1>
 
-          <p className="text-xs sm:text-sm md:text-[15px] text-muted-foreground tracking-wide leading-relaxed max-w-3xl lg:max-w-4xl mx-auto">
+          <p className="text-xs sm:text-sm md:text-[15px] text-muted-foreground tracking-wide leading-relaxed max-w-xl mx-auto">
             {activeCategory
               ? activeCategory.description
-              : "Explore our wholesale showroom inventory across 6 commercial product lines. Select any category to view specialized subcategories, technical specifications, and contractor trade supplies."}
+              : "Certified wholesale showroom inventory across 6 product divisions with same-day site dispatch across Erode."}
           </p>
 
-          <p className="mt-3 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-accent/90">
+          <p className="hidden sm:block mt-3 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-accent/90">
             Same-Day Site Dispatch across Erode / Perundurai SIPCOT / Bhavani
           </p>
 
           {/* Controls Level 1: Centered Luxury Search Bar */}
-          <div className="mt-8 max-w-lg mx-auto w-full">
+          <div className="mt-4 sm:mt-7 max-w-lg mx-auto w-full">
             <div className="relative w-full">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-stone-400 pointer-events-none" />
+              <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 size-3.5 sm:size-4 text-stone-400 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
@@ -803,13 +803,13 @@ function ProductsPage() {
                     ? `Search in ${activeCategory.title}`
                     : "Search categories, products, or technical specs"
                 }
-                className="w-full h-11 rounded-full border border-stone-200/90 bg-white/95 pl-11 pr-10 text-xs sm:text-sm text-foreground placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-xs"
+                className="w-full h-9 sm:h-11 rounded-full border border-stone-200/90 bg-white/95 pl-9 sm:pl-11 pr-10 text-xs sm:text-sm text-foreground placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-2xs"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-stone-400 hover:text-stone-800 cursor-pointer p-1"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-stone-400 hover:text-stone-800 cursor-pointer p-1"
                 >
                   Clear
                 </button>
@@ -817,8 +817,8 @@ function ProductsPage() {
             </div>
           </div>
 
-          {/* Discrete Category Filter Chips (Row 2) */}
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto">
+          {/* Discrete Category Filter Chips (Single-Row Horizontal Scroll on Mobile) */}
+          <div className="mt-3 sm:mt-4 flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1 px-1 justify-start sm:justify-center max-w-4xl mx-auto">
             {catalogCategories.map((cat) => {
               const isActive = selectedCategoryId === cat.id;
               return (
@@ -829,7 +829,7 @@ function ProductsPage() {
                     setSelectedCategoryId(isActive ? null : cat.id);
                     setSearchQuery("");
                   }}
-                  className={`h-[34px] rounded-full px-4 text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center border ${
+                  className={`h-[30px] sm:h-[34px] rounded-full px-3.5 sm:px-4 text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center shrink-0 border ${
                     isActive
                       ? "bg-[#0A2234] text-white border-[#0A2234] shadow-xs"
                       : "bg-white/95 text-stone-600 border-stone-200/90 hover:text-stone-950 hover:bg-stone-50 hover:border-stone-300 shadow-2xs"
@@ -870,7 +870,7 @@ function ProductsPage() {
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 justify-items-center">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6 justify-items-center">
                 {filteredCategories.map((cat) => (
                   <article
                     key={cat.id}
@@ -879,10 +879,10 @@ function ProductsPage() {
                       setSearchQuery("");
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
-                    className="group relative flex flex-col justify-between rounded-[24px] sm:rounded-[28px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer max-w-[370px] w-full"
+                    className="group relative flex flex-col justify-between rounded-[18px] sm:rounded-[28px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-2xs sm:shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer max-w-[370px] w-full"
                   >
                     {/* Visual Header */}
-                    <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-stone-100">
+                    <div className="relative h-32 sm:h-52 w-full overflow-hidden bg-stone-100">
                       <img
                         src={cat.image}
                         alt={cat.title}
@@ -892,40 +892,36 @@ function ProductsPage() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
 
                       {/* Badge count on image */}
-                      <div className="absolute bottom-3 left-3.5 z-10 pointer-events-none">
-                        <span className="inline-block rounded-md bg-black/65 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-xs">
+                      <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3.5 z-10 pointer-events-none">
+                        <span className="inline-block rounded-md bg-black/65 px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-xs">
                           {cat.subcategoriesCountText}
                         </span>
                       </div>
                     </div>
 
                     {/* Card Body */}
-                    <div className="px-[15px] py-4 sm:py-5 flex-1 flex flex-col justify-between">
+                    <div className="px-2.5 sm:px-[15px] py-2.5 sm:py-5 flex-1 flex flex-col justify-between">
                       <div>
                         {/* Highlight Tag */}
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-accent block mb-1">
+                        <span className="text-[8px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-accent block mb-0.5 sm:mb-1">
                           {cat.highlight}
                         </span>
 
-                        <h3 className="font-display font-serif text-lg sm:text-xl font-normal text-primary tracking-tight leading-snug group-hover:text-paint-deep transition-colors">
+                        <h3 className="font-display font-serif text-xs sm:text-xl font-bold sm:font-normal text-primary tracking-tight leading-tight sm:leading-snug group-hover:text-paint-deep transition-colors">
                           {cat.title}
                         </h3>
 
-                        <p className="mt-2 text-xs sm:text-[13px] text-muted-foreground leading-relaxed">
+                        <p className="mt-1 sm:mt-2 text-[9.5px] sm:text-[13px] text-muted-foreground leading-snug sm:leading-relaxed">
                           {cat.description}
                         </p>
                       </div>
 
                       {/* Card Action */}
-                      <div className="mt-5 pt-3.5 border-t border-stone-200/80">
-                        <Button
-                          variant="hero"
-                          size="sm"
-                          type="button"
-                          className="w-full h-9 rounded-full text-xs font-semibold cursor-pointer shadow-xs justify-center"
-                        >
-                          <span>Explore Subcategories</span>
-                        </Button>
+                      <div className="mt-2.5 sm:mt-5 pt-2 sm:pt-3.5 border-t border-stone-200/80">
+                        <div className="flex items-center justify-between text-[10px] sm:text-xs font-semibold text-primary group-hover:text-accent transition-colors">
+                          <span className="tracking-wide">Explore Range</span>
+                          <span className="transform group-hover:translate-x-1 transition-transform">&rarr;</span>
+                        </div>
                       </div>
                     </div>
                   </article>
@@ -979,7 +975,7 @@ function ProductsPage() {
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 justify-items-center">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6 justify-items-center">
                 {filteredSubcategories.map((sub) => {
                   const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(
                     `Hello Akshara Paints, I would like to inquire about ${activeCategory.title} - ${sub.title}. Please share available grades and pricing.`
@@ -988,10 +984,10 @@ function ProductsPage() {
                   return (
                     <article
                       key={sub.id}
-                      className="group relative flex flex-col justify-between rounded-[24px] sm:rounded-[28px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 max-w-[370px] w-full"
+                      className="group relative flex flex-col justify-between rounded-[18px] sm:rounded-[28px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-2xs sm:shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 max-w-[370px] w-full"
                     >
                       {/* Visual Header with Image and Badge */}
-                      <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-stone-100 flex items-center justify-center">
+                      <div className="relative h-32 sm:h-52 w-full overflow-hidden bg-stone-100 flex items-center justify-center">
                         <img
                           src={sub.image}
                           alt={sub.title}
@@ -1001,49 +997,49 @@ function ProductsPage() {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
 
                         {/* Subcategory Count Badge on bottom-left */}
-                        <div className="absolute bottom-3 left-3.5 z-10 pointer-events-none">
-                          <span className="inline-block rounded-md bg-black/65 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-xs">
+                        <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3.5 z-10 pointer-events-none">
+                          <span className="inline-block rounded-md bg-black/65 px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-xs">
                             {sub.badge}
                           </span>
                         </div>
                       </div>
 
                       {/* Card Body with Full Content */}
-                      <div className="px-[15px] py-4 sm:py-5 flex-1 flex flex-col justify-between">
+                      <div className="px-2.5 sm:px-[15px] py-2.5 sm:py-5 flex-1 flex flex-col justify-between">
                         <div>
                           {/* Highlight Tag */}
-                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-accent block mb-1">
+                          <span className="text-[8px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-accent block mb-0.5 sm:mb-1">
                             {sub.highlight}
                           </span>
 
                           {/* Subcategory Title */}
-                          <h3 className="font-display font-serif text-lg sm:text-xl font-normal text-primary tracking-tight leading-snug group-hover:text-paint-deep transition-colors">
+                          <h3 className="font-display font-serif text-xs sm:text-xl font-bold sm:font-normal text-primary tracking-tight leading-tight sm:leading-snug group-hover:text-paint-deep transition-colors">
                             {sub.title}
                           </h3>
 
                           {/* Description */}
-                          <p className="mt-2 text-xs sm:text-[13px] text-muted-foreground leading-relaxed">
+                          <p className="mt-1 sm:mt-2 text-[9.5px] sm:text-[13px] text-muted-foreground leading-snug sm:leading-relaxed">
                             {sub.description}
                           </p>
 
                           {/* Specifications Ribbon */}
-                          <div className="mt-3.5 rounded-xl border border-stone-200/90 bg-stone-100/70 p-3 text-[11px] leading-relaxed text-stone-700">
-                            <span className="font-mono font-bold text-[10px] uppercase tracking-wider text-stone-500 block mb-0.5">
-                              Technical Scope &amp; Packaging
+                          <div className="mt-2 sm:mt-3.5 rounded-lg sm:rounded-xl border border-stone-200/90 bg-stone-100/70 p-1.5 sm:p-3 text-[9px] sm:text-[11px] leading-snug sm:leading-relaxed text-stone-700">
+                            <span className="font-mono font-bold text-[8px] sm:text-[10px] uppercase tracking-wider text-stone-500 block mb-0.5">
+                              Technical Scope
                             </span>
-                            <span className="font-medium text-stone-900">
+                            <span className="font-medium text-stone-900 line-clamp-1 sm:line-clamp-none">
                               {sub.specs}
                             </span>
                           </div>
                         </div>
 
                         {/* Card Action Button */}
-                        <div className="mt-5 pt-3.5 border-t border-stone-200/80">
+                        <div className="mt-2.5 sm:mt-5 pt-2 sm:pt-3.5 border-t border-stone-200/80">
                           <Button
                             variant="hero"
                             size="sm"
                             asChild
-                            className="w-full h-9 rounded-full text-xs font-semibold cursor-pointer shadow-xs justify-center"
+                            className="w-full h-7 sm:h-9 rounded-full text-[10px] sm:text-xs font-semibold cursor-pointer shadow-xs justify-center"
                           >
                             <a
                               href={whatsappUrl}
@@ -1066,29 +1062,34 @@ function ProductsPage() {
       </section>
 
       {/* Streamlined Bottom Consultation Strip */}
-      <section className="pb-16 px-4 sm:px-6 mx-auto max-w-[1200px] w-full">
-        <div className="rounded-[24px] sm:rounded-[28px] border border-[#E7E2D6] bg-gradient-to-r from-stone-50 via-white to-stone-50 p-6 sm:p-7 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
-          <div className="space-y-1">
-            <h3 className="font-display font-serif text-lg sm:text-xl font-normal text-primary">
+      <section className="pb-12 sm:pb-16 px-3 sm:px-6 mx-auto max-w-[1200px] w-full">
+        <div className="rounded-2xl sm:rounded-[28px] border border-stone-200/90 bg-gradient-to-br from-white via-stone-50/90 to-amber-50/40 p-4 sm:p-7 shadow-xs hover:shadow-md transition-all flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-center sm:text-left">
+          <div className="space-y-1.5">
+            <span className="inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Wholesale Trade Desk Active
+            </span>
+            <h3 className="font-display font-serif text-lg sm:text-xl font-normal text-primary leading-snug">
               Looking for Wholesale Contractor Quotes or Direct Site Dispatch?
             </h3>
-            <p className="text-xs text-muted-foreground">
-              Contact our trade materials desk for volume estimates, mill test reports, and scheduled site drops
+            <p className="text-xs text-muted-foreground leading-relaxed max-w-xl">
+              Contact our trade materials desk for volume estimates, mill test reports, and scheduled site drops across Erode district.
             </p>
           </div>
           <Button
             variant="hero"
             size="default"
             asChild
-            className="rounded-full px-6 py-2.5 text-xs font-semibold cursor-pointer shadow-md shrink-0"
+            className="rounded-full px-6 sm:px-8 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold cursor-pointer shadow-md shrink-0 w-full sm:w-auto"
           >
             <a
-              href="https://wa.me/919876543210?text=Hello%20Akshara%20Paints,%20I%20have%20a%20commercial%20materials%20inquiry%20regarding%20products%20in%20Erode"
+              href="https://wa.me/919443722255?text=Hello%20Akshara%20Paints,%20I%20have%20a%20commercial%20materials%20inquiry%20regarding%20products%20in%20Erode"
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-center"
+              className="flex items-center justify-center gap-1.5"
             >
               <span>Chat with Technical Desk</span>
+              <span className="text-accent-foreground font-bold">&rarr;</span>
             </a>
           </Button>
         </div>

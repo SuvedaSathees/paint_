@@ -418,4 +418,10 @@
 
 .font-script {
   font-family: "Caveat", cursive, sans-serif;
+}
+
+@media (min-width: 860px) {
+  .website-5-cols {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  }
 }

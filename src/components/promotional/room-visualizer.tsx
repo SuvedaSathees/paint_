@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Palette, Check, ShoppingBag, Eye, ArrowRight, Camera } from "lucide-react";
+import { Check, ShoppingBag, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ShadeCard {
@@ -101,31 +101,31 @@ export function RoomVisualizer() {
   const [selectedShade, setSelectedShade] = useState<ShadeCard>(SAMPLE_SHADES[0]);
 
   return (
-    <section className="-mt-[40px] pt-[36px] pb-[50px] px-4 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full">
-      {/* Header matching reference aesthetic */}
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <span className="text-xs font-bold uppercase tracking-[0.24em] text-accent block mb-2">
+    <section className="pt-6 sm:pt-10 pb-10 sm:pb-14 px-3 sm:px-6 lg:px-8 mx-auto max-w-[1360px] w-full">
+      {/* Header */}
+      <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-9">
+        <span className="text-[0.68rem] sm:text-xs font-bold uppercase tracking-[0.24em] text-accent block mb-1.5">
           &mdash; ARCHITECTURAL COLOR STUDIO &mdash;
         </span>
-        <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-serif tracking-tight text-primary">
+        <h2 className="font-display text-2xl sm:text-4xl lg:text-5xl font-serif font-semibold tracking-tight text-primary">
           Live Room Color Visualizer
         </h2>
-        <p className="mt-3 text-sm sm:text-base text-muted-foreground tracking-wide leading-relaxed">
-          Experience certified Birla Opus designer shades against authentic natural daylight and room textures before tinting a single drop in our computerized lab.
+        <p className="mt-2 text-xs sm:text-sm text-muted-foreground tracking-wide leading-relaxed max-w-lg mx-auto">
+          Experience certified Birla Opus designer shades against natural daylight and room textures before tinting in our computerized lab.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center rounded-3xl border border-primary/15 bg-card/60 p-6 sm:p-10 shadow-xl backdrop-blur-sm">
-        {/* Left: Realistic Room Preview Canvas */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-center rounded-2xl sm:rounded-3xl border border-primary/12 bg-card/75 p-3.5 sm:p-6 lg:p-8 shadow-lg backdrop-blur-sm">
+        {/* Left: Realistic Room Preview Canvas (Preserved Living Room Experience) */}
         <div className="lg:col-span-7 flex flex-col justify-center">
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-primary/15 bg-stone-900 shadow-2xl">
+          <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden rounded-xl sm:rounded-2xl border border-primary/15 bg-stone-900 shadow-xl">
             {/* Photorealistic Living Room Images with Smooth Cross-Fade */}
             {SAMPLE_SHADES.map((shade) => (
               <img
                 key={shade.id}
                 src={shade.image}
                 alt={`${shade.name} painted on living room walls`}
-                className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700 ease-in-out ${
+                className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-600 ease-in-out ${
                   selectedShade.id === shade.id ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
                 }`}
                 loading="eager"
@@ -133,48 +133,49 @@ export function RoomVisualizer() {
             ))}
 
             {/* Top-Left Live Color HUD Indicator */}
-            <div className="absolute top-4 left-4 z-20 flex items-center gap-2.5 rounded-2xl bg-black/75 backdrop-blur-md px-3.5 py-2 text-white shadow-xl border border-white/20">
+            <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-20 flex items-center gap-2 rounded-xl bg-black/75 backdrop-blur-md px-2.5 py-1.5 sm:px-3 sm:py-2 text-white shadow-lg border border-white/20">
               <span
-                className="size-4 rounded-full border-2 border-white/80 shadow-sm"
+                className="size-3.5 sm:size-4 rounded-full border-2 border-white/80 shadow-xs shrink-0"
                 style={{ backgroundColor: selectedShade.hex }}
               />
               <div className="text-left">
-                <span className="block text-[0.62rem] uppercase font-bold tracking-wider text-white/70">
+                <span className="block text-[0.58rem] sm:text-[0.62rem] uppercase font-bold tracking-wider text-white/70">
                   {selectedShade.code}
                 </span>
-                <span className="block text-xs font-bold text-white leading-tight">
+                <span className="block text-[0.72rem] sm:text-xs font-bold text-white leading-tight">
                   {selectedShade.name}
                 </span>
               </div>
             </div>
 
             {/* Top-Right Photorealistic Badge */}
-            <div className="absolute top-4 right-4 z-20 hidden sm:flex items-center rounded-full bg-black/60 backdrop-blur-md px-3 py-1 text-white border border-white/15 text-[0.62rem] font-semibold">
-              <span>Realistic Room Preview</span>
+            <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 z-20 hidden sm:flex items-center rounded-full bg-black/60 backdrop-blur-md px-3 py-1 text-white border border-white/15 text-[0.62rem] font-semibold">
+              <span>Living Room Preview</span>
             </div>
 
             {/* Bottom-Right Sheen Badge */}
-            <div className="absolute bottom-4 right-4 z-20 rounded-full bg-black/75 backdrop-blur-md px-3.5 py-1.5 border border-white/20 text-white shadow-2xl">
-              <span className="text-[0.68rem] font-bold uppercase tracking-wider text-white">
+            <div className="absolute bottom-2.5 right-2.5 sm:bottom-3.5 sm:right-3.5 z-20 rounded-full bg-black/75 backdrop-blur-md px-2.5 py-1 sm:px-3 sm:py-1.5 border border-white/20 text-white shadow-md">
+              <span className="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-white">
                 {selectedShade.sheen}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Right: Swatch Cards Grid ("Tap a Sample Card") */}
-        <div className="lg:col-span-5 space-y-5">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
+        {/* Right: Compact & Responsive Swatch Box */}
+        <div className="lg:col-span-5 space-y-2.5 sm:space-y-3.5">
+          {/* Swatches Header */}
+          <div className="flex items-center justify-between px-0.5">
+            <span className="text-[0.72rem] sm:text-xs font-bold uppercase tracking-[0.14em] text-primary">
               Birla Opus Designer Swatches:
             </span>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-[0.68rem] sm:text-xs text-muted-foreground font-medium">
               Tap any chip to apply
             </span>
           </div>
 
-          {/* 8 Color Swatch Cards (Styled like physical showroom chips) */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {/* Compact 4-Column Swatch Grid (Zero Ellipsis Dots, Full Names Cleanly Wrapped) */}
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
             {SAMPLE_SHADES.map((shade) => {
               const isSelected = selectedShade.id === shade.id;
               return (
@@ -182,30 +183,35 @@ export function RoomVisualizer() {
                   key={shade.id}
                   type="button"
                   onClick={() => setSelectedShade(shade)}
-                  className={`group relative flex flex-col overflow-hidden rounded-2xl border text-left transition-all duration-200 cursor-pointer shadow-sm ${
+                  className={`group relative flex flex-col overflow-hidden rounded-xl border text-center transition-all duration-150 cursor-pointer ${
                     isSelected
-                      ? "border-primary ring-2 ring-accent ring-offset-2 scale-104 shadow-lg"
-                      : "border-primary/10 hover:border-primary/30 hover:scale-102"
+                      ? "border-primary ring-2 ring-accent ring-offset-1 shadow-md scale-[1.02]"
+                      : "border-primary/12 hover:border-primary/30 hover:scale-[1.01] bg-card"
                   }`}
+                  aria-label={`Select shade ${shade.name} (${shade.code})`}
+                  aria-pressed={isSelected}
                 >
-                  {/* Top Swatch Color Block */}
+                  {/* Swatch Color Block */}
                   <div
-                    className="h-16 w-full relative flex items-center justify-center transition-transform group-hover:scale-105"
+                    className="h-8 sm:h-11 w-full relative flex items-center justify-center transition-transform"
                     style={{ backgroundColor: shade.hex }}
                   >
+                    {/* Subtle top shine */}
+                    <div className="absolute inset-x-0 top-0 h-1/2 bg-white/15 pointer-events-none" />
+
                     {isSelected && (
-                      <div className="size-6 rounded-full bg-white/95 text-stone-900 grid place-items-center shadow-md">
-                        <Check className="size-3.5 stroke-[3]" />
+                      <div className="size-4 sm:size-4.5 rounded-full bg-black/50 backdrop-blur-xs text-white grid place-items-center shadow-xs">
+                        <Check className="size-2.5 sm:size-3 stroke-[3]" />
                       </div>
                     )}
                   </div>
 
-                  {/* Bottom Swatch Label */}
-                  <div className="bg-card p-2.5 border-t border-primary/10">
-                    <span className="block text-[0.6rem] font-mono uppercase text-muted-foreground">
+                  {/* Swatch Code & Full Name Label (No dots / truncation) */}
+                  <div className="bg-card px-1 py-1 sm:py-1.5 border-t border-primary/10 min-h-[38px] sm:min-h-[44px] flex flex-col justify-center">
+                    <span className="block text-[0.5rem] sm:text-[0.56rem] font-mono text-muted-foreground leading-none">
                       {shade.code}
                     </span>
-                    <strong className="block text-xs font-bold text-primary leading-tight">
+                    <strong className="block text-[0.58rem] sm:text-[0.68rem] font-bold text-primary leading-tight mt-0.5 break-words">
                       {shade.name}
                     </strong>
                   </div>
@@ -214,37 +220,42 @@ export function RoomVisualizer() {
             })}
           </div>
 
-          {/* Details & CTA Box for Selected Shade */}
-          <div className="rounded-2xl bg-secondary/60 p-5 border border-primary/10 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+          {/* Simple & Neat Selected Shade Box */}
+          <div className="rounded-xl sm:rounded-2xl bg-secondary/50 p-2.5 sm:p-3.5 border border-primary/10">
+            <div className="flex items-center justify-between gap-2 mb-1.5">
+              <div className="flex items-center gap-2 min-w-0">
                 <span
-                  className="size-4 rounded-full border border-primary/20"
+                  className="size-3.5 rounded-full border border-primary/25 shadow-xs shrink-0"
                   style={{ backgroundColor: selectedShade.hex }}
                 />
-                <strong className="font-display text-sm font-bold text-primary">
-                  {selectedShade.name} ({selectedShade.code})
-                </strong>
+                <div className="flex items-baseline gap-1.5 min-w-0">
+                  <strong className="font-display text-xs sm:text-sm font-bold text-primary">
+                    {selectedShade.name}
+                  </strong>
+                  <span className="font-mono text-[0.68rem] sm:text-xs text-muted-foreground">
+                    ({selectedShade.code})
+                  </span>
+                </div>
               </div>
-              <span className="text-[0.65rem] rounded-full bg-primary/10 text-primary px-2.5 py-0.5 font-bold uppercase tracking-wider">
+              <span className="text-[0.58rem] sm:text-[0.65rem] rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 px-2 py-0.5 font-bold uppercase tracking-wider shrink-0">
                 100% In Stock
               </span>
             </div>
 
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <p className="text-[0.72rem] sm:text-xs text-muted-foreground leading-snug mb-2.5">
               {selectedShade.description}
             </p>
 
-            <div className="pt-2 flex flex-wrap items-center gap-3">
+            <div className="grid grid-cols-2 gap-2">
               <Button
                 variant="hero"
                 size="sm"
                 asChild
-                className="rounded-full cursor-pointer text-xs gap-1.5 font-bold shadow-sm"
+                className="rounded-full cursor-pointer text-[0.72rem] sm:text-xs font-bold py-1.5 px-2 shadow-sm justify-center"
               >
                 <Link to="/visualizer">
-                  <Camera className="size-3.5" />
-                  <span>Upload &amp; Paint Your Own Room &rarr;</span>
+                  <Camera className="size-3 mr-1" />
+                  <span>Paint Room &rarr;</span>
                 </Link>
               </Button>
 
@@ -252,15 +263,15 @@ export function RoomVisualizer() {
                 variant="outline"
                 size="sm"
                 asChild
-                className="rounded-full cursor-pointer text-xs gap-1 border-primary/25"
+                className="rounded-full cursor-pointer text-[0.72rem] sm:text-xs font-semibold py-1.5 px-2 border-primary/25 justify-center bg-white/70"
               >
                 <a
                   href={`https://wa.me/919443722255?text=Hi%20Akshara%20Paints,%20I%20would%20like%20to%20order%20a%20tester%20or%20tin%20for%20shade%20${encodeURIComponent(selectedShade.name)}%20(${selectedShade.code})`}
                   target="_blank"
                   rel="noreferrer"
-                  className="gap-1"
                 >
-                  <ShoppingBag className="size-3.5" /><span>Order Sample Pot (₹199)</span>
+                  <ShoppingBag className="size-3 mr-1" />
+                  <span>Sample (₹199)</span>
                 </a>
               </Button>
             </div>

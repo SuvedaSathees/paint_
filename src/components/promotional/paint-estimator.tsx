@@ -60,7 +60,6 @@ function PaintRollerIcon({
       className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Roller cylinder */}
       <rect
         x="4"
         y="6"
@@ -71,7 +70,6 @@ function PaintRollerIcon({
         stroke={isSelected ? "#FFFFFF" : "#26211C"}
         strokeWidth="1.6"
       />
-      {/* Metal wire arm */}
       <path
         d="M17 9.25 H 20 C 20.8 9.25 21.5 9.95 21.5 10.75 V 13 C 21.5 13.8 20.8 14.5 20 14.5 H 12 C 11.2 14.5 10.5 15.2 10.5 16 V 17.5"
         stroke={isSelected ? "#FFFFFF" : "#26211C"}
@@ -79,7 +77,6 @@ function PaintRollerIcon({
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Handle */}
       <rect
         x="9"
         y="17.5"
@@ -111,19 +108,14 @@ function BrickWallIcon({
       className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Outer frame */}
       <rect x="3.5" y="5.5" width="21" height="17" rx="2" />
-      {/* Horizontal divider lines */}
       <line x1="3.5" y1="11.2" x2="24.5" y2="11.2" />
       <line x1="3.5" y1="16.8" x2="24.5" y2="16.8" />
-      {/* Row 1 vertical dividers (3 bricks) */}
       <line x1="10.5" y1="5.5" x2="10.5" y2="11.2" />
       <line x1="17.5" y1="5.5" x2="17.5" y2="11.2" />
-      {/* Row 2 vertical dividers (staggered joints) */}
       <line x1="7" y1="11.2" x2="7" y2="16.8" />
       <line x1="14" y1="11.2" x2="14" y2="16.8" />
       <line x1="21" y1="11.2" x2="21" y2="16.8" />
-      {/* Row 3 vertical dividers (3 bricks) */}
       <line x1="10.5" y1="16.8" x2="10.5" y2="22.5" />
       <line x1="17.5" y1="16.8" x2="17.5" y2="22.5" />
     </svg>
@@ -131,11 +123,11 @@ function BrickWallIcon({
 }
 
 const SPACES: SpaceOption[] = [
-  { id: "room", name: "Single Room / Accent Wall", subtitle: "~250 sq.ft wall area", sqft: 250, icon: Home },
+  { id: "room", name: "Single Room", subtitle: "~250 sq.ft wall area", sqft: 250, icon: Home },
   { id: "2bhk", name: "2BHK Full Apartment", subtitle: "~900 sq.ft wall area", sqft: 900, icon: Building2 },
   { id: "villa", name: "3BHK Villa / Duplex", subtitle: "~1,800 sq.ft wall area", sqft: 1800, icon: Castle },
-  { id: "exterior", name: "Exterior Facade / Elevation", subtitle: "~1,500 sq.ft exterior", sqft: 1500, icon: Sun },
-  { id: "commercial", name: "Commercial / Builder Site", subtitle: "~3,500+ sq.ft • Wholesale 20L Drums", sqft: 3500, icon: Truck },
+  { id: "exterior", name: "Exterior Elevation", subtitle: "~1,500 sq.ft exterior", sqft: 1500, icon: Sun },
+  { id: "commercial", name: "Commercial Site", subtitle: "~3,500+ sq.ft • 20L Drums", sqft: 3500, icon: Truck },
 ];
 
 const FINISHES: FinishOption[] = [
@@ -155,9 +147,9 @@ const FINISHES: FinishOption[] = [
   },
   {
     id: "bulk-drum",
-    name: "Wholesale Bulk Supply — 20L Drums",
-    badge: "Contractor 20L Wholesale",
-    type: "Commercial tier pricing • Same-day truck delivery to site",
+    name: "Wholesale Bulk — 20L Drums",
+    badge: "Contractor Wholesale",
+    type: "Commercial tier pricing • Same-day truck delivery",
     rateMultiplier: 0.82,
   },
 ];
@@ -218,22 +210,294 @@ export function PaintEstimator() {
   };
 
   return (
-    <section className="pt-[50px] pb-0 px-4 sm:px-7 lg:px-10 mx-auto max-w-[1360px] w-full">
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <span className="text-xs font-bold uppercase tracking-[0.24em] text-accent block mb-2">
+    <section className="pt-6 sm:pt-[50px] pb-6 sm:pb-0 px-3 sm:px-7 lg:px-10 mx-auto max-w-[1360px] w-full">
+      {/* Header */}
+      <div className="text-center max-w-3xl mx-auto mb-4 sm:mb-12">
+        <span className="text-[0.68rem] sm:text-xs font-bold uppercase tracking-[0.24em] text-accent block mb-1">
           &mdash; INSTANT PAINT CALCULATOR &mdash;
         </span>
-        <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-serif tracking-tight text-primary">
+        <h2 className="font-display text-2xl sm:text-4xl lg:text-5xl font-serif tracking-tight text-primary">
           Precision Paint Estimator
         </h2>
-        <p className="mt-3 text-sm sm:text-base text-muted-foreground tracking-wide leading-relaxed">
-          Calculate exact paint liters, primer requirements, and budget estimates tailored to your project. Select your space layout, preferred Birla Opus finish, and wall condition for instant pricing.
+        <p className="mt-1 text-xs sm:text-sm text-muted-foreground tracking-wide leading-relaxed max-w-2xl mx-auto">
+          Calculate exact paint liters, primer requirements, and budget estimates tailored to your project.
         </p>
       </div>
 
-      {/* Main Studio Card - Compact & Perfectly Balanced */}
-      <div className="w-full rounded-3xl bg-white border border-stone-200/90 shadow-xl overflow-hidden">
-        {/* Top 4-Step Interactive Studio Stepper - Exactly Same Size for all 4 Boxes */}
+      {/* ========================================================================= */}
+      {/* MOBILE ONE-PAGE ESTIMATOR (< lg): Fits completely on 1 screen, 0 scrolling */}
+      {/* ========================================================================= */}
+      <div className="block lg:hidden rounded-2xl bg-white border border-stone-200/90 shadow-md p-3 sm:p-4">
+        {/* Step Indicator Pills in 1 Single Line */}
+        <div className="grid grid-cols-4 gap-1 p-1 bg-stone-100/90 rounded-xl mb-3">
+          {[
+            { step: 1, label: "Space", val: selectedSpace.name.replace("Single ", "").split(" ")[0] },
+            { step: 2, label: "Finish", val: selectedFinish.badge.replace("Birla ", "").split(" ")[0] },
+            { step: 3, label: "Surface", val: selectedCondition.name.split(" ")[0] },
+            { step: 4, label: "Shade", val: selectedTone.name.split(" ")[0], hex: selectedTone.hex },
+          ].map(({ step, label, val, hex }) => {
+            const isCurrent = currentStep === step;
+            const isPassed = currentStep > step;
+            return (
+              <button
+                key={step}
+                type="button"
+                onClick={() => setCurrentStep(step)}
+                className={`py-1 px-0.5 rounded-lg text-center transition-all cursor-pointer ${
+                  isCurrent
+                    ? "bg-[#1D4A38] text-white shadow-xs font-bold"
+                    : isPassed
+                    ? "bg-white text-emerald-800 font-semibold"
+                    : "text-stone-500 hover:text-stone-800"
+                }`}
+              >
+                <div className="flex items-center justify-center gap-1">
+                  {hex && <span className="size-1.5 rounded-full shrink-0" style={{ backgroundColor: hex }} />}
+                  <span className="text-[0.6rem] uppercase tracking-wider block leading-tight">
+                    0{step} {label}
+                  </span>
+                </div>
+                <span className="text-[0.55rem] block opacity-85 mt-0.5 leading-tight whitespace-nowrap overflow-hidden">
+                  {val}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Step Content Area (Compact height ~155px) */}
+        <div className="min-h-[155px] flex flex-col justify-center">
+          {/* Step 1: Space */}
+          {currentStep === 1 && (
+            <div className="grid grid-cols-2 gap-1.5">
+              {SPACES.map((space) => {
+                const Icon = space.icon;
+                const isSelected = selectedSpace.id === space.id;
+                const isCommercial = space.id === "commercial";
+                return (
+                  <button
+                    key={space.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedSpace(space);
+                      setCurrentStep(2);
+                    }}
+                    className={`p-2 rounded-xl border text-left transition-all flex items-center gap-2 cursor-pointer ${
+                      isCommercial ? "col-span-2" : ""
+                    } ${
+                      isSelected
+                        ? "bg-[#1D4A38] text-white border-[#1D4A38] shadow-xs"
+                        : "bg-stone-50 hover:bg-stone-100 text-stone-900 border-stone-200/80"
+                    }`}
+                  >
+                    <div
+                      className={`size-6 rounded-lg flex items-center justify-center shrink-0 ${
+                        isSelected
+                          ? "bg-white/20 text-white"
+                          : "bg-white text-stone-700 border border-stone-200"
+                      }`}
+                    >
+                      <Icon className="size-3" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="block text-[0.66rem] font-bold leading-tight break-words">
+                        {space.name}
+                      </span>
+                      <span
+                        className={`block text-[0.55rem] font-mono leading-tight mt-0.5 ${
+                          isSelected ? "text-white/75" : "text-stone-500"
+                        }`}
+                      >
+                        {space.subtitle.split("•")[0]?.trim()}
+                      </span>
+                    </div>
+                    {isSelected && <Check className="size-3 stroke-[3] shrink-0 text-white" />}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Step 2: Finish */}
+          {currentStep === 2 && (
+            <div className="space-y-1.5">
+              {FINISHES.map((finish) => {
+                const isSelected = selectedFinish.id === finish.id;
+                return (
+                  <button
+                    key={finish.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedFinish(finish);
+                      setCurrentStep(3);
+                    }}
+                    className={`w-full p-2 rounded-xl border text-left transition-all flex items-center justify-between gap-2 cursor-pointer ${
+                      isSelected
+                        ? "bg-[#1D4A38] text-white border-[#1D4A38] shadow-xs"
+                        : "bg-stone-50 hover:bg-stone-100 text-stone-900 border-stone-200/80"
+                    }`}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className={`text-[0.58rem] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${
+                            isSelected ? "bg-white/20 text-white" : "bg-stone-200 text-stone-700"
+                          }`}
+                        >
+                          {finish.badge}
+                        </span>
+                        <strong className="text-[0.72rem] font-bold truncate">
+                          {finish.name.split("—")[0]?.trim()}
+                        </strong>
+                      </div>
+                      <p
+                        className={`text-[0.6rem] truncate mt-0.5 ${
+                          isSelected ? "text-white/80" : "text-stone-500"
+                        }`}
+                      >
+                        {finish.type.split("•")[0]?.trim()}
+                      </p>
+                    </div>
+                    {isSelected && <Check className="size-3.5 stroke-[3] shrink-0 text-white" />}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Step 3: Condition */}
+          {currentStep === 3 && (
+            <div className="space-y-2">
+              {CONDITIONS.map((cond) => {
+                const isSelected = selectedCondition.id === cond.id;
+                return (
+                  <button
+                    key={cond.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedCondition(cond);
+                      setCurrentStep(4);
+                    }}
+                    className={`w-full p-2.5 rounded-xl border text-left transition-all flex items-center justify-between gap-2 cursor-pointer ${
+                      isSelected
+                        ? "bg-[#1D4A38] text-white border-[#1D4A38] shadow-xs"
+                        : "bg-stone-50 hover:bg-stone-100 text-stone-900 border-stone-200/80"
+                    }`}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <strong className="block text-[0.78rem] font-bold leading-tight">
+                        {cond.name}
+                      </strong>
+                      <p
+                        className={`text-[0.62rem] mt-0.5 ${
+                          isSelected ? "text-white/80" : "text-stone-500"
+                        }`}
+                      >
+                        {cond.desc.split("•")[0]?.trim()}
+                      </p>
+                    </div>
+                    {isSelected && <Check className="size-3.5 stroke-[3] shrink-0 text-white" />}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Step 4: Shade */}
+          {currentStep === 4 && (
+            <div className="grid grid-cols-4 gap-1.5">
+              {TONES.map((tone) => {
+                const isSelected = selectedTone.id === tone.id;
+                return (
+                  <button
+                    key={tone.id}
+                    type="button"
+                    onClick={() => setSelectedTone(tone)}
+                    className={`p-1 rounded-xl border text-center transition-all cursor-pointer ${
+                      isSelected
+                        ? "border-stone-900 ring-2 ring-stone-900/20 bg-stone-50 shadow-xs"
+                        : "border-stone-200 hover:border-stone-300 bg-white"
+                    }`}
+                  >
+                    <span
+                      className="h-6 w-full rounded-lg block shadow-2xs border border-black/10 relative"
+                      style={{ backgroundColor: tone.hex }}
+                    >
+                      {isSelected && (
+                        <Check className="size-2.5 stroke-[3] text-white absolute inset-0 m-auto drop-shadow-xs" />
+                      )}
+                    </span>
+                    <span className="block text-[0.52rem] font-mono uppercase text-stone-400 mt-0.5 truncate">
+                      {tone.code}
+                    </span>
+                    <strong className="block text-[0.6rem] font-bold text-stone-900 truncate">
+                      {tone.name.split(" ")[0]}
+                    </strong>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Bottom Compact Estimate Bar & Action Buttons */}
+        <div className="mt-3 pt-2 border-t border-stone-200 flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[0.62rem] text-stone-500">Volume:</span>
+              <strong className="font-mono font-bold text-xs text-amber-900">~{totalLiters}L</strong>
+            </div>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span className="text-[0.62rem] text-stone-500">Est. Price:</span>
+              <strong className="font-serif font-bold text-xs sm:text-sm text-stone-900">
+                ₹{estimatedMin.toLocaleString("en-IN")} – ₹{estimatedMax.toLocaleString("en-IN")}
+              </strong>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            {currentStep > 1 && (
+              <button
+                type="button"
+                onClick={() => setCurrentStep((p) => Math.max(1, p - 1))}
+                className="px-2.5 py-1 rounded-full text-[0.65rem] font-medium border border-stone-300 text-stone-600 bg-white cursor-pointer hover:bg-stone-50"
+              >
+                Back
+              </button>
+            )}
+
+            {currentStep < 4 ? (
+              <button
+                type="button"
+                onClick={() => setCurrentStep((p) => Math.min(4, p + 1))}
+                className="px-3.5 py-1.5 rounded-full text-[0.68rem] font-bold bg-[#1D4A38] text-white shadow-xs cursor-pointer hover:bg-[#15382b]"
+              >
+                Next
+              </button>
+            ) : (
+              <Button
+                size="sm"
+                asChild
+                className="rounded-full text-[0.68rem] font-bold bg-[#E03A00] hover:bg-[#c83400] text-white h-7 px-3.5 shadow-xs"
+              >
+                <a
+                  href={`https://wa.me/919443722255?text=Hello%20Akshara%20Paints,%20I%20used%20your%20Instant%20Paint%20Calculator:%0A- Space: ${encodeURIComponent(selectedSpace.name)}%0A- Finish: ${encodeURIComponent(selectedFinish.name)}%0A- Condition: ${encodeURIComponent(selectedCondition.name)}%0A- Shade: ${encodeURIComponent(selectedTone.name)} (${selectedTone.code})%0A- Est. Volume: ~${totalLiters}L%0A- Est. Price: ₹${estimatedMin.toLocaleString("en-IN")} - ₹${estimatedMax.toLocaleString("en-IN")}%0APlease provide an official quote.`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span>Quote &rarr;</span>
+                </a>
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* DESKTOP STUDIO CALCULATOR (≥ lg): Full 2-column showcase layout            */}
+      {/* ========================================================================= */}
+      <div className="hidden lg:block w-full rounded-3xl bg-white border border-stone-200/90 shadow-xl overflow-hidden">
+        {/* Top 4-Step Interactive Studio Stepper */}
         <div className="py-2.5 px-3 sm:py-3 sm:px-4 bg-gradient-to-b from-stone-50 via-stone-50/50 to-white border-b border-stone-200/80">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 w-full items-stretch">
             {[
@@ -275,7 +539,6 @@ export function PaintEstimator() {
                       : "bg-white text-stone-400 border-stone-200 shadow-2xs hover:text-stone-700 hover:border-stone-300"
                   }`}
                 >
-                  {/* Step Circular Badge Indicator */}
                   <div
                     className={`size-7 sm:size-8 rounded-full flex items-center justify-center shrink-0 font-bold text-xs transition-all ${
                       isCurrent
@@ -292,7 +555,6 @@ export function PaintEstimator() {
                     )}
                   </div>
 
-                  {/* Step Label & Live Selection Value */}
                   <div className="min-w-0 flex-1 overflow-hidden">
                     <div className="flex items-center justify-between">
                       <span
@@ -336,27 +598,27 @@ export function PaintEstimator() {
           </div>
         </div>
 
-        {/* 2-Column Responsive Body */}
-        <div className="flex flex-col lg:flex-row items-stretch w-full min-h-[420px]">
-          {/* Left Column: Interactive Wizard Steps (55% width) */}
-          <div className="w-full lg:w-[56%] py-5 px-6 sm:py-6 sm:px-8 flex flex-col justify-between min-w-0">
+        {/* 2-Column Desktop Body */}
+        <div className="flex flex-row items-stretch w-full min-h-[420px]">
+          {/* Left Column: Interactive Wizard Steps (56% width) */}
+          <div className="w-[56%] py-6 px-8 flex flex-col justify-between min-w-0">
             <div>
               {/* Step 1: Space */}
               {currentStep === 1 && (
-                <div className="space-y-4 animate-fade-in min-h-[410px] sm:min-h-[430px] flex flex-col justify-between">
+                <div className="space-y-4 animate-fade-in min-h-[430px] flex flex-col justify-between">
                   <div>
-                    <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.24em] text-accent block">
+                    <span className="text-xs font-bold uppercase tracking-[0.24em] text-accent block">
                       TAP 1 OF 4
                     </span>
-                    <h3 className="font-serif text-2xl sm:text-[32px] text-[#0A2234] font-normal tracking-tight mt-1">
+                    <h3 className="font-serif text-[30px] text-[#0A2234] font-normal tracking-tight mt-1">
                       Which space are you painting?
                     </h3>
-                    <p className="text-xs sm:text-[13.5px] text-stone-500 mt-1">
+                    <p className="text-[13.5px] text-stone-500 mt-1">
                       Choose the area to calculate square footage and coverage requirements.
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                  <div className="grid grid-cols-2 gap-3 pt-2">
                     {SPACES.map((space) => {
                       const Icon = space.icon;
                       const isSelected = selectedSpace.id === space.id;
@@ -369,7 +631,7 @@ export function PaintEstimator() {
                             setSelectedSpace(space);
                             setCurrentStep(2);
                           }}
-                          className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 min-h-[110px] sm:h-[118px] ${
+                          className={`p-4 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 h-[118px] ${
                             isSelected
                               ? "bg-[#1D4A38] border-[#1D4A38] text-white shadow-md"
                               : "bg-[#FAF9F6] hover:bg-[#F4F2EC] border-[#E8E6E0] hover:border-stone-300 text-stone-900"
@@ -401,20 +663,20 @@ export function PaintEstimator() {
                               )}
                             </div>
                             <div
-                              className={`size-6 sm:size-7 rounded-full shrink-0 flex items-center justify-center transition-all ${
+                              className={`size-7 rounded-full shrink-0 flex items-center justify-center transition-all ${
                                 isSelected
                                   ? "bg-white text-[#1D4A38] shadow-sm"
                                   : "bg-white border border-stone-300 shadow-sm"
                               }`}
                             >
                               {isSelected ? (
-                                <Check className="size-3.5 sm:size-4 stroke-[3]" />
+                                <Check className="size-4 stroke-[3]" />
                               ) : null}
                             </div>
                           </div>
                           <div>
                             <strong
-                              className={`block text-sm sm:text-base font-bold tracking-tight leading-tight ${
+                              className={`block text-base font-bold tracking-tight leading-tight ${
                                 isSelected ? "text-white" : "text-stone-900"
                               }`}
                             >
@@ -437,15 +699,15 @@ export function PaintEstimator() {
 
               {/* Step 2: Finish */}
               {currentStep === 2 && (
-                <div className="space-y-4 animate-fade-in min-h-[410px] sm:min-h-[430px] flex flex-col justify-between">
+                <div className="space-y-4 animate-fade-in min-h-[430px] flex flex-col justify-between">
                   <div>
-                    <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.24em] text-accent block">
+                    <span className="text-xs font-bold uppercase tracking-[0.24em] text-accent block">
                       TAP 2 OF 4
                     </span>
-                    <h3 className="font-serif text-2xl sm:text-[32px] text-[#0A2234] font-normal tracking-tight mt-1">
+                    <h3 className="font-serif text-[30px] text-[#0A2234] font-normal tracking-tight mt-1">
                       Which finish formulation?
                     </h3>
-                    <p className="text-xs sm:text-[13.5px] text-stone-500 mt-1">
+                    <p className="text-[13.5px] text-stone-500 mt-1">
                       Pick between trade-grade durable emulsion or Birla Opus designer luxury.
                     </p>
                   </div>
@@ -464,16 +726,15 @@ export function PaintEstimator() {
                             setSelectedFinish(finish);
                             setCurrentStep(3);
                           }}
-                          className={`w-full p-3.5 sm:px-4 sm:py-3.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex items-center justify-between gap-3.5 min-h-[74px] sm:h-[78px] ${
+                          className={`w-full px-4 py-3.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex items-center justify-between gap-3.5 h-[78px] ${
                             isSelected
                               ? "bg-[#1D4A38] border-[#1D4A38] text-white shadow-md ring-1 ring-[#1D4A38]/30"
                               : "bg-[#FAF9F6] hover:bg-[#F4F2EC] border-[#E8E6E0] hover:border-stone-300 text-stone-900"
                           }`}
                         >
                           <div className="flex items-center gap-3 min-w-0 flex-1">
-                            {/* Feature Icon Squircle */}
                             <div
-                              className={`size-9 sm:size-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                              className={`size-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
                                 isSelected
                                   ? "bg-[#295F4A] border border-white/10 text-white shadow-inner"
                                   : isPremium
@@ -492,7 +753,6 @@ export function PaintEstimator() {
                               )}
                             </div>
 
-                            {/* Copy Details */}
                             <div className="space-y-0.5 min-w-0 flex-1">
                               <div className="flex items-center gap-2">
                                 <span
@@ -505,7 +765,7 @@ export function PaintEstimator() {
                                   {finish.badge}
                                 </span>
                                 <strong
-                                  className={`block text-xs sm:text-sm font-bold tracking-tight truncate ${
+                                  className={`block text-sm font-bold tracking-tight truncate ${
                                     isSelected ? "text-white" : "text-stone-900"
                                   }`}
                                 >
@@ -513,7 +773,7 @@ export function PaintEstimator() {
                                 </strong>
                               </div>
                               <p
-                                className={`text-[11px] sm:text-xs leading-tight truncate ${
+                                className={`text-xs leading-tight truncate ${
                                   isSelected ? "text-white/80" : "text-stone-500"
                                 }`}
                               >
@@ -522,51 +782,45 @@ export function PaintEstimator() {
                             </div>
                           </div>
 
-                          {/* Right Radio / Check Circle */}
                           <div
-                            className={`size-6 sm:size-7 rounded-full shrink-0 flex items-center justify-center transition-all ${
+                            className={`size-7 rounded-full shrink-0 flex items-center justify-center transition-all ${
                               isSelected
                                 ? "bg-white text-[#1D4A38] shadow-sm"
                                 : "bg-white border border-stone-300 shadow-sm"
                             }`}
                           >
                             {isSelected ? (
-                              <Check className="size-3.5 sm:size-4 stroke-[3]" />
+                              <Check className="size-4 stroke-[3]" />
                             ) : null}
                           </div>
                         </button>
                       );
                     })}
 
-                    {/* Formulation Specification Matrix - Covers Lower White Space Comfortably */}
-                    <div className="p-3.5 sm:p-4 rounded-2xl bg-stone-50 border border-stone-200/90 text-xs text-stone-700 mt-3 space-y-2.5">
+                    <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200/90 text-xs text-stone-700 mt-3 space-y-2.5">
                       <div className="flex items-center justify-between font-mono font-semibold text-[10.5px] uppercase text-stone-500 tracking-wider">
-                        <span>Formulation Technical Specification</span>
+                        <span>Formulation Specification</span>
                         <span className="text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200 font-bold text-[10px]">
                           {selectedFinish.badge}
                         </span>
                       </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5">
+                      <div className="grid grid-cols-3 gap-2.5">
                         <div className="p-2.5 rounded-xl bg-white border border-stone-200 shadow-2xs">
                           <span className="text-[9.5px] text-stone-400 font-mono block uppercase">Scrub Durability</span>
                           <strong className="text-stone-900 text-xs font-semibold block mt-0.5 truncate">
-                            {selectedFinish.id === "premium" || selectedFinish.id === "luxury-emulsion"
-                              ? "Class 1 (10,000+ Wash)"
-                              : "Class 2 (5,000 Wash)"}
+                            Class 1 (10,000+ Wash)
                           </strong>
                         </div>
                         <div className="p-2.5 rounded-xl bg-white border border-stone-200 shadow-2xs">
                           <span className="text-[9.5px] text-stone-400 font-mono block uppercase">Surface Sheen</span>
                           <strong className="text-stone-900 text-xs font-semibold block mt-0.5 truncate">
-                            {selectedFinish.id === "premium" || selectedFinish.id === "luxury-emulsion"
-                              ? "Velvet Satin Luxury"
-                              : "Smooth Matt Architectural"}
+                            Velvet Satin Luxury
                           </strong>
                         </div>
-                        <div className="p-2.5 rounded-xl bg-white border border-stone-200 shadow-2xs col-span-2 sm:col-span-1">
-                          <span className="text-[9.5px] text-stone-400 font-mono block uppercase">Factory Warranty</span>
+                        <div className="p-2.5 rounded-xl bg-white border border-stone-200 shadow-2xs">
+                          <span className="text-[9.5px] text-stone-400 font-mono block uppercase">Warranty</span>
                           <strong className="text-stone-900 text-xs font-semibold block mt-0.5 truncate">
-                            {selectedFinish.id === "premium" ? "5-Yr Luxury Warranty" : "3-Yr Batch Verified"}
+                            5-Yr Verified
                           </strong>
                         </div>
                       </div>
@@ -577,15 +831,15 @@ export function PaintEstimator() {
 
               {/* Step 3: Condition */}
               {currentStep === 3 && (
-                <div className="space-y-4 animate-fade-in min-h-[410px] sm:min-h-[430px] flex flex-col justify-between">
+                <div className="space-y-4 animate-fade-in min-h-[430px] flex flex-col justify-between">
                   <div>
-                    <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.24em] text-accent block">
+                    <span className="text-xs font-bold uppercase tracking-[0.24em] text-accent block">
                       TAP 3 OF 4
                     </span>
-                    <h3 className="font-serif text-2xl sm:text-[32px] text-[#0A2234] font-normal tracking-tight mt-1">
+                    <h3 className="font-serif text-[30px] text-[#0A2234] font-normal tracking-tight mt-1">
                       What is the wall condition?
                     </h3>
-                    <p className="text-xs sm:text-[13.5px] text-stone-500 mt-1">
+                    <p className="text-[13.5px] text-stone-500 mt-1">
                       Fresh plaster absorbs more paint and requires primer, while repainting needs less.
                     </p>
                   </div>
@@ -601,24 +855,17 @@ export function PaintEstimator() {
                           type="button"
                           onClick={() => {
                             setSelectedCondition(cond);
-                            if (selectedCondition.id === cond.id) {
-                              setCurrentStep(4);
-                            } else {
-                              setTimeout(() => {
-                                setCurrentStep(4);
-                              }, 280);
-                            }
+                            setCurrentStep(4);
                           }}
-                          className={`w-full p-3.5 sm:p-4 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex items-center justify-between gap-3.5 sm:gap-4 ${
+                          className={`w-full p-4 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 ${
                             isSelected
                               ? "bg-[#1D4A38] border-[#1D4A38] text-white shadow-md ring-1 ring-[#1D4A38]/30"
                               : "bg-[#FAF9F6] hover:bg-[#F4F2EC] border-[#E8E6E0] hover:border-stone-300 text-stone-900"
                           }`}
                         >
-                          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0 flex-1">
-                            {/* Icon Squircle Badge */}
+                          <div className="flex items-center gap-4 min-w-0 flex-1">
                             <div
-                              className={`size-12 sm:size-13 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
+                              className={`size-13 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
                                 isSelected
                                   ? "bg-[#295F4A] border border-white/10 shadow-inner"
                                   : isRepaint
@@ -629,27 +876,26 @@ export function PaintEstimator() {
                               {isRepaint ? (
                                 <PaintRollerIcon
                                   isSelected={isSelected}
-                                  className="size-7 sm:size-8"
+                                  className="size-8"
                                 />
                               ) : (
                                 <BrickWallIcon
                                   isSelected={isSelected}
-                                  className="size-6 sm:size-7"
+                                  className="size-7"
                                 />
                               )}
                             </div>
 
-                            {/* Option Copy */}
                             <div className="space-y-0.5 min-w-0 flex-1">
                               <strong
-                                className={`block text-sm sm:text-base font-bold tracking-tight ${
+                                className={`block text-base font-bold tracking-tight ${
                                   isSelected ? "text-white" : "text-stone-900"
                                 }`}
                               >
                                 {cond.name}
                               </strong>
                               <p
-                                className={`text-xs sm:text-[13px] leading-snug ${
+                                className={`text-[13px] leading-snug ${
                                   isSelected ? "text-white/80" : "text-stone-500"
                                 }`}
                               >
@@ -658,43 +904,41 @@ export function PaintEstimator() {
                             </div>
                           </div>
 
-                          {/* Right Radio / Check Circle */}
                           <div
-                            className={`size-6 sm:size-7 rounded-full shrink-0 flex items-center justify-center transition-all ${
+                            className={`size-7 rounded-full shrink-0 flex items-center justify-center transition-all ${
                               isSelected
                                 ? "bg-white text-[#1D4A38] shadow-sm"
                                 : "bg-white border border-stone-300 shadow-sm"
                             }`}
                           >
                             {isSelected ? (
-                              <Check className="size-3.5 sm:size-4 stroke-[3]" />
+                              <Check className="size-4 stroke-[3]" />
                             ) : null}
                           </div>
                         </button>
                       );
                     })}
 
-                    {/* Surface Application Technical Guidance (Eliminating Dead Space) */}
-                    <div className="p-3.5 sm:p-4 rounded-2xl bg-stone-50 border border-stone-200/90 text-xs text-stone-700 mt-3 space-y-2.5">
+                    <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200/90 text-xs text-stone-700 mt-3 space-y-2.5">
                       <div className="flex items-center justify-between font-mono font-semibold text-[10.5px] uppercase text-stone-500 tracking-wider">
-                        <span>Application Specification</span>
+                        <span>Application Protocol</span>
                         <span className="text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 font-bold">
-                          {selectedCondition.id === "new-plaster" ? "Primer Mandatory" : "Direct Topcoat"}
+                          {selectedCondition.id === "fresh" ? "Primer Mandatory" : "Direct Topcoat"}
                         </span>
                       </div>
                       <div className="grid grid-cols-2 gap-2.5">
                         <div className="p-2.5 rounded-xl bg-white border border-stone-200 shadow-2xs">
                           <span className="text-[10px] text-stone-400 font-mono block uppercase">Coating Protocol</span>
                           <strong className="text-stone-900 text-xs font-semibold block mt-0.5">
-                            {selectedCondition.id === "new-plaster"
+                            {selectedCondition.id === "fresh"
                               ? "1 Coat Primer Sealer + 2 Topcoats"
-                              : "2 Coats Luxury Direct Topcoat"}
+                              : "2 Coats Direct Topcoat"}
                           </strong>
                         </div>
                         <div className="p-2.5 rounded-xl bg-white border border-stone-200 shadow-2xs">
                           <span className="text-[10px] text-stone-400 font-mono block uppercase">Optimal Coverage</span>
                           <strong className="text-stone-900 text-xs font-semibold block mt-0.5">
-                            {selectedCondition.id === "new-plaster"
+                            {selectedCondition.id === "fresh"
                               ? "90 – 110 sq.ft / Liter"
                               : "120 – 140 sq.ft / Liter"}
                           </strong>
@@ -705,22 +949,22 @@ export function PaintEstimator() {
                 </div>
               )}
 
-              {/* Step 4: Shade Palette */}
+              {/* Step 4: Shade */}
               {currentStep === 4 && (
-                <div className="space-y-4 animate-fade-in min-h-[410px] sm:min-h-[430px] flex flex-col justify-between">
+                <div className="space-y-4 animate-fade-in min-h-[430px] flex flex-col justify-between">
                   <div>
-                    <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.24em] text-accent block">
+                    <span className="text-xs font-bold uppercase tracking-[0.24em] text-accent block">
                       TAP 4 OF 4 &bull; FINAL STEP
                     </span>
-                    <h3 className="font-serif text-2xl sm:text-[32px] text-[#0A2234] font-normal tracking-tight mt-1">
+                    <h3 className="font-serif text-[30px] text-[#0A2234] font-normal tracking-tight mt-1">
                       Which shade palette?
                     </h3>
-                    <p className="text-xs sm:text-[13.5px] text-stone-500 mt-1">
-                      Select your intended shade to tint your batch in our computer lab.
+                    <p className="text-[13.5px] text-stone-500 mt-1">
+                      Select your intended shade to tint your batch in our computerized lab.
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-2">
+                  <div className="grid grid-cols-4 gap-3 pt-2">
                     {TONES.map((tone) => {
                       const isSelected = selectedTone.id === tone.id;
                       return (
@@ -728,7 +972,7 @@ export function PaintEstimator() {
                           key={tone.id}
                           type="button"
                           onClick={() => setSelectedTone(tone)}
-                          className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all duration-200 cursor-pointer ${
+                          className={`p-3 rounded-xl border text-left transition-all duration-200 cursor-pointer ${
                             isSelected
                               ? "bg-white border-2 border-stone-900 ring-4 ring-stone-900/10 shadow-md scale-[1.02]"
                               : "bg-[#FAF9F6] hover:bg-white border-[#E8E6E0] hover:border-stone-300 text-stone-900 shadow-2xs"
@@ -736,7 +980,7 @@ export function PaintEstimator() {
                         >
                           <div className="relative">
                             <span
-                              className="h-10 sm:h-12 w-full rounded-lg block mb-2 shadow-xs border border-black/15 ring-1 ring-black/5"
+                              className="h-12 w-full rounded-lg block mb-2 shadow-xs border border-black/15 ring-1 ring-black/5"
                               style={{ backgroundColor: tone.hex }}
                             />
                             {isSelected && (
@@ -764,12 +1008,11 @@ export function PaintEstimator() {
                     })}
                   </div>
 
-                  {/* Computerized Shade Tinting Lab Guarantee (Eliminating Dead Space) */}
                   <div className="p-3 rounded-xl bg-stone-50 border border-stone-200/90 flex items-center justify-between text-xs mt-3">
                     <div className="flex items-center gap-2">
                       <Sparkles className="size-4 text-amber-600 shrink-0" />
                       <span className="text-[11.5px] text-stone-600">
-                        <strong>Official Computerized Tinting:</strong> Zero tinting charges &bull; Exact formula batch match
+                        <strong>Official Computerized Tinting:</strong> Zero tinting charges &bull; Exact formula match
                       </span>
                     </div>
                     <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0">
@@ -827,9 +1070,8 @@ export function PaintEstimator() {
             </div>
           </div>
 
-          {/* Right Column: Studio Showcase & Output (44% width - NEVER squeezed) */}
-          <div className="w-full lg:w-[44%] bg-stone-50 border-t lg:border-t-0 lg:border-l border-stone-200 py-5 px-6 sm:py-6 sm:px-7 flex flex-col justify-between gap-3.5 sm:gap-4 min-w-0">
-            {/* Top Status */}
+          {/* Right Column: Studio Showcase & Output (44% width) */}
+          <div className="w-[44%] bg-stone-50 border-l border-stone-200 py-6 px-7 flex flex-col justify-between gap-4 min-w-0">
             <div className="flex items-center justify-between pb-3 border-b border-stone-200 shrink-0">
               <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-stone-500">
                 Automated Tin Fill
@@ -839,8 +1081,7 @@ export function PaintEstimator() {
               </span>
             </div>
 
-            {/* Visual: Realistic Room Finish Photo - Expands to fill available vertical space without empty dead space */}
-            <div className="relative rounded-2xl overflow-hidden shadow-md border border-stone-200/90 w-full min-h-[260px] sm:min-h-[290px] lg:min-h-[310px] flex-1 flex flex-col justify-end bg-stone-200 group">
+            <div className="relative rounded-2xl overflow-hidden shadow-md border border-stone-200/90 w-full min-h-[300px] flex-1 flex flex-col justify-end bg-stone-200 group">
               <img
                 src={selectedTone.roomImage}
                 alt={selectedTone.name}
@@ -848,9 +1089,8 @@ export function PaintEstimator() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/10 pointer-events-none" />
 
-              {/* Top overlay badge: Certified Shade Code */}
               <div className="absolute top-3 left-3 z-10">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] sm:text-[10.5px] font-mono tracking-wider uppercase border border-white/20 shadow-sm select-none">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10.5px] font-mono tracking-wider uppercase border border-white/20 shadow-sm select-none">
                   <span
                     className="size-2 rounded-full border border-white/60 shadow-xs"
                     style={{ backgroundColor: selectedTone.hex }}
@@ -859,27 +1099,25 @@ export function PaintEstimator() {
                 </span>
               </div>
 
-              {/* Bottom Label on Room Image */}
-              <div className="relative z-10 p-3.5 sm:p-4 text-white">
+              <div className="relative z-10 p-4 text-white">
                 <div className="flex items-center gap-1.5 mb-1">
                   <span
                     className="size-2.5 rounded-full border border-white shadow-xs"
                     style={{ backgroundColor: selectedTone.hex }}
                   />
-                  <span className="text-[10px] sm:text-[10.5px] font-mono tracking-widest uppercase font-bold text-amber-300">
+                  <span className="text-[10.5px] font-mono tracking-widest uppercase font-bold text-amber-300">
                     PAINTING IN
                   </span>
                 </div>
-                <h4 className="text-xl sm:text-2xl font-serif font-medium leading-tight drop-shadow-md">
+                <h4 className="text-2xl font-serif font-medium leading-tight drop-shadow-md">
                   {selectedTone.name}
                 </h4>
-                <p className="text-[11px] sm:text-xs text-white/80 mt-0.5 font-sans leading-normal">
+                <p className="text-xs text-white/80 mt-0.5 font-sans leading-normal">
                   Birla Opus &bull; {selectedFinish.name} &bull; {selectedSpace.name}
                 </p>
               </div>
             </div>
 
-            {/* Calculated Output Box */}
             <div className="rounded-xl p-3.5 bg-white border border-stone-200 shadow-sm space-y-2 shrink-0">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-stone-500">Required Volume:</span>
@@ -905,8 +1143,7 @@ export function PaintEstimator() {
               </p>
             </div>
 
-            {/* Quick Trade Desk Hotline & Same-Day Dispatch */}
-            <div className="mt-3 p-3 rounded-xl bg-amber-50/80 border border-amber-200/80 flex items-center justify-between text-xs">
+            <div className="mt-2 p-3 rounded-xl bg-amber-50/80 border border-amber-200/80 flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <div className="size-7 rounded-lg bg-stone-900 text-amber-400 flex items-center justify-center shrink-0">
                   <Truck className="size-3.5" />

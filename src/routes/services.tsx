@@ -176,10 +176,10 @@ function ServicesPage() {
   const [viewStates, setViewStates] = useState<Record<string, "before" | "after">>({});
 
   const categories: { id: ServiceCategory; label: string }[] = [
-    { id: "all", label: `All (${servicesData.length})` },
-    { id: "paints", label: `Color & Waterproofing (${servicesData.filter((s) => s.category === "paints").length})` },
-    { id: "logistics", label: `Fleet & Estimation (${servicesData.filter((s) => s.category === "logistics").length})` },
-    { id: "structural", label: `Hardware & Labor (${servicesData.filter((s) => s.category === "structural").length})` },
+    { id: "all", label: "All" },
+    { id: "paints", label: "Color & Waterproofing" },
+    { id: "logistics", label: "Fleet & Estimation" },
+    { id: "structural", label: "Hardware & Labor" },
   ];
 
   const filteredServices = servicesData.filter((s) => {
@@ -198,61 +198,60 @@ function ServicesPage() {
       <SiteHeader />
 
       {/* Hero Header Section - Centered Luxury Architectural Layout */}
-      <section className="relative pt-12 sm:pt-14 pb-12 sm:pb-14 px-4 sm:px-7 lg:px-10 border-b border-primary/10 overflow-hidden bg-gradient-to-b from-stone-50/80 via-white to-background">
+      <section className="relative pt-10 sm:pt-16 pb-5 sm:pb-14 px-3 sm:px-7 lg:px-10 border-b border-primary/10 overflow-hidden bg-gradient-to-b from-stone-50/80 via-white to-background">
         <div className="absolute left-1/2 -top-28 -translate-x-1/2 size-[650px] rounded-full bg-radial from-accent/12 via-primary/5 to-transparent blur-3xl pointer-events-none" />
 
         <div className="mx-auto max-w-4xl text-center relative z-10">
-          <span className="text-[0.68rem] sm:text-[0.74rem] font-bold uppercase tracking-[0.26em] text-accent block mb-3.5 select-none">
+          <span className="text-[9px] sm:text-[0.74rem] font-bold uppercase tracking-[0.22em] text-accent block mb-1.5 sm:mb-3 select-none">
             &mdash; EXPERT CRAFTSMANSHIP &amp; CONTRACTOR SERVICES &mdash;
           </span>
 
-          <h1 className="font-display font-serif text-4xl sm:text-5xl lg:text-6xl tracking-tight text-primary font-normal leading-[1.12] mb-4 sm:mb-5">
+          <h1 className="font-display font-serif text-2xl sm:text-5xl lg:text-6xl tracking-tight text-primary font-normal leading-tight mb-1.5 sm:mb-4">
             Professional Services
           </h1>
 
-          <p className="text-xs sm:text-sm md:text-[15px] text-muted-foreground tracking-wide leading-relaxed max-w-3xl lg:max-w-4xl mx-auto">
-            From 3-minute computerized Birla Opus shade dispensing and non-destructive dampness audits
-            to custom fastener sizing and scheduled job-site logistics &mdash; we back every project with master technical precision.
+          <p className="text-xs sm:text-sm md:text-[15px] text-muted-foreground tracking-wide leading-relaxed max-w-xl mx-auto">
+            Computerized Birla Opus shade dispensing, custom fastener sizing, and scheduled job-site logistics across Erode.
           </p>
 
-          <p className="mt-3 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-accent/90">
+          <p className="hidden sm:block mt-3 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-accent/90">
             Serving Erode / Perundurai SIPCOT / Bhavani / Modakkurichi
           </p>
 
           {/* Compact 1-Row Proof Metric Ribbon */}
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto">
-            <div className="rounded-2xl border border-stone-200/80 bg-white/95 p-3 text-center shadow-2xs">
-              <span className="font-serif text-xl sm:text-2xl font-bold text-primary block">2,200+</span>
-              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Opus Shades</span>
+          <div className="mt-3.5 sm:mt-8 grid grid-cols-4 gap-1.5 sm:gap-3 max-w-3xl mx-auto">
+            <div className="rounded-xl sm:rounded-2xl border border-stone-200/80 bg-white/95 p-1.5 sm:p-3 text-center shadow-2xs">
+              <span className="font-serif text-sm sm:text-2xl font-bold text-primary block">2,200+</span>
+              <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-bold tracking-wider leading-none">Shades</span>
             </div>
-            <div className="rounded-2xl border border-stone-200/80 bg-white/95 p-3 text-center shadow-2xs">
-              <span className="font-serif text-xl sm:text-2xl font-bold text-primary block">&lt; 3 Mins</span>
-              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Dosing Speed</span>
+            <div className="rounded-xl sm:rounded-2xl border border-stone-200/80 bg-white/95 p-1.5 sm:p-3 text-center shadow-2xs">
+              <span className="font-serif text-sm sm:text-2xl font-bold text-primary block">&lt; 3 Min</span>
+              <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-bold tracking-wider leading-none">Tinting</span>
             </div>
-            <div className="rounded-2xl border border-stone-200/80 bg-white/95 p-3 text-center shadow-2xs">
-              <span className="font-serif text-xl sm:text-2xl font-bold text-primary block">35 km</span>
-              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Fleet Coverage</span>
+            <div className="rounded-xl sm:rounded-2xl border border-stone-200/80 bg-white/95 p-1.5 sm:p-3 text-center shadow-2xs">
+              <span className="font-serif text-sm sm:text-2xl font-bold text-primary block">35 km</span>
+              <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-bold tracking-wider leading-none">Fleet</span>
             </div>
-            <div className="rounded-2xl border border-stone-200/80 bg-white/95 p-3 text-center shadow-2xs">
-              <span className="font-serif text-xl sm:text-2xl font-bold text-primary block">M6–M36</span>
-              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Bolt Sizing</span>
+            <div className="rounded-xl sm:rounded-2xl border border-stone-200/80 bg-white/95 p-1.5 sm:p-3 text-center shadow-2xs">
+              <span className="font-serif text-sm sm:text-2xl font-bold text-primary block">M6–M36</span>
+              <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-bold tracking-wider leading-none">Bolts</span>
             </div>
           </div>
 
-          {/* Search Input & Category Filter Tabs */}
-          <div className="mt-8 flex flex-col md:flex-row items-center justify-center gap-3 w-full max-w-4xl mx-auto">
+          {/* Search Input & Category Filter Tabs (Single-Row Horizontal Scroll on Mobile) */}
+          <div className="mt-4 sm:mt-7 flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-3 w-full max-w-4xl mx-auto">
             <div className="relative w-full sm:w-64 shrink-0">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-3.5 text-stone-400 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search services"
-                className="w-full h-[36px] rounded-full border border-stone-200/90 bg-white/95 pl-9 pr-4 text-xs sm:text-[13px] text-foreground placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-2xs"
+                placeholder="Search services..."
+                className="w-full h-9 sm:h-[36px] rounded-full border border-stone-200/90 bg-white/95 pl-9 pr-4 text-xs sm:text-[13px] text-foreground placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-2xs"
               />
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-1.5 p-1 rounded-full bg-stone-100/90 border border-stone-200/80 shadow-2xs">
+            <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1 px-1 justify-start sm:justify-center max-w-4xl mx-auto w-full sm:w-auto">
               {categories.map((cat) => {
                 const isActive = selectedCategory === cat.id;
                 return (
@@ -260,10 +259,10 @@ function ServicesPage() {
                     key={cat.id}
                     type="button"
                     onClick={() => setSelectedCategory(cat.id)}
-                    className={`h-[30px] rounded-full px-3.5 text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center ${
+                    className={`h-[30px] sm:h-[34px] rounded-full px-3.5 sm:px-4 text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center shrink-0 border ${
                       isActive
-                        ? "bg-[#0A2234] text-white shadow-xs"
-                        : "text-stone-600 hover:text-stone-950 hover:bg-white/60"
+                        ? "bg-[#0A2234] text-white border-[#0A2234] shadow-xs"
+                        : "bg-white/95 text-stone-600 border-stone-200/90 hover:text-stone-950 hover:bg-stone-50 hover:border-stone-300 shadow-2xs"
                     }`}
                   >
                     {cat.label}
@@ -296,14 +295,14 @@ function ServicesPage() {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 sm:gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-8">
             {filteredServices.map((srv) => (
               <article
                 key={srv.id}
-                className="group relative flex flex-col justify-between rounded-[28px] sm:rounded-[32px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5"
+                className="group relative flex flex-col justify-between rounded-[18px] sm:rounded-[32px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-2xs sm:shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5"
               >
                 {/* Visual Header */}
-                <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-stone-100">
+                <div className="relative h-32 sm:h-52 w-full overflow-hidden bg-stone-100">
                   <img
                     src={
                       srv.beforeImage && srv.afterImage
@@ -321,7 +320,7 @@ function ServicesPage() {
                   {/* Interactive Before / After Visual Toggle */}
                   {srv.beforeImage && srv.afterImage && (
                     <>
-                      <div className="absolute top-3 right-3 z-20 flex items-center rounded-full bg-stone-900/80 p-0.5 backdrop-blur-md border border-white/25 text-[10px] font-semibold text-white shadow-md">
+                      <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-20 flex items-center rounded-full bg-stone-900/80 p-0.5 backdrop-blur-md border border-white/25 text-[8px] sm:text-[10px] font-semibold text-white shadow-md">
                         <button
                           type="button"
                           onClick={(e) => {
@@ -329,7 +328,7 @@ function ServicesPage() {
                             e.stopPropagation();
                             setViewStates((prev) => ({ ...prev, [srv.id]: "before" }));
                           }}
-                          className={`px-2.5 py-0.5 rounded-full transition-all cursor-pointer ${
+                          className={`px-1.5 sm:px-2.5 py-0.5 rounded-full transition-all cursor-pointer ${
                             viewStates[srv.id] === "before"
                               ? "bg-white text-stone-950 shadow-xs"
                               : "text-white/80 hover:text-white"
@@ -344,7 +343,7 @@ function ServicesPage() {
                             e.stopPropagation();
                             setViewStates((prev) => ({ ...prev, [srv.id]: "after" }));
                           }}
-                          className={`px-2.5 py-0.5 rounded-full transition-all cursor-pointer ${
+                          className={`px-1.5 sm:px-2.5 py-0.5 rounded-full transition-all cursor-pointer ${
                             (viewStates[srv.id] ?? "after") === "after"
                               ? "bg-white text-stone-950 shadow-xs"
                               : "text-white/80 hover:text-white"
@@ -354,9 +353,9 @@ function ServicesPage() {
                         </button>
                       </div>
 
-                      <div className="absolute bottom-2.5 left-3 z-10 pointer-events-none">
-                        <span className="inline-block rounded-md bg-black/60 px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-wider text-white backdrop-blur-xs">
-                          {viewStates[srv.id] === "before" ? "Damp Wall Damage" : "Opus Restored"}
+                      <div className="absolute bottom-2 left-2 sm:bottom-2.5 sm:left-3 z-10 pointer-events-none">
+                        <span className="inline-block rounded-md bg-black/60 px-1.5 py-0.5 text-[8px] sm:text-[9.5px] font-semibold uppercase tracking-wider text-white backdrop-blur-xs">
+                          {viewStates[srv.id] === "before" ? "Damp Wall" : "Restored"}
                         </span>
                       </div>
                     </>
@@ -364,30 +363,30 @@ function ServicesPage() {
                 </div>
 
                 {/* Card Body */}
-                <div className="px-[15px] py-5 flex-1 flex flex-col justify-between">
+                <div className="px-2.5 sm:px-[15px] py-2.5 sm:py-5 flex-1 flex flex-col justify-between">
                   <div>
                     {/* Subtle Turnaround Indicator Tag */}
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-accent block mb-1">
+                    <span className="text-[8px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-accent block mb-0.5 sm:mb-1">
                       {srv.highlight}
                     </span>
 
                     <h3
-                      className="font-display font-serif text-lg sm:text-xl font-normal text-primary tracking-tight leading-snug group-hover:text-paint-deep transition-colors"
+                      className="font-display font-serif text-xs sm:text-xl font-bold sm:font-normal text-primary tracking-tight leading-tight sm:leading-snug group-hover:text-paint-deep transition-colors"
                     >
                       {srv.title}
                     </h3>
-                    <p className="mt-2 text-xs sm:text-[13px] text-muted-foreground leading-relaxed">
+                    <p className="mt-1 sm:mt-2 text-[9.5px] sm:text-[13px] text-muted-foreground leading-snug sm:leading-relaxed">
                       {srv.description}
                     </p>
                   </div>
 
                   {/* Card Action */}
-                  <div className="mt-6 pt-4 border-t border-stone-200/80">
+                  <div className="mt-2.5 sm:mt-6 pt-2 sm:pt-4 border-t border-stone-200/80">
                     <Button
                       variant="hero"
                       size="sm"
                       asChild
-                      className="w-full rounded-full text-xs font-semibold cursor-pointer shadow-xs justify-center"
+                      className="w-full h-7 sm:h-9 rounded-full text-[10px] sm:text-xs font-semibold cursor-pointer shadow-xs justify-center"
                     >
                       <a
                         href={`https://wa.me/919876543210?text=Hello%20Akshara%20Paints,%20I%20would%20like%20to%20inquire%20about%20your%20service:%20${encodeURIComponent(
@@ -409,29 +408,34 @@ function ServicesPage() {
       </section>
 
       {/* Streamlined Bottom Consultation Strip */}
-      <section className="pb-16 px-4 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full">
-        <div className="rounded-[28px] border border-[#E7E2D6] bg-gradient-to-r from-stone-50 via-white to-stone-50 p-6 sm:p-8 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
-          <div className="space-y-1">
-            <h3 className="font-display font-serif text-xl sm:text-2xl font-normal text-primary">
+      <section className="pb-12 sm:pb-16 px-3 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full">
+        <div className="rounded-2xl sm:rounded-[28px] border border-stone-200/90 bg-gradient-to-br from-white via-stone-50/90 to-amber-50/40 p-4 sm:p-8 shadow-xs hover:shadow-md transition-all flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-center sm:text-left">
+          <div className="space-y-1.5">
+            <span className="inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Senior Technical Desk Active
+            </span>
+            <h3 className="font-display font-serif text-lg sm:text-2xl font-normal text-primary leading-snug">
               Need a Custom Site Service or Bulk Contractor Quote?
             </h3>
-            <p className="text-xs sm:text-[13px] text-muted-foreground">
-              Speak directly with our senior technical desk for project scheduling and material takeoff assistance
+            <p className="text-xs sm:text-[13px] text-muted-foreground leading-relaxed max-w-xl">
+              Speak directly with our senior technical desk for project scheduling and material takeoff assistance across Erode district.
             </p>
           </div>
           <Button
             variant="hero"
             size="default"
             asChild
-            className="rounded-full px-7 py-2.5 text-xs font-semibold cursor-pointer shadow-md shrink-0"
+            className="rounded-full px-6 sm:px-8 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold cursor-pointer shadow-md shrink-0 w-full sm:w-auto"
           >
             <a
-              href="https://wa.me/919876543210?text=Hello%20Akshara%20Paints,%20I%20have%20a%20custom%20service%20inquiry%20regarding%20my%20project%20in%20Erode"
+              href="https://wa.me/919443722255?text=Hello%20Akshara%20Paints,%20I%20have%20a%20custom%20service%20inquiry%20regarding%20my%20project%20in%20Erode"
               target="_blank"
               rel="noreferrer"
-              className="flex items-center justify-center"
+              className="flex items-center justify-center gap-1.5"
             >
               <span>Consult Technical Desk</span>
+              <span className="text-accent-foreground font-bold">&rarr;</span>
             </a>
           </Button>
         </div>
