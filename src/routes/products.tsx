@@ -844,7 +844,7 @@ function ProductsPage() {
       </section>
 
       {/* Main Content Area */}
-      <section className="py-10 sm:py-14 px-4 sm:px-6 mx-auto max-w-[1200px] w-full flex-1">
+      <section className="py-12 sm:py-16 px-4 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full flex-1">
         {/* State A: Top-Level Category Grid (selectedCategoryId === null) */}
         {selectedCategoryId === null && (
           <div>
@@ -870,7 +870,7 @@ function ProductsPage() {
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6 justify-items-center">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-8">
                 {filteredCategories.map((cat) => (
                   <article
                     key={cat.id}
@@ -879,7 +879,7 @@ function ProductsPage() {
                       setSearchQuery("");
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
-                    className="group relative flex flex-col justify-between rounded-[18px] sm:rounded-[28px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-2xs sm:shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer max-w-[370px] w-full"
+                    className="group relative flex flex-col justify-between rounded-[18px] sm:rounded-[32px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-2xs sm:shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer w-full"
                   >
                     {/* Visual Header */}
                     <div className="relative h-32 sm:h-52 w-full overflow-hidden bg-stone-100">
@@ -900,7 +900,7 @@ function ProductsPage() {
                     </div>
 
                     {/* Card Body */}
-                    <div className="px-2.5 sm:px-[15px] py-2.5 sm:py-5 flex-1 flex flex-col justify-between">
+                    <div className="px-2.5 sm:px-[18px] py-2.5 sm:py-5 flex-1 flex flex-col justify-between">
                       <div>
                         {/* Highlight Tag */}
                         <span className="text-[8px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-accent block mb-0.5 sm:mb-1">
@@ -975,7 +975,7 @@ function ProductsPage() {
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6 justify-items-center">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-8">
                 {filteredSubcategories.map((sub) => {
                   const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(
                     `Hello Akshara Paints, I would like to inquire about ${activeCategory.title} - ${sub.title}. Please share available grades and pricing.`
@@ -984,7 +984,7 @@ function ProductsPage() {
                   return (
                     <article
                       key={sub.id}
-                      className="group relative flex flex-col justify-between rounded-[18px] sm:rounded-[28px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-2xs sm:shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 max-w-[370px] w-full"
+                      className="group relative flex flex-col justify-between rounded-[18px] sm:rounded-[32px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-2xs sm:shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 w-full"
                     >
                       {/* Visual Header with Image and Badge */}
                       <div className="relative h-32 sm:h-52 w-full overflow-hidden bg-stone-100 flex items-center justify-center">
@@ -1005,7 +1005,7 @@ function ProductsPage() {
                       </div>
 
                       {/* Card Body with Full Content */}
-                      <div className="px-2.5 sm:px-[15px] py-2.5 sm:py-5 flex-1 flex flex-col justify-between">
+                      <div className="px-2.5 sm:px-[18px] py-2.5 sm:py-5 flex-1 flex flex-col justify-between">
                         <div>
                           {/* Highlight Tag */}
                           <span className="text-[8px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-accent block mb-0.5 sm:mb-1">
@@ -1062,8 +1062,8 @@ function ProductsPage() {
       </section>
 
       {/* Streamlined Bottom Consultation Strip */}
-      <section className="pb-12 sm:pb-16 px-3 sm:px-6 mx-auto max-w-[1200px] w-full">
-        <div className="rounded-2xl sm:rounded-[28px] border border-stone-200/90 bg-gradient-to-br from-white via-stone-50/90 to-amber-50/40 p-4 sm:p-7 shadow-xs hover:shadow-md transition-all flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-center sm:text-left">
+      <section className="pb-12 sm:pb-16 px-4 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full">
+        <div className="rounded-2xl sm:rounded-[32px] border border-stone-200/90 bg-gradient-to-br from-white via-stone-50/90 to-amber-50/40 p-5 sm:p-8 shadow-xs hover:shadow-md transition-all flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-center sm:text-left">
           <div className="space-y-1.5">
             <span className="inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 border border-emerald-200 px-2.5 py-0.5 rounded-full">
               <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />

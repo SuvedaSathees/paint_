@@ -18,37 +18,31 @@ export const SAMPLE_ROOMS = [
     id: "living-sage",
     name: "Living Room",
     src: "/room-sage.jpg",
-    icon: "🛋️",
   },
   {
     id: "master-linen",
     name: "Master Suite",
     src: "/room-linen.jpg",
-    icon: "🛏️",
   },
   {
     id: "accent-rose",
     name: "Accent Lounge",
     src: "/room-rose.jpg",
-    icon: "🌸",
   },
   {
     id: "dining-forest",
     name: "Dining Room",
     src: "/room-forest.jpg",
-    icon: "🌿",
   },
   {
     id: "terracotta-study",
     name: "Villa Study",
     src: "/room-terracotta.jpg",
-    icon: "🏛️",
   },
   {
     id: "ocean-suite",
     name: "Waterfront Suite",
     src: "/room-ocean.jpg",
-    icon: "🌊",
   },
 ];
 
@@ -207,19 +201,14 @@ export function ColorVisualizer() {
         className="hidden"
       />
 
-      {/* Elegant Architectural Header & Room Switcher Bar */}
-      <div className="bg-white border border-stone-200/80 rounded-2xl p-2.5 sm:p-4 shadow-2xs space-y-2">
-        <div className="flex items-center justify-between gap-2">
+      {/* Clean Architectural Header & Room Switcher Bar */}
+      <div className="bg-white border border-stone-200/80 rounded-2xl p-3 sm:p-4 shadow-2xs space-y-2.5">
+        <div className="flex items-center justify-between gap-3">
           <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[9px] font-extrabold uppercase tracking-wider text-[#F05323] bg-[#FFF0EB] px-2 py-0.5 rounded-full">
-                Birla Opus Studio
-              </span>
-              <span className="text-[10px] text-stone-400 font-mono hidden xs:inline">
-                Real-Time Paint Simulator
-              </span>
-            </div>
-            <h1 className="font-display font-serif text-base sm:text-2xl font-bold text-stone-900 leading-tight mt-0.5">
+            <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#D97706] block mb-0.5 select-none">
+              Birla Opus Studio
+            </span>
+            <h1 className="font-display font-serif text-base sm:text-2xl font-bold text-[#0F1E36] leading-tight">
               Virtual Room Paint Studio
             </h1>
           </div>
@@ -229,7 +218,7 @@ export function ColorVisualizer() {
               onClick={() => fileInputRef.current?.click()}
               variant="outline"
               size="sm"
-              className="rounded-full border-stone-200 hover:bg-stone-50 text-stone-800 font-bold text-xs h-8 px-3 gap-1.5 cursor-pointer shadow-2xs"
+              className="rounded-full border-stone-200 hover:bg-stone-50 text-stone-700 font-semibold text-xs h-8 sm:h-9 px-3.5 gap-1.5 cursor-pointer shadow-2xs"
             >
               <Upload className="size-3.5 text-[#F05323]" />
               <span>Upload Photo</span>
@@ -239,7 +228,7 @@ export function ColorVisualizer() {
               onClick={handleCameraTrigger}
               variant="outline"
               size="sm"
-              className="rounded-full border-stone-200 hover:bg-stone-50 text-stone-800 font-bold text-xs h-8 px-3 gap-1.5 cursor-pointer shadow-2xs"
+              className="rounded-full border-stone-200 hover:bg-stone-50 text-stone-700 font-semibold text-xs h-8 sm:h-9 px-3.5 gap-1.5 cursor-pointer shadow-2xs"
             >
               <Camera className="size-3.5 text-stone-600" />
               <span>Camera</span>
@@ -285,29 +274,30 @@ export function ColorVisualizer() {
           </button>
         </div>
 
-        {/* Desktop-Only Preset Room Switcher (Strictly hidden on mobile responsive) */}
-        <div className="hidden sm:flex pt-1.5 border-t border-stone-100 items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 shrink-0 mr-0.5">
+        {/* Desktop-Only Preset Room Switcher */}
+        <div className="hidden sm:flex pt-2.5 border-t border-stone-100 items-center gap-2 overflow-x-auto no-scrollbar">
+          <span className="text-[11px] font-semibold text-stone-400 uppercase tracking-wider shrink-0 mr-1 select-none">
             Room:
           </span>
-          {SAMPLE_ROOMS.map((room) => {
-            const isCurrent = activeImage === room.src;
-            return (
-              <button
-                key={room.id}
-                type="button"
-                onClick={() => handleCustomImageChange(room.src)}
-                className={`h-7 sm:h-8 rounded-full px-2.5 sm:px-3 text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center gap-1.5 shrink-0 border ${
-                  isCurrent
-                    ? "bg-[#071624] text-white border-[#071624] shadow-xs"
-                    : "bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100"
-                }`}
-              >
-                <span>{room.icon}</span>
-                <span>{room.name}</span>
-              </button>
-            );
-          })}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+            {SAMPLE_ROOMS.map((room) => {
+              const isCurrent = activeImage === room.src;
+              return (
+                <button
+                  key={room.id}
+                  type="button"
+                  onClick={() => handleCustomImageChange(room.src)}
+                  className={`h-8 rounded-full px-3.5 text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0 border ${
+                    isCurrent
+                      ? "bg-[#0A2234] text-white border-[#0A2234] shadow-xs"
+                      : "bg-white text-stone-600 border-stone-200/90 hover:text-stone-950 hover:bg-stone-50 hover:border-stone-300"
+                  }`}
+                >
+                  <span>{room.name}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 

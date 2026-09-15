@@ -1,8 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import {
-  Paintbrush,
-  Wand2,
-  Eraser,
   Undo2,
   Redo2,
   RotateCcw,
@@ -659,13 +656,12 @@ export function CanvasWorkspace({
               setActiveTool("smart-fill");
               setIsComparing(false);
             }}
-            className={`flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[11px] font-bold transition-all cursor-pointer ${
+            className={`flex items-center justify-center rounded-lg px-2.5 py-1.5 text-[11px] font-bold transition-all cursor-pointer ${
               activeTool === "smart-fill" && !isComparing
                 ? "bg-[#071624] text-white shadow-2xs"
                 : "text-stone-600 hover:text-stone-900 bg-stone-100"
             }`}
           >
-            <Wand2 className="size-3 text-[#F05323]" />
             <span>Tap Wall</span>
           </button>
 
@@ -675,13 +671,12 @@ export function CanvasWorkspace({
               setActiveTool("brush");
               setIsComparing(false);
             }}
-            className={`flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[11px] font-bold transition-all cursor-pointer ${
+            className={`flex items-center justify-center rounded-lg px-2.5 py-1.5 text-[11px] font-bold transition-all cursor-pointer ${
               activeTool === "brush" && !isComparing
                 ? "bg-[#071624] text-white shadow-2xs"
                 : "text-stone-600 hover:text-stone-900 bg-stone-100"
             }`}
           >
-            <Paintbrush className="size-3 text-stone-700" />
             <span>Brush</span>
           </button>
         </div>
@@ -760,14 +755,13 @@ export function CanvasWorkspace({
               setActiveTool("smart-fill");
               setIsComparing(false);
             }}
-            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all shrink-0 cursor-pointer ${
+            className={`flex items-center justify-center rounded-lg px-3 py-1 text-xs font-semibold transition-all shrink-0 cursor-pointer ${
               activeTool === "smart-fill" && !isComparing
                 ? "bg-white text-stone-900 shadow-2xs border border-stone-200 font-bold"
                 : "text-stone-600 hover:text-stone-900"
             }`}
             title="Tap any wall to intelligently fill with selected paint color"
           >
-            <Wand2 className="size-3.5 text-[#F05323]" />
             <span>Smart Tap</span>
           </button>
 
@@ -777,14 +771,13 @@ export function CanvasWorkspace({
               setActiveTool("brush");
               setIsComparing(false);
             }}
-            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all shrink-0 cursor-pointer ${
+            className={`flex items-center justify-center rounded-lg px-3 py-1 text-xs font-semibold transition-all shrink-0 cursor-pointer ${
               activeTool === "brush" && !isComparing
                 ? "bg-white text-stone-900 shadow-2xs border border-stone-200 font-bold"
                 : "text-stone-600 hover:text-stone-900"
             }`}
             title="Paint walls manually with a roller brush"
           >
-            <Paintbrush className="size-3.5 text-stone-800" />
             <span>Brush</span>
           </button>
 
@@ -794,14 +787,13 @@ export function CanvasWorkspace({
               setActiveTool("eraser");
               setIsComparing(false);
             }}
-            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all shrink-0 cursor-pointer ${
+            className={`flex items-center justify-center rounded-lg px-3 py-1 text-xs font-semibold transition-all shrink-0 cursor-pointer ${
               activeTool === "eraser" && !isComparing
                 ? "bg-white text-stone-900 shadow-2xs border border-stone-200 font-bold"
                 : "text-stone-600 hover:text-stone-900"
             }`}
             title="Erase paint from window frames or furniture"
           >
-            <Eraser className="size-3.5 text-stone-500" />
             <span>Eraser</span>
           </button>
         </div>
@@ -1007,10 +999,10 @@ export function CanvasWorkspace({
         {!isComparing && (
           <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 pointer-events-none rounded-lg sm:rounded-xl bg-black/60 px-2.5 py-1 text-[10px] sm:text-[11px] font-medium text-white/95 backdrop-blur-md">
             {activeTool === "smart-fill"
-              ? "👉 Tap wall to paint"
+              ? "Tap wall to paint"
               : activeTool === "brush"
-              ? "🖌️ Drag to paint"
-              : "🧹 Drag to erase"}
+              ? "Drag to paint"
+              : "Drag to erase"}
           </div>
         )}
       </div>

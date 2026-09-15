@@ -121,6 +121,16 @@ function useInView(threshold = 0.15) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (typeof window === "undefined" || typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
+    // Check if already in or near viewport on mount
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight + 150 && rect.bottom > -150) {
+      setInView(true);
+      return;
+    }
     const obs = new IntersectionObserver(
       ([e]) => {
         if (e.isIntersecting) {
@@ -128,10 +138,19 @@ function useInView(threshold = 0.15) {
           obs.disconnect();
         }
       },
-      { threshold }
+      { threshold, rootMargin: "80px" }
     );
     obs.observe(el);
-    return () => obs.disconnect();
+
+    // Fallback: reveal after 600ms so content is never stuck hidden
+    const timer = setTimeout(() => {
+      setInView(true);
+    }, 600);
+
+    return () => {
+      obs.disconnect();
+      clearTimeout(timer);
+    };
   }, [threshold]);
   return { ref, inView };
 }
@@ -373,34 +392,36 @@ export function ProductCatalogSection() {
           </p>
         </div>
 
-        {/* 2 ── Mobile Grid: Small boxes like service (< 860px) */}
-        <div
-          ref={gridRef}
-          className="grid min-[860px]:hidden grid-cols-2 gap-2.5 sm:gap-3.5 max-w-xl mx-auto w-full px-1 justify-items-stretch"
-        >
-          {CATEGORIES.map((cat, i) => (
-            <MobileCategoryCard
-              key={cat.id}
-              cat={cat}
-              index={i}
-              inView={gridInView}
-              isLastOdd={i === CATEGORIES.length - 1 && CATEGORIES.length % 2 !== 0}
-            />
-          ))}
-        </div>
+        {/* 2 ── Product Grids Container (Wrapper ensures IntersectionObserver fires on desktop & mobile) */}
+        <div ref={gridRef} className="w-full">
+          {/* Mobile Grid: Small boxes like service (< 860px) */}
+          <div
+            className="grid min-[860px]:hidden grid-cols-2 gap-2.5 sm:gap-3.5 max-w-xl mx-auto w-full px-1 justify-items-stretch"
+          >
+            {CATEGORIES.map((cat, i) => (
+              <MobileCategoryCard
+                key={cat.id}
+                cat={cat}
+                index={i}
+                inView={gridInView}
+                isLastOdd={i === CATEGORIES.length - 1 && CATEGORIES.length % 2 !== 0}
+              />
+            ))}
+          </div>
 
-        {/* 3 ── Desktop Grid: Strictly 5 in a Row matching screenshot (>= 860px) */}
-        <div
-          className="hidden min-[860px]:grid min-[860px]:grid-cols-5 website-5-cols gap-2.5 sm:gap-3 lg:gap-3 xl:gap-3.5 max-w-[1360px] mx-auto w-full px-1 sm:px-0 justify-items-stretch"
-        >
-          {CATEGORIES.map((cat, i) => (
-            <CategoryCard
-              key={cat.id}
-              cat={cat}
-              index={i}
-              inView={gridInView}
-            />
-          ))}
+          {/* Desktop Grid: Strictly 5 in a Row matching screenshot (>= 860px) */}
+          <div
+            className="hidden min-[860px]:grid min-[860px]:grid-cols-5 website-5-cols gap-2.5 sm:gap-3 lg:gap-3 xl:gap-3.5 max-w-[1360px] mx-auto w-full px-1 sm:px-0 justify-items-stretch"
+          >
+            {CATEGORIES.map((cat, i) => (
+              <CategoryCard
+                key={cat.id}
+                cat={cat}
+                index={i}
+                inView={gridInView}
+              />
+            ))}
+          </div>
         </div>
 
         {/* 3 ── Browse Full Catalogue Button */}
