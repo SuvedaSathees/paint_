@@ -610,65 +610,105 @@ function ContactPage() {
           </div>
 
           {/* Row 2 Left (5 Cols): Direct WhatsApp Quick Card */}
-          <div className="col-span-5">
-            <div className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/80 via-white to-stone-50 p-5 shadow-sm space-y-3 h-full flex flex-col justify-between">
+          <div className="col-span-5 h-full">
+            <div className="rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-emerald-50/70 via-white to-stone-50/60 p-5 shadow-2xs hover:shadow-md transition-all h-full flex flex-col justify-between">
               <div>
-                <h4 className="font-bold text-stone-900 text-sm">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="inline-flex items-center gap-1.5 bg-emerald-100/90 text-emerald-800 border border-emerald-200/80 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                    <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Instant Desk Active</span>
+                  </div>
+                  <span className="text-[10.5px] text-stone-500 font-medium">
+                    Replies in ~5 mins
+                  </span>
+                </div>
+
+                <h4 className="font-serif text-lg font-bold text-stone-900 leading-tight">
                   Prefer Direct WhatsApp?
                 </h4>
-                <p className="text-xs text-stone-600 mt-1">
-                  Send wall photos, blueprint takeoffs, or paint shade codes.
+                <p className="text-xs text-stone-600 mt-1 leading-relaxed">
+                  Skip the form and connect directly with our technical showroom team for instant support.
                 </p>
+
+                {/* Helpful prompt chips */}
+                <div className="flex flex-wrap gap-1.5 mt-3.5">
+                  <span className="inline-flex items-center rounded-lg bg-white/90 border border-emerald-200/70 px-2.5 py-1 text-[11px] font-medium text-stone-700 shadow-2xs">
+                    📸 Room Wall Photos
+                  </span>
+                  <span className="inline-flex items-center rounded-lg bg-white/90 border border-emerald-200/70 px-2.5 py-1 text-[11px] font-medium text-stone-700 shadow-2xs">
+                    📋 Contractor BOQ
+                  </span>
+                  <span className="inline-flex items-center rounded-lg bg-white/90 border border-emerald-200/70 px-2.5 py-1 text-[11px] font-medium text-stone-700 shadow-2xs">
+                    🎨 Shade Tinting Inquiry
+                  </span>
+                </div>
               </div>
-              <Button
-                asChild
-                className="w-full justify-center rounded-full bg-[#25D366] hover:bg-[#20BD5A] text-white font-semibold text-xs h-10 cursor-pointer shadow-[0_2px_10px_rgba(37,211,102,0.3)] transition-all hover:scale-[1.01]"
-              >
-                <a
-                  href="https://wa.me/919443722255?text=Hello%20Akshara%20Paints%20%26%20Hardware,%20I%20would%20like%20to%20request%20a%20quote%20for%20my%20project."
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center justify-center text-center"
+
+              <div className="pt-4 mt-3 border-t border-emerald-100/80">
+                <Button
+                  asChild
+                  className="w-full justify-center rounded-full bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold text-xs h-10 cursor-pointer shadow-[0_4px_14px_rgba(37,211,102,0.28)] transition-all hover:scale-[1.01] active:scale-[0.99]"
                 >
-                  <span>Chat on WhatsApp (+91 94437 22255)</span>
-                </a>
-              </Button>
+                  <a
+                    href="https://wa.me/919443722255?text=Hello%20Akshara%20Paints%20%26%20Hardware,%20I%20would%20like%20to%20request%20a%20quote%20for%20my%20project."
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-center gap-2"
+                  >
+                    <WhatsAppIcon className="size-4 shrink-0 fill-white" />
+                    <span>Chat on WhatsApp (+91 94437 22255)</span>
+                  </a>
+                </Button>
+              </div>
             </div>
           </div>
 
           {/* Row 2 Right (7 Cols): Google Maps Embed & Location Details */}
-          <div className="col-span-7">
-            <div className="rounded-2xl border border-stone-200/90 bg-white p-3.5 shadow-sm h-full flex items-center gap-4">
-              <div className="flex-1 space-y-1.5 px-2 w-full">
-                <div className="flex items-center gap-1.5 text-[#F05323]">
-                  <MapPin className="size-3.5" />
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-stone-500">
-                    Live GPS Location
+          <div className="col-span-7 h-full">
+            <div className="rounded-2xl border border-stone-200/90 bg-white p-4 sm:p-5 shadow-2xs hover:shadow-md transition-all h-full flex flex-col sm:flex-row items-stretch gap-4">
+              <div className="flex-1 flex flex-col justify-between space-y-2">
+                <div>
+                  <div className="flex items-center gap-1.5 text-[#F05323] mb-1">
+                    <MapPin className="size-3.5 shrink-0" />
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#D97706]">
+                      Live Showroom Location
+                    </span>
+                  </div>
+                  <h4 className="font-serif text-lg font-bold text-stone-900 leading-tight">
+                    Flagship Showroom &amp; Color Lab
+                  </h4>
+                  <p className="text-xs text-stone-600 leading-relaxed mt-1">
+                    Plot 42, Highway Bypass Rd, Opp. Collectorate Ring, Erode – 638002
+                  </p>
+                  <div className="mt-2 text-[11px] text-stone-500 font-medium">
+                    <span className="text-stone-700 font-semibold">Timings:</span> Mon – Sat: 8:30 AM – 8:30 PM
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-stone-100 flex items-center justify-between gap-2">
+                  <a
+                    href="https://maps.google.com/?q=Akshara+Paints+and+Hardware+Erode"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-800 text-xs font-semibold px-3.5 py-1.5 transition-all shadow-2xs"
+                  >
+                    <span>Get Directions</span>
+                    <ExternalLink className="size-3" />
+                  </a>
+                  <span className="text-[10.5px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">
+                    Customer Parking Available
                   </span>
                 </div>
-                <h4 className="font-bold text-stone-900 text-sm">
-                  Flagship Showroom &amp; Color Lab
-                </h4>
-                <p className="text-xs text-stone-600 leading-relaxed">
-                  Plot 42, Highway Bypass Rd, Opp. Collectorate Ring, Erode – 638002
-                </p>
-                <a
-                  href="https://maps.google.com/?q=Akshara+Paints+and+Hardware+Erode"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs font-bold text-stone-900 hover:text-[#F05323] inline-flex items-center gap-1 pt-0.5 group"
-                >
-                  <span>Open in Google Maps</span>
-                  <ExternalLink className="size-3 transition-transform group-hover:translate-x-0.5" />
-                </a>
               </div>
-              <div className="w-[260px] h-[115px] rounded-xl overflow-hidden border border-stone-200 shrink-0">
+
+              <div className="w-full sm:w-[280px] lg:w-[310px] h-[170px] sm:h-auto min-h-[170px] rounded-xl overflow-hidden border border-stone-200/90 shadow-inner shrink-0 relative">
                 <iframe
                   title="Akshara Paints & Hardware – Erode Location Map"
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3912.0!2d77.7272!3d11.3424!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTHCsDIwJzMyLjYiTiA3N8KwNDMnMzguMCJF!5e0!3m2!1sen!2sin!4v1699999999999!5m2!1sen!2sin"
                   width="100%"
                   height="100%"
-                  style={{ border: 0, display: "block" }}
+                  className="w-full h-full object-cover"
+                  style={{ border: 0, minHeight: "170px" }}
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
