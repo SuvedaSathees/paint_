@@ -4,7 +4,6 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import {
-  BookOpen,
   Calendar,
   Clock,
   ArrowRight,
@@ -14,7 +13,6 @@ import {
   CheckCircle2,
   ShieldCheck,
   Zap,
-  Layers,
   Phone,
   Share2,
   Sparkles,
@@ -1280,11 +1278,23 @@ function BlogPage() {
     );
   }
 
-  const categories: { id: BlogCategory; label: string }[] = [
-    { id: "all", label: "All" },
-    { id: "paints", label: "Birla Paints" },
-    { id: "pipes", label: "Conduit Pipes" },
-    { id: "fasteners", label: "Fasteners" },
+  const categories = [
+    { id: "all" as const, label: "All", count: articlesData.length },
+    {
+      id: "paints" as const,
+      label: "Birla Paints",
+      count: articlesData.filter((a) => a.category === "paints").length,
+    },
+    {
+      id: "pipes" as const,
+      label: "Conduit Pipes",
+      count: articlesData.filter((a) => a.category === "pipes").length,
+    },
+    {
+      id: "fasteners" as const,
+      label: "Fasteners",
+      count: articlesData.filter((a) => a.category === "fasteners").length,
+    },
   ];
 
   const featuredArticle: Article = articlesData.find((a) => a.featured) ?? articlesData[0]!;
@@ -1314,77 +1324,75 @@ function BlogPage() {
           </span>
 
           {/* Centered Serif Main Heading */}
-          <h1 className="font-display font-serif text-2xl sm:text-5xl lg:text-6xl tracking-tight text-primary font-normal leading-tight mb-1.5 sm:mb-5">
+          <h1 className="font-display font-serif text-2xl sm:text-5xl lg:text-6xl tracking-tight text-primary font-normal leading-tight mb-1.5 sm:mb-4">
             Knowledge &amp; Insights
           </h1>
 
           {/* Centered Subtitle Paragraph */}
-          <p className="text-xs sm:text-sm md:text-[15px] text-muted-foreground tracking-wide leading-relaxed max-w-xl mx-auto">
-            Practical engineering guides, Birla Opus shade theory, waterproofing chemistry, and electrical standards by technical specialists.
+          <p className="text-xs sm:text-sm md:text-[15px] text-muted-foreground tracking-wide leading-relaxed max-w-2xl mx-auto">
+            Practical engineering guides, Birla Opus shade theory, waterproofing chemistry, and electrical conduit compliance &mdash; authored by Akshara&apos;s technical specialists and site consultants.
           </p>
 
-          {/* Centered Authority Badges (Hidden on mobile to eliminate clutter) */}
-          <div className="hidden sm:flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-[11px] sm:text-xs font-semibold text-muted-foreground select-none mt-6">
-            <span className="inline-flex items-center gap-1.5">
-              <BookOpen className="size-3.5 text-accent" /> 25+ Technical Publications
-            </span>
-            <span className="hidden sm:inline opacity-40">&bull;</span>
-            <span className="inline-flex items-center gap-1.5">
-              <ShieldCheck className="size-3.5 text-emerald-600" /> IS:9537 Electrical Codes
-            </span>
-            <span className="hidden sm:inline opacity-40">&bull;</span>
-            <span className="inline-flex items-center gap-1.5">
-              <Zap className="size-3.5 text-primary" /> Birla Opus Color Studio
-            </span>
-            <span className="hidden sm:inline opacity-40">&bull;</span>
-            <span className="inline-flex items-center gap-1.5">
-              <Layers className="size-3.5 text-accent" /> Field Tested Applicator SOPs
-            </span>
+          {/* Clean Authority Metadata Strip */}
+          <div className="hidden sm:flex items-center justify-center gap-4 sm:gap-6 text-[11px] sm:text-xs font-semibold text-stone-500 mt-4 select-none">
+            <span>25+ Technical Publications</span>
+            <span className="opacity-30">&bull;</span>
+            <span>IS:9537 Electrical Codes</span>
+            <span className="opacity-30">&bull;</span>
+            <span>Birla Opus Color Studio</span>
+            <span className="opacity-30">&bull;</span>
+            <span>Field-Tested Applicator SOPs</span>
           </div>
 
-          {/* Combined Search & Segmented Category Filter (Single-Row Horizontal Scroll on Mobile) */}
-          <div className="mt-4 sm:mt-7 flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-3 w-full max-w-5xl mx-auto">
-            {/* Search Input Bar */}
-            <div className="relative w-full md:w-64 lg:w-72 shrink-0">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-3.5 text-stone-400 pointer-events-none" />
+          {/* Controls Level 1: Centered Luxury Search Bar */}
+          <div className="mt-5 sm:mt-7 max-w-lg mx-auto w-full">
+            <div className="relative w-full">
+              <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 size-3.5 sm:size-4 text-stone-400 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search guides, standards..."
-                className="w-full h-9 sm:h-[40px] rounded-full border border-stone-200/90 bg-white/95 pl-9 pr-9 text-xs sm:text-[13px] text-foreground placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-2xs hover:border-stone-300"
+                placeholder="Search technical guides, standards, or materials..."
+                className="w-full h-10 sm:h-11 rounded-full border border-stone-200/90 bg-white/95 pl-10 sm:pl-11 pr-10 text-xs sm:text-sm text-foreground placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-2xs hover:border-stone-300"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-700 cursor-pointer font-medium"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-stone-400 hover:text-stone-800 cursor-pointer p-1"
                 >
                   Clear
                 </button>
               )}
             </div>
+          </div>
 
-            {/* Discrete Category Filter Chips (Single-Row Horizontal Scroll on Mobile) */}
-            <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1 px-1 justify-start sm:justify-center max-w-4xl mx-auto w-full sm:w-auto">
-              {categories.map((cat) => {
-                const isActive = selectedCategory === cat.id;
-                return (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`h-[30px] sm:h-[34px] rounded-full px-3.5 sm:px-4 text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center shrink-0 border ${
-                      isActive
-                        ? "bg-[#0A2234] text-white border-[#0A2234] shadow-xs"
-                        : "bg-white/95 text-stone-600 border-stone-200/90 hover:text-stone-950 hover:bg-stone-50 hover:border-stone-300 shadow-2xs"
+          {/* Controls Level 2: Discrete Category Filter Chips (Single-Row Horizontal Scroll on Mobile) */}
+          <div className="mt-3 sm:mt-4 flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1 px-1 justify-start sm:justify-center max-w-4xl mx-auto">
+            {categories.map((cat) => {
+              const isActive = selectedCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`h-[30px] sm:h-[34px] rounded-full px-3.5 sm:px-4 text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center shrink-0 border ${
+                    isActive
+                      ? "bg-[#0A2234] text-white border-[#0A2234] shadow-xs"
+                      : "bg-white/95 text-stone-600 border-stone-200/90 hover:text-stone-950 hover:bg-stone-50 hover:border-stone-300 shadow-2xs"
+                  }`}
+                >
+                  <span>{cat.label}</span>
+                  <span
+                    className={`ml-1.5 text-[10px] font-mono ${
+                      isActive ? "text-white/80 font-bold" : "text-stone-400"
                     }`}
                   >
-                    {cat.label}
-                  </button>
-                );
-              })}
-            </div>
+                    ({cat.count})
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
