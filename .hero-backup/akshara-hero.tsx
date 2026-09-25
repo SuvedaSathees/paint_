@@ -1,24 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteFooter } from "@/components/site-footer";
 import { HomeContent } from "@/components/home-content";
 import { SiteHeader, navItems as heroNavItems } from "@/components/site-header";
-import { createRollerReveal } from "@/components/paint-roller-reveal";
 
 export { heroNavItems };
 
 const SCROLL_DISTANCE = 3800;
-
-const DESKTOP_STATS = [
-  { value: 5000, suffix: "+", label: "Colours in Stock" },
-  { value: 15, suffix: "+", label: "Years in Erode" },
-  { value: 1200, suffix: "+", label: "Projects Done" },
-  { value: 98, suffix: "%", label: "Satisfaction" },
-] as const;
-
-const formatStat = (n: number) => Math.round(n).toLocaleString("en-IN");
 
 function HeroNav({ onNavigate }: { onNavigate: (toEnd: boolean) => void }) {
   return (
@@ -35,8 +26,6 @@ export function AksharaHero() {
   const desktopFrameRef = useRef<HTMLElement>(null);
   const desktopVideoRef = useRef<HTMLVideoElement>(null);
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
-  const wallCanvasRef = useRef<HTMLCanvasElement>(null);
-  const rollerRef = useRef<HTMLDivElement>(null);
   const [isAnimationEnded, setIsAnimationEnded] = useState(false);
 
   useEffect(() => {
@@ -87,8 +76,6 @@ export function AksharaHero() {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduceMotion) {
       rootRef.current.classList.add("is-reduced-motion");
-      if (wallCanvasRef.current) wallCanvasRef.current.style.display = "none";
-      if (rollerRef.current) rollerRef.current.style.display = "none";
       if (desktopVideoRef.current) {
         desktopVideoRef.current.currentTime = 4.5;
       }
@@ -145,59 +132,7 @@ export function AksharaHero() {
         video.addEventListener("seeked", handleSeeked);
       }
 
-      // ==========================================================
-      // OPENING: a real paint roller paints the scene onto the wall
-      // ==========================================================
-      const reveal =
-        wallCanvasRef.current && rollerRef.current
-          ? createRollerReveal({ canvas: wallCanvasRef.current, roller: rollerRef.current, passes: 3 })
-          : null;
-      const rollerState = { p: 0 };
-      const PASSES = 3;
-
-      gsap.set(".hero-badge", { clipPath: "inset(0% 100% 0% 0%)" });
-      gsap.set(".hero-wet-title", { clipPath: "inset(-20% 100% -20% 0%)", y: 10 });
-      gsap.set(".scroll-cue-inner", { opacity: 0, y: 12 });
-
-      const opening = gsap.timeline({ delay: 0.35 });
-      for (let i = 0; i < PASSES; i++) {
-        opening.to(
-          rollerState,
-          {
-            p: (i + 1) / PASSES,
-            duration: 0.78,
-            ease: "power1.inOut",
-            onUpdate: () => reveal?.render(rollerState.p),
-          },
-          i === 0 ? 0 : ">+0.06"
-        );
-      }
-      opening
-        .to(".hero-badge", { clipPath: "inset(0% 0% 0% 0%)", duration: 0.55, ease: "power2.out" }, ">-0.1")
-        .to(
-          ".hero-wet-title",
-          { clipPath: "inset(-20% 0% -20% 0%)", y: 0, duration: 0.9, ease: "power3.inOut" },
-          ">-0.25"
-        )
-        .to(".scroll-cue-inner", { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, ">-0.3");
-
-      // Visitor wants in: fast-forward the opening instead of making them wait
-      const skipOpening = () => {
-        if (opening.progress() < 1) opening.timeScale(6);
-      };
-      if (window.scrollY > 20 || window.location.hash === "#finale") {
-        opening.progress(1);
-        reveal?.finish();
-      }
-      window.addEventListener("wheel", skipOpening, { passive: true, once: true });
-      window.addEventListener("keydown", skipOpening, { once: true });
-      window.addEventListener("pointerdown", skipOpening, { once: true });
-
       const videoTrack = { progress: 0 };
-      const statNodes = Array.from(
-        desktopFrameRef.current?.querySelectorAll<HTMLElement>("[data-stat-target]") ?? []
-      );
-      const statCounter = { value: 0 };
 
       const timeline = gsap.timeline({
         scrollTrigger: {
@@ -248,53 +183,18 @@ export function AksharaHero() {
         // Stage 04: Soft backdrop illumination
         .to(".scene-wash", { opacity: 0.45, duration: 1.0 }, 2.8)
 
-        // Stage 05: Three primer-white brush strokes are painted on behind the copy
-        .fromTo(
-          ".hero-primer-stroke",
-          { clipPath: "inset(0% 100% 0% 0%)" },
-          { clipPath: "inset(0% 0% 0% 0%)", stagger: 0.14, duration: 0.55, ease: "power2.inOut" },
-          3.05
-        )
-
-        // Stage 06: Finale composition
+        // Stage 05: Finale composition
         .fromTo(
           ".final-copy > *",
           { opacity: 0, y: 35 },
           { opacity: 1, y: 0, stagger: 0.12, duration: 0.75, ease: "power3.out" },
           3.5
-        )
-        // Orange brush stroke swipes under "Paints,"
-        .fromTo(
-          ".final-paint-swipe",
-          { clipPath: "inset(0% 100% 0% 0%)" },
-          { clipPath: "inset(0% 0% 0% 0%)", duration: 0.55, ease: "power2.inOut" },
-          3.85
-        )
-        // Trust stats count up
-        .fromTo(
-          statCounter,
-          { value: 0 },
-          {
-            value: 1,
-            duration: 0.8,
-            ease: "power2.out",
-            onUpdate: () => {
-              statNodes.forEach((node) => {
-                node.textContent = formatStat(Number(node.dataset.statTarget || 0) * statCounter.value);
-              });
-            },
-          },
-          4.0
         );
 
       return () => {
         if (video) {
           video.removeEventListener("seeked", handleSeeked);
         }
-        reveal?.destroy();
-        window.removeEventListener("wheel", skipOpening);
-        window.removeEventListener("keydown", skipOpening);
-        window.removeEventListener("pointerdown", skipOpening);
       };
     });
 
@@ -504,12 +404,12 @@ export function AksharaHero() {
         <div className="scene-wash absolute inset-0 bg-background/88 opacity-0 pointer-events-none transition-opacity duration-300" />
         <div className="camera-halo absolute left-[60%] top-[42%] size-[min(62vw,800px)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-studio-white/70 opacity-40 blur-3xl pointer-events-none" />
 
-        {/* Initial Stage Intro Copy: brushed-on badge + wet-paint title */}
-        <div className="intro-copy absolute left-1/2 top-[calc(1rem+22px)] sm:top-[calc(1.5rem+22px)] z-20 w-max max-w-[96vw] -translate-x-1/2 px-2 sm:px-4 text-center pointer-events-none">
-          <p className="hero-badge mx-auto mb-2 w-max px-6 py-1.5 text-[0.62rem] sm:text-[0.7rem] font-black uppercase tracking-[0.26em] text-white whitespace-nowrap">
+        {/* Initial Stage Intro Copy */}
+        <div className="intro-copy absolute left-1/2 top-[calc(1rem+25px)] sm:top-[calc(1.5rem+25px)] z-20 w-max max-w-[96vw] -translate-x-1/2 px-2 sm:px-4 text-center pointer-events-none">
+          <p className="mb-1 text-[0.68rem] sm:text-xs font-black uppercase tracking-[0.26em] text-[#E03A00] whitespace-nowrap">
             Authorised Birla Opus Dealer &middot; Erode
           </p>
-          <h1 className="hero-wet-title font-display text-[clamp(1.1rem,3.1vw,2.35rem)] font-bold leading-tight tracking-[0.03em] whitespace-nowrap">
+          <h1 className="font-display text-[clamp(1.1rem,3.1vw,2.35rem)] font-bold leading-tight tracking-[0.03em] text-primary drop-shadow-[0_2px_10px_rgba(255,255,255,0.85)] whitespace-nowrap">
             AKSHARA PAINTS &amp; HARDWARE
           </h1>
         </div>
@@ -528,23 +428,6 @@ export function AksharaHero() {
           />
         </div>
 
-        {/* Finale backdrop: three primer-white brush strokes painted on behind the copy */}
-        <div aria-hidden="true" className="hero-primer pointer-events-none absolute left-[-3vw] top-1/2 z-30 w-[min(50vw,720px)] -translate-y-1/2">
-          <span className="hero-primer-stroke" />
-          <span className="hero-primer-stroke" />
-          <span className="hero-primer-stroke" />
-        </div>
-
-        {/* Opening: primed wall that the paint roller paints away */}
-        <canvas
-          ref={wallCanvasRef}
-          aria-hidden="true"
-          className="hero-wall pointer-events-none absolute inset-0 z-[70] h-full w-full"
-        />
-        <div ref={rollerRef} aria-hidden="true" className="hero-roller pointer-events-none absolute left-0 top-0 z-[71]">
-          <img src="/akshara-roller-side.png" alt="" draggable={false} className="h-full w-full select-none" />
-        </div>
-
         {/* Finale: Brand Message & CTA Buttons */}
         <div
           id="finale"
@@ -554,11 +437,7 @@ export function AksharaHero() {
             &mdash; AUTHORISED BIRLA OPUS DEALER &middot; ERODE &mdash;
           </p>
           <h2 className="text-balance font-display text-[clamp(2.1rem,4.5vw,4.1rem)] font-serif font-semibold leading-[0.96] text-primary opacity-0">
-            <span className="relative inline-block">
-              <span aria-hidden="true" className="final-paint-swipe" />
-              <span className="relative">Paints,</span>
-            </span>{" "}
-            Electrical &amp; Construction Supplies.
+            Paints, Electrical &amp; Construction Supplies.
           </h2>
           <p className="mt-3.5 max-w-md text-sm leading-relaxed text-[#0E2838] font-semibold opacity-0 sm:text-[0.95rem] drop-shadow-[0_1px_0_rgba(255,255,255,0.35)]">
             From signature Birla Opus computerized color tinting to ISI rigid conduit pipes, industrial fasteners, and site hardware supplies &mdash; delivered direct to your job site in Erode.
@@ -576,22 +455,40 @@ export function AksharaHero() {
             </Button>
           </div>
 
-          {/* Compact Trust Stats Row (numbers count up as the finale lands) */}
+          {/* Compact Trust Stats Row */}
           <div className="mt-5 pt-4 border-t border-primary/12 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-lg opacity-0">
-            {DESKTOP_STATS.map((stat, i) => (
-              <div
-                key={stat.label}
-                className={`flex flex-col ${i > 0 ? "sm:border-l sm:border-primary/10 sm:pl-3" : ""}`}
-              >
-                <span className="font-display text-base sm:text-lg font-bold text-primary leading-tight tabular-nums">
-                  <span data-stat-target={stat.value}>{formatStat(stat.value)}</span>
-                  {stat.suffix}
-                </span>
-                <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
-                  {stat.label}
-                </span>
-              </div>
-            ))}
+            <div className="flex flex-col">
+              <span className="font-display text-base sm:text-lg font-bold text-primary leading-tight">
+                5000+
+              </span>
+              <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
+                Colours in Stock
+              </span>
+            </div>
+            <div className="flex flex-col sm:border-l sm:border-primary/10 sm:pl-3">
+              <span className="font-display text-base sm:text-lg font-bold text-primary leading-tight">
+                15+
+              </span>
+              <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
+                Years in Erode
+              </span>
+            </div>
+            <div className="flex flex-col sm:border-l sm:border-primary/10 sm:pl-3">
+              <span className="font-display text-base sm:text-lg font-bold text-primary leading-tight">
+                1200+
+              </span>
+              <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
+                Projects Done
+              </span>
+            </div>
+            <div className="flex flex-col sm:border-l sm:border-primary/10 sm:pl-3">
+              <span className="font-display text-base sm:text-lg font-bold text-primary leading-tight">
+                98%
+              </span>
+              <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground mt-0.5">
+                Satisfaction
+              </span>
+            </div>
           </div>
         </div>
 
@@ -599,13 +496,11 @@ export function AksharaHero() {
         <button
           type="button"
           onClick={() => handleNavigate(true)}
-          className="scroll-cue absolute bottom-3 sm:bottom-4 left-1/2 z-40 -translate-x-1/2 cursor-pointer"
+          className="scroll-cue absolute bottom-3 sm:bottom-4 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full bg-white/80 backdrop-blur-md px-3.5 py-1.5 border border-stone-200/80 shadow-xs text-primary cursor-pointer hover:bg-white transition-all"
           aria-label="Scroll to discover"
         >
-          <span className="scroll-cue-inner flex items-center gap-2 rounded-full bg-white/85 backdrop-blur-md px-3.5 py-1.5 border border-stone-200/80 shadow-xs text-primary hover:bg-white transition-colors">
-            <span className="text-[0.6rem] font-bold uppercase tracking-[0.2em]">Scroll to discover</span>
-            <span aria-hidden="true" className="scroll-drip" />
-          </span>
+          <span className="text-[0.6rem] font-bold uppercase tracking-[0.2em]">Scroll to discover</span>
+          <ArrowDown className="size-3 animate-bounce text-accent" />
         </button>
       </section>
 

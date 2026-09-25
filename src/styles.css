@@ -424,4 +424,168 @@
   .website-5-cols {
     grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
   }
-}
+}
+/* ==========================================================================
+   DESKTOP HERO — real paint reveal
+   ========================================================================== */
+
+/* Primed wall that the roller paints away (solid until the canvas takes over) */
+.hero-wall {
+  background: #eceef1;
+}
+
+.hero-roller {
+  opacity: 0;
+  will-change: transform;
+  filter: drop-shadow(0 18px 22px rgba(14, 28, 44, 0.28)) drop-shadow(0 4px 6px rgba(14, 28, 44, 0.18));
+}
+
+/* Badge brushed on with a real orange paint stroke */
+.hero-badge {
+  background: linear-gradient(90deg, #e2491a, #f26438 55%, #f08a2a);
+  -webkit-mask: url("/akshara-brush-mask.png") center / 100% 100% no-repeat;
+  mask: url("/akshara-brush-mask.png") center / 100% 100% no-repeat;
+  text-shadow: 0 1px 1px rgba(120, 30, 0, 0.35);
+}
+
+/* Title in glossy wet paint: deep navy with a highlight that glides across */
+.hero-wet-title {
+  color: transparent;
+  background-image:
+    linear-gradient(
+      105deg,
+      transparent 0%,
+      transparent 42%,
+      rgba(255, 255, 255, 0.9) 49%,
+      rgba(255, 255, 255, 0.9) 51%,
+      transparent 58%,
+      transparent 100%
+    ),
+    linear-gradient(180deg, #1c3a66 0%, #0e2346 55%, #0a1a36 100%);
+  background-size: 260% 100%, 100% 100%;
+  background-position: 130% 0, 0 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.9)) drop-shadow(0 6px 14px rgba(14, 35, 70, 0.18));
+  animation: wetGloss 5.5s cubic-bezier(0.45, 0, 0.2, 1) 3.4s infinite;
+}
+
+@keyframes wetGloss {
+  0% {
+    background-position: 130% 0, 0 0;
+  }
+  45%,
+  100% {
+    background-position: -30% 0, 0 0;
+  }
+}
+
+/* Finale backdrop — three primer-white brush strokes */
+.hero-primer {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.hero-primer-stroke {
+  display: block;
+  height: clamp(150px, 21vh, 200px);
+  margin-top: clamp(-52px, -5vh, -36px);
+  background: rgba(247, 248, 250, 0.93);
+  -webkit-mask: url("/akshara-brush-mask.png") center / 100% 100% no-repeat;
+  mask: url("/akshara-brush-mask.png") center / 100% 100% no-repeat;
+  clip-path: inset(0% 100% 0% 0%);
+}
+
+.hero-primer-stroke:first-child {
+  margin-top: 0;
+}
+
+.hero-primer-stroke:nth-child(2) {
+  margin-left: 2vw;
+  transform: scaleX(1.04) rotate(-0.6deg);
+}
+
+.hero-primer-stroke:nth-child(3) {
+  width: 92%;
+  transform: rotate(0.5deg);
+}
+
+/* Orange brush swipe under "Paints," */
+.final-paint-swipe {
+  position: absolute;
+  left: -6%;
+  right: -8%;
+  bottom: 0.04em;
+  height: 0.42em;
+  background: linear-gradient(90deg, #e2491a, #f26438 60%, #f5a13a);
+  -webkit-mask: url("/akshara-brush-mask.png") center / 100% 100% no-repeat;
+  mask: url("/akshara-brush-mask.png") center / 100% 100% no-repeat;
+  opacity: 0.85;
+  clip-path: inset(0% 100% 0% 0%);
+}
+
+/* Scroll cue — a paint drip */
+.scroll-drip {
+  position: relative;
+  width: 6px;
+  height: 12px;
+}
+
+.scroll-drip::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 2px;
+  margin-left: -1px;
+  height: 100%;
+  border-radius: 2px;
+  background: #f05323;
+  transform-origin: top;
+  animation: dripLine 1.9s cubic-bezier(0.6, 0, 0.3, 1) infinite;
+}
+
+.scroll-drip::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 6px;
+  height: 7px;
+  margin-left: -3px;
+  border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+  background: #f05323;
+  animation: dripDrop 1.9s cubic-bezier(0.6, 0, 0.3, 1) infinite;
+}
+
+@keyframes dripLine {
+  0% { transform: scaleY(0); opacity: 1; }
+  55% { transform: scaleY(0.75); opacity: 1; }
+  100% { transform: scaleY(0.75); opacity: 0; }
+}
+
+@keyframes dripDrop {
+  0% { transform: translateY(-2px) scale(0.6); opacity: 0; }
+  20% { opacity: 1; }
+  55% { transform: translateY(6px) scale(1); opacity: 1; }
+  100% { transform: translateY(14px) scale(0.9); opacity: 0; }
+}
+
+/* Reduced motion: final states, no reveal */
+.is-reduced-motion .hero-wall,
+.is-reduced-motion .hero-roller {
+  display: none;
+}
+
+.is-reduced-motion .hero-badge,
+.is-reduced-motion .hero-wet-title,
+.is-reduced-motion .hero-primer-stroke,
+.is-reduced-motion .final-paint-swipe {
+  clip-path: none !important;
+}
+
+.is-reduced-motion .final-copy > * {
+  opacity: 1 !important;
+}
