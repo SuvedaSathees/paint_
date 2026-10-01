@@ -505,7 +505,7 @@ export function AksharaHero() {
         <div className="camera-halo absolute left-[60%] top-[42%] size-[min(62vw,800px)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-studio-white/70 opacity-40 blur-3xl pointer-events-none" />
 
         {/* Initial Stage Intro Copy: brushed-on badge + wet-paint title */}
-        <div className="intro-copy absolute left-1/2 top-[calc(1rem+22px)] sm:top-[calc(1.5rem+22px)] z-20 w-max max-w-[96vw] -translate-x-1/2 px-2 sm:px-4 text-center pointer-events-none">
+        <div className="intro-copy absolute left-1/2 top-[calc(1rem+12px)] sm:top-[calc(1.5rem+12px)] z-20 w-max max-w-[96vw] -translate-x-1/2 px-2 sm:px-4 text-center pointer-events-none">
           <p className="hero-badge mx-auto mb-2 w-max px-6 py-1.5 text-[0.62rem] sm:text-[0.7rem] font-black uppercase tracking-[0.26em] text-white whitespace-nowrap">
             Authorised Birla Opus Dealer &middot; Erode
           </p>
