@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { HelpStrip } from "@/components/help-strip";
+import { ArrowLeft, Search, Truck } from "lucide-react";
+import { whatsappLink } from "@/lib/store-info";
 
 export const Route = createFileRoute("/products")({
   head: () => ({
@@ -722,120 +724,192 @@ const catalogCategories: CategoryItem[] = [
   },
 ];
 
+type CartItem = {
+  id: string;
+  title: string;
+  categoryTitle: string;
+  image: string;
+  qty: number;
+};
+
+const CART_KEY = "akshara-cart";
+
+function readCart(): CartItem[] {
+  try {
+    const raw = window.localStorage.getItem(CART_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function buildOrderMessage(items: CartItem[], note: string) {
+  const lines = items.map((it, i) => `${i + 1}. ${it.title} (${it.categoryTitle}) x ${it.qty}`);
+  return [
+    "Hello Akshara Paints, I would like to order:",
+    "",
+    ...lines,
+    ...(note.trim() ? ["", `Note: ${note.trim()}`] : []),
+    "",
+    "Please share price, stock and delivery details.",
+  ].join("\n");
+}
+
 function ProductsPage() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cartReady, setCartReady] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [note, setNote] = useState("");
+
+  // Keep the cart between visits (browser storage; safe if unavailable)
+  useEffect(() => {
+    setCart(readCart());
+    setCartReady(true);
+  }, []);
+  useEffect(() => {
+    if (!cartReady) return;
+    try {
+      window.localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    } catch {
+      /* storage blocked — cart still works for this visit */
+    }
+  }, [cart, cartReady]);
+
+  const cartCount = cart.reduce((n, it) => n + it.qty, 0);
+  const qtyOf = (id: string) => cart.find((it) => it.id === id)?.qty ?? 0;
+  const addToCart = (item: Omit<CartItem, "qty">) =>
+    setCart((prev) =>
+      prev.some((it) => it.id === item.id)
+        ? prev.map((it) => (it.id === item.id ? { ...it, qty: it.qty + 1 } : it))
+        : [...prev, { ...item, qty: 1 }],
+    );
+  const changeQty = (id: string, delta: number) =>
+    setCart((prev) =>
+      prev.flatMap((it) => (it.id !== id ? [it] : it.qty + delta <= 0 ? [] : [{ ...it, qty: it.qty + delta }])),
+    );
+  const removeItem = (id: string) => setCart((prev) => prev.filter((it) => it.id !== id));
 
   const activeCategory = catalogCategories.find((c) => c.id === selectedCategoryId);
 
-  // Top-level categories filtering for State A
-  const filteredCategories = catalogCategories.filter((cat) => {
-    const q = searchQuery.toLowerCase().trim();
-    if (q === "") return true;
-
-    const matchesCat =
-      cat.title.toLowerCase().includes(q) ||
-      cat.description.toLowerCase().includes(q) ||
-      cat.highlight.toLowerCase().includes(q);
-
-    const matchesSub = cat.subcategories.some(
-      (sub) =>
+  // Every product range, with its category; "All" shows all of them, a chip shows one category
+  const q = searchQuery.toLowerCase().trim();
+  const visibleProducts = catalogCategories
+    .filter((cat) => !activeCategory || cat.id === activeCategory.id)
+    .flatMap((cat) => cat.subcategories.map((sub) => ({ cat, sub })))
+    .filter(
+      ({ cat, sub }) =>
+        q === "" ||
         sub.title.toLowerCase().includes(q) ||
         sub.description.toLowerCase().includes(q) ||
         sub.highlight.toLowerCase().includes(q) ||
-        sub.specs.toLowerCase().includes(q)
+        sub.specs.toLowerCase().includes(q) ||
+        cat.title.toLowerCase().includes(q) ||
+        cat.shortTitle.toLowerCase().includes(q),
     );
 
-    return matchesCat || matchesSub;
-  });
-
-  // Active category's subcategories filtering for State B
-  const filteredSubcategories = activeCategory
-    ? activeCategory.subcategories.filter((sub) => {
-        const q = searchQuery.toLowerCase().trim();
-        if (q === "") return true;
-        return (
-          sub.title.toLowerCase().includes(q) ||
-          sub.description.toLowerCase().includes(q) ||
-          sub.highlight.toLowerCase().includes(q) ||
-          sub.specs.toLowerCase().includes(q)
-        );
-      })
-    : [];
+  // Product cut-outs (.png) are shown whole on a soft backdrop; photos (.jpg) fill the frame
+  const imgFit = (src: string) =>
+    src.endsWith(".png")
+      ? "absolute inset-0 size-full object-contain p-3 transition-transform duration-500 group-hover:scale-[1.05]"
+      : "absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-[1.05]";
+  const dots = (text: string) => text.replace(/\s*\|\s*|\s+\/\s+/g, " · ");
+  const openCategory = (id: string | null) => {
+    setSelectedCategoryId(id);
+    setSearchQuery("");
+  };
+  const query = searchQuery.trim();
+  const gridHeading = query ? `Results for “${query}”` : activeCategory ? activeCategory.shortTitle : "All products";
+  const gridCount = `${visibleProducts.length} ${visibleProducts.length === 1 ? "product" : "products"}`;
+  const chips = [{ id: null as string | null, label: "All" }, ...catalogCategories.map((c) => ({ id: c.id as string | null, label: c.shortTitle }))];
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SiteHeader />
 
-      {/* Hero Header Section */}
-      <section className="relative pt-10 sm:pt-16 pb-5 sm:pb-14 px-3 sm:px-6 border-b border-primary/10 overflow-hidden bg-gradient-to-b from-stone-50/80 via-white to-background">
-        <div className="absolute left-1/2 -top-28 -translate-x-1/2 size-[650px] rounded-full bg-radial from-accent/12 via-primary/5 to-transparent blur-3xl pointer-events-none" />
+      {/* Page header: title on the left, search on the right, filters below */}
+      <section className="px-4 sm:px-7 lg:px-10 pt-7 sm:pt-14 pb-5 sm:pb-10 border-b border-stone-200/70">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+            <div className="min-w-0 text-center lg:text-left">
+              {activeCategory ? (
+                <button
+                  type="button"
+                  onClick={() => openCategory(null)}
+                  className="group inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.22em] text-[#F05323] cursor-pointer"
+                >
+                  <ArrowLeft className="size-3.5 transition-transform group-hover:-translate-x-0.5" />
+                  All categories
+                </button>
+              ) : (
+                <p className="flex items-center justify-center lg:justify-start gap-2.5 sm:gap-3 text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#F05323] sm:text-xs sm:tracking-[0.22em]">
+                  <span aria-hidden className="h-px w-6 shrink-0 bg-current opacity-50 sm:w-8" />
+                  <span className="sm:hidden">Wholesale &amp; retail catalog</span>
+                  <span className="hidden sm:inline">Commercial wholesale &amp; retail catalog</span>
+                  <span aria-hidden className="h-px w-6 shrink-0 bg-current opacity-50 sm:w-8" />
+                </p>
+              )}
+              <h1 className="mt-1.5 sm:mt-2 font-serif text-[2rem] leading-tight sm:text-[2.6rem] xl:text-5xl text-primary">
+                {activeCategory ? activeCategory.title : "All Products"}
+              </h1>
+            </div>
 
-        <div className="mx-auto max-w-4xl text-center relative z-10">
-          <span className="text-[9px] sm:text-[0.74rem] font-bold uppercase tracking-[0.22em] text-accent block mb-1.5 sm:mb-3 select-none">
-            &mdash; COMMERCIAL WHOLESALE &amp; RETAIL CATALOG &mdash;
-          </span>
-
-          <h1 className="font-display font-serif text-2xl sm:text-5xl lg:text-6xl tracking-tight text-primary font-normal leading-tight mb-1.5 sm:mb-4">
-            {activeCategory ? activeCategory.title : "Product Categories"}
-          </h1>
-
-          <p className="text-xs sm:text-sm md:text-[15px] text-muted-foreground tracking-wide leading-relaxed max-w-xl mx-auto">
-            {activeCategory
-              ? activeCategory.description
-              : "Certified wholesale showroom inventory across 6 product divisions with same-day site dispatch across Erode."}
-          </p>
-
-          <p className="hidden sm:block mt-3 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-accent/90">
-            Same-Day Site Dispatch across Erode / Perundurai SIPCOT / Bhavani
-          </p>
-
-          {/* Controls Level 1: Centered Luxury Search Bar */}
-          <div className="mt-4 sm:mt-7 max-w-lg mx-auto w-full">
-            <div className="relative w-full">
-              <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 size-3.5 sm:size-4 text-stone-400 pointer-events-none" />
+            <div className="mx-auto flex w-full max-w-xl items-center gap-2 lg:mx-0 lg:w-[480px] lg:max-w-none lg:shrink-0">
+            <div className="relative min-w-0 flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-stone-400 pointer-events-none" />
               <input
-                type="text"
+                type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={
-                  activeCategory
-                    ? `Search in ${activeCategory.title}`
-                    : "Search categories, products, or technical specs"
-                }
-                className="w-full h-9 sm:h-11 rounded-full border border-stone-200/90 bg-white/95 pl-9 sm:pl-11 pr-10 text-xs sm:text-sm text-foreground placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-2xs"
+                placeholder={activeCategory ? `Search ${activeCategory.shortTitle}` : "Search products"}
+                aria-label="Search products"
+                className="w-full h-11 rounded-full border border-stone-200 bg-white pl-11 pr-16 text-sm text-foreground placeholder:text-stone-400 outline-none transition focus:border-[#F05323] focus:ring-4 focus:ring-[#F05323]/10 [&::-webkit-search-cancel-button]:hidden"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-stone-400 hover:text-stone-800 cursor-pointer p-1"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-stone-400 hover:text-stone-800 cursor-pointer"
                 >
                   Clear
                 </button>
               )}
             </div>
+            <button
+              type="button"
+              onClick={() => setCartOpen(true)}
+              className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full border border-stone-200 bg-white px-4 text-sm font-semibold text-stone-800 transition hover:border-stone-300 cursor-pointer"
+            >
+              Cart
+              <span
+                className={`grid h-6 min-w-6 place-items-center rounded-full px-1.5 text-xs ${
+                  cartCount > 0 ? "bg-[#F05323] text-white" : "bg-stone-100 text-stone-500"
+                }`}
+              >
+                {cartCount}
+              </span>
+            </button>
+            </div>
           </div>
 
-          {/* Discrete Category Filter Chips (Single-Row Horizontal Scroll on Mobile) */}
-          <div className="mt-3 sm:mt-4 flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1 px-1 justify-start sm:justify-center max-w-4xl mx-auto">
-            {catalogCategories.map((cat) => {
-              const isActive = selectedCategoryId === cat.id;
+          <div className="mt-4 sm:mt-5 flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:justify-center sm:overflow-visible lg:justify-start">
+            {chips.map((chip) => {
+              const isActive = selectedCategoryId === chip.id;
               return (
                 <button
-                  key={cat.id}
+                  key={chip.label}
                   type="button"
-                  onClick={() => {
-                    setSelectedCategoryId(isActive ? null : cat.id);
-                    setSearchQuery("");
-                  }}
-                  className={`h-[30px] sm:h-[34px] rounded-full px-3.5 sm:px-4 text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center shrink-0 border ${
+                  onClick={() => openCategory(chip.id)}
+                  aria-pressed={isActive}
+                  className={`h-9 shrink-0 rounded-full border px-3.5 sm:px-4 text-[13px] font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                     isActive
-                      ? "bg-[#0A2234] text-white border-[#0A2234] shadow-xs"
-                      : "bg-white/95 text-stone-600 border-stone-200/90 hover:text-stone-950 hover:bg-stone-50 hover:border-stone-300 shadow-2xs"
+                      ? "bg-[#0A2234] text-white border-[#0A2234]"
+                      : "bg-white text-stone-600 border-stone-200 hover:text-stone-900 hover:border-stone-300"
                   }`}
                 >
-                  {cat.shortTitle}
+                  {chip.label}
                 </button>
               );
             })}
@@ -843,259 +917,244 @@ function ProductsPage() {
         </div>
       </section>
 
-      {/* Main Content Area */}
-      <section className="py-12 sm:py-16 px-4 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full flex-1">
-        {/* State A: Top-Level Category Grid (selectedCategoryId === null) */}
-        {selectedCategoryId === null && (
-          <div>
-            <div className="flex items-center justify-between mb-7">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
-                Displaying {filteredCategories.length} Primary Categories
-              </span>
-            </div>
-
-            {filteredCategories.length === 0 ? (
-              <div className="text-center py-16 rounded-[28px] border border-stone-200 bg-[#FAF8F5] p-8 max-w-md mx-auto">
-                <h3 className="font-display font-serif text-lg font-normal text-primary">No categories found</h3>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Try another search term or reset your filter
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSearchQuery("")}
-                  className="mt-4 rounded-full cursor-pointer"
-                >
-                  Reset Search
-                </Button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-8">
-                {filteredCategories.map((cat) => (
-                  <article
-                    key={cat.id}
-                    onClick={() => {
-                      setSelectedCategoryId(cat.id);
-                      setSearchQuery("");
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                    className="group relative flex flex-col justify-between rounded-[18px] sm:rounded-[32px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-2xs sm:shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer w-full"
-                  >
-                    {/* Visual Header */}
-                    <div className="relative h-32 sm:h-52 w-full overflow-hidden bg-stone-100">
-                      <img
-                        src={cat.image}
-                        alt={cat.title}
-                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
-
-                      {/* Badge count on image */}
-                      <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3.5 z-10 pointer-events-none">
-                        <span className="inline-block rounded-md bg-black/65 px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-xs">
-                          {cat.subcategoriesCountText}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Card Body */}
-                    <div className="px-2.5 sm:px-[18px] py-2.5 sm:py-5 flex-1 flex flex-col justify-between">
-                      <div>
-                        {/* Highlight Tag */}
-                        <span className="text-[8px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-accent block mb-0.5 sm:mb-1">
-                          {cat.highlight}
-                        </span>
-
-                        <h3 className="font-display font-serif text-xs sm:text-xl font-bold sm:font-normal text-primary tracking-tight leading-tight sm:leading-snug group-hover:text-paint-deep transition-colors">
-                          {cat.title}
-                        </h3>
-
-                        <p className="mt-1 sm:mt-2 text-[9.5px] sm:text-[13px] text-muted-foreground leading-snug sm:leading-relaxed">
-                          {cat.description}
-                        </p>
-                      </div>
-
-                      {/* Card Action */}
-                      <div className="mt-2.5 sm:mt-5 pt-2 sm:pt-3.5 border-t border-stone-200/80">
-                        <div className="flex items-center justify-between text-[10px] sm:text-xs font-semibold text-primary group-hover:text-accent transition-colors">
-                          <span className="tracking-wide">Explore Range</span>
-                          <span className="transform group-hover:translate-x-1 transition-transform">&rarr;</span>
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* State B: Active Category Subcategories Drilldown (selectedCategoryId !== null) */}
-        {selectedCategoryId !== null && activeCategory && (
-          <div className="w-full">
-            {/* Breadcrumb & Return Bar */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-7 pb-4 border-b border-stone-200">
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedCategoryId(null);
-                    setSearchQuery("");
-                  }}
-                  className="rounded-full text-xs font-semibold cursor-pointer shadow-2xs hover:bg-stone-100"
-                >
-                  <span>&larr; Back to All Categories</span>
-                </Button>
-                <span className="text-stone-300 font-light text-sm">/</span>
-                <span className="text-xs sm:text-sm font-serif font-bold text-primary">
-                  {activeCategory.title}
-                </span>
-              </div>
-
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
-                Showing {filteredSubcategories.length} Subcategories
-              </span>
-            </div>
-
-            {filteredSubcategories.length === 0 ? (
-              <div className="text-center py-16 rounded-[28px] border border-stone-200 bg-[#FAF8F5] p-8 max-w-md mx-auto">
-                <h3 className="font-display font-serif text-lg font-normal text-primary">No subcategories match</h3>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Try another search query or clear your keyword
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSearchQuery("")}
-                  className="mt-4 rounded-full cursor-pointer"
-                >
-                  Clear Search
-                </Button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-8">
-                {filteredSubcategories.map((sub) => {
-                  const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(
-                    `Hello Akshara Paints, I would like to inquire about ${activeCategory.title} - ${sub.title}. Please share available grades and pricing.`
-                  )}`;
-
-                  return (
-                    <article
-                      key={sub.id}
-                      className="group relative flex flex-col justify-between rounded-[18px] sm:rounded-[32px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-2xs sm:shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 w-full"
-                    >
-                      {/* Visual Header with Image and Badge */}
-                      <div className="relative h-32 sm:h-52 w-full overflow-hidden bg-stone-100 flex items-center justify-center">
-                        <img
-                          src={sub.image}
-                          alt={sub.title}
-                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                          loading="lazy"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
-
-                        {/* Subcategory Count Badge on bottom-left */}
-                        <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3.5 z-10 pointer-events-none">
-                          <span className="inline-block rounded-md bg-black/65 px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-xs">
-                            {sub.badge}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Card Body with Full Content */}
-                      <div className="px-2.5 sm:px-[18px] py-2.5 sm:py-5 flex-1 flex flex-col justify-between">
-                        <div>
-                          {/* Highlight Tag */}
-                          <span className="text-[8px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-accent block mb-0.5 sm:mb-1">
-                            {sub.highlight}
-                          </span>
-
-                          {/* Subcategory Title */}
-                          <h3 className="font-display font-serif text-xs sm:text-xl font-bold sm:font-normal text-primary tracking-tight leading-tight sm:leading-snug group-hover:text-paint-deep transition-colors">
-                            {sub.title}
-                          </h3>
-
-                          {/* Description */}
-                          <p className="mt-1 sm:mt-2 text-[9.5px] sm:text-[13px] text-muted-foreground leading-snug sm:leading-relaxed">
-                            {sub.description}
-                          </p>
-
-                          {/* Specifications Ribbon */}
-                          <div className="mt-2 sm:mt-3.5 rounded-lg sm:rounded-xl border border-stone-200/90 bg-stone-100/70 p-1.5 sm:p-3 text-[9px] sm:text-[11px] leading-snug sm:leading-relaxed text-stone-700">
-                            <span className="font-mono font-bold text-[8px] sm:text-[10px] uppercase tracking-wider text-stone-500 block mb-0.5">
-                              Technical Scope
-                            </span>
-                            <span className="font-medium text-stone-900 line-clamp-1 sm:line-clamp-none">
-                              {sub.specs}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Card Action Button */}
-                        <div className="mt-2.5 sm:mt-5 pt-2 sm:pt-3.5 border-t border-stone-200/80">
-                          <Button
-                            variant="hero"
-                            size="sm"
-                            asChild
-                            className="w-full h-7 sm:h-9 rounded-full text-[10px] sm:text-xs font-semibold cursor-pointer shadow-xs justify-center"
-                          >
-                            <a
-                              href={whatsappUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="flex items-center justify-center"
-                            >
-                              <span>{sub.ctaLabel}</span>
-                            </a>
-                          </Button>
-                        </div>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
-      </section>
-
-      {/* Streamlined Bottom Consultation Strip */}
-      <section className="pb-12 sm:pb-16 px-4 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full">
-        <div className="rounded-2xl sm:rounded-[32px] border border-stone-200/90 bg-gradient-to-br from-white via-stone-50/90 to-amber-50/40 p-5 sm:p-8 shadow-xs hover:shadow-md transition-all flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-center sm:text-left">
-          <div className="space-y-1.5">
-            <span className="inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Wholesale Trade Desk Active
-            </span>
-            <h3 className="font-display font-serif text-lg sm:text-xl font-normal text-primary leading-snug">
-              Looking for Wholesale Contractor Quotes or Direct Site Dispatch?
-            </h3>
-            <p className="text-xs text-muted-foreground leading-relaxed max-w-xl">
-              Contact our trade materials desk for volume estimates, mill test reports, and scheduled site drops across Erode district.
-            </p>
-          </div>
-          <Button
-            variant="hero"
-            size="default"
-            asChild
-            className="rounded-full px-6 sm:px-8 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold cursor-pointer shadow-md shrink-0 w-full sm:w-auto"
-          >
-            <a
-              href="https://wa.me/919443722255?text=Hello%20Akshara%20Paints,%20I%20have%20a%20commercial%20materials%20inquiry%20regarding%20products%20in%20Erode"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center justify-center gap-1.5"
-            >
-              <span>Chat with Technical Desk</span>
-              <span className="text-accent-foreground font-bold">&rarr;</span>
-            </a>
-          </Button>
+      {/* Grid */}
+      <section className="px-4 sm:px-7 lg:px-10 pt-4 sm:pt-10 pb-10 mx-auto max-w-[1440px] w-full flex-1">
+        <div className="mb-3 sm:mb-5 flex items-end justify-between gap-4">
+          <h2 className={`font-serif text-lg sm:text-2xl text-primary ${query ? "" : "hidden sm:block"}`}>{gridHeading}</h2>
+          <p className="shrink-0 text-[13px] sm:text-sm text-stone-500">{gridCount}</p>
         </div>
+
+        {visibleProducts.length === 0 ? (
+          <div className="rounded-3xl border border-stone-200 bg-white px-6 py-16 text-center">
+            <h3 className="font-serif text-xl text-primary">Nothing found</h3>
+            <p className="mt-2 text-sm text-stone-500">Try a different word, or clear the search.</p>
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              className="mt-5 inline-flex h-10 items-center rounded-full border border-stone-300 bg-white px-5 text-sm font-semibold text-stone-800 transition hover:border-stone-400 hover:bg-stone-50 cursor-pointer"
+            >
+              Clear search
+            </button>
+          </div>
+        ) : (
+          /* Shop-style product cards, 4 per row */
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
+            {visibleProducts.map(({ cat, sub }) => {
+              const id = `${cat.id}:${sub.id}`;
+              const qty = qtyOf(id);
+              const item = { id, title: sub.title, categoryTitle: cat.title, image: sub.image };
+              const isCutout = sub.image.endsWith(".png");
+              return (
+                <article
+                  key={id}
+                  className="group flex flex-col overflow-hidden rounded-2xl sm:rounded-xl border border-stone-200 bg-white transition duration-200 hover:border-stone-300 hover:shadow-[0_10px_28px_rgba(14,40,56,0.10)]"
+                >
+                  {/* Product image */}
+                  <div className="relative aspect-square sm:aspect-[4/3] overflow-hidden bg-[#FAF8F5] sm:bg-white">
+                    <img
+                      src={sub.image}
+                      alt={sub.title}
+                      loading="lazy"
+                      className={`absolute inset-0 size-full transition-transform duration-300 group-hover:scale-[1.05] ${
+                        isCutout ? "object-contain p-3 sm:p-6" : "object-cover"
+                      }`}
+                    />
+                    <span className="absolute left-2 top-2 rounded-full bg-[#0A2234]/90 px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-wide text-white sm:left-3 sm:top-3 sm:rounded-md sm:bg-[#0A2234] sm:text-[11px]">
+                      {sub.badge}
+                    </span>
+                  </div>
+
+                  {/* Details */}
+                  <div className="flex flex-1 flex-col border-t border-stone-100 p-2.5 sm:p-4">
+                    <p className="truncate text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[#F05323]">{cat.shortTitle}</p>
+                    <h3 className="mt-0.5 sm:mt-1 line-clamp-2 min-h-[2.5em] sm:min-h-0 text-[13.5px] font-semibold leading-snug text-stone-900 sm:text-[15px]">
+                      {sub.title}
+                    </h3>
+                    <p className="mt-1 line-clamp-1 text-[11.5px] text-stone-500 sm:text-[13px]">{dots(sub.highlight)}</p>
+                    <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-stone-500 max-sm:hidden" title={dots(sub.specs)}>
+                      {dots(sub.specs)}
+                    </p>
+                    <p className="mt-1.5 sm:mt-2 text-[11.5px] sm:text-xs font-semibold text-emerald-700">Price on request<span className="hidden sm:inline"> &middot; Site delivery</span></p>
+
+                    <div className="mt-auto grid grid-cols-2 gap-1.5 sm:gap-2 pt-2.5 sm:pt-4">
+                      {qty === 0 ? (
+                        <button
+                          type="button"
+                          onClick={() => addToCart(item)}
+                          className="h-9 sm:h-10 rounded-full sm:rounded-lg border border-[#F05323] bg-white text-[12.5px] sm:text-[13px] font-semibold text-[#F05323] transition hover:bg-orange-50 cursor-pointer"
+                        >
+                          <span className="sm:hidden">+ Cart</span>
+                          <span className="hidden sm:inline">Add to cart</span>
+                        </button>
+                      ) : (
+                        <div className="flex h-9 sm:h-10 items-center justify-between rounded-full sm:rounded-lg border border-[#F05323] bg-orange-50/60">
+                          <button
+                            type="button"
+                            onClick={() => changeQty(id, -1)}
+                            aria-label={`One less ${sub.title}`}
+                            className="grid h-full w-7 sm:w-9 place-items-center rounded-l-full sm:rounded-l-lg text-lg font-medium text-[#F05323] hover:bg-orange-100 cursor-pointer"
+                          >
+                            &minus;
+                          </button>
+                          <span className="text-sm font-semibold text-stone-900" aria-live="polite">
+                            {qty}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => changeQty(id, 1)}
+                            aria-label={`One more ${sub.title}`}
+                            className="grid h-full w-7 sm:w-9 place-items-center rounded-r-full sm:rounded-r-lg text-lg font-medium text-[#F05323] hover:bg-orange-100 cursor-pointer"
+                          >
+                            +
+                          </button>
+                        </div>
+                      )}
+                      <a
+                        href={whatsappLink(buildOrderMessage([{ ...item, qty: Math.max(qty, 1) }], ""))}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex h-9 sm:h-10 items-center justify-center rounded-full sm:rounded-lg bg-[#F05323] text-[12.5px] sm:text-[13px] font-semibold text-white transition hover:bg-[#dd4615]"
+                      >
+                        <span className="sm:hidden">Order</span>
+                        <span className="hidden sm:inline">Order now</span>
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
       </section>
 
-      <SiteFooter />
+      {/* Help strip */}
+      <section className="px-4 sm:px-7 lg:px-10 pb-6 sm:pb-8 mx-auto max-w-[1440px] w-full">
+        <HelpStrip
+          icon={Truck}
+          title="Need a wholesale quote or site delivery?"
+          text="Tell us what you need and we’ll share prices, stock and delivery times."
+          whatsappText="Hello Akshara Paints, I have a product enquiry for my project in Erode."
+        />
+      </section>
+
+      <SiteFooter className="mt-0! sm:mt-0!" />
+
+      {/* Floating cart button */}
+      {cartCount > 0 && !cartOpen && (
+        <button
+          type="button"
+          onClick={() => setCartOpen(true)}
+          className="fixed bottom-5 right-5 z-40 inline-flex h-12 items-center gap-3 rounded-full bg-[#0A2234] pl-5 pr-2 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(10,34,52,0.3)] transition hover:bg-[#13344d] cursor-pointer"
+        >
+          View cart
+          <span className="grid h-8 min-w-8 place-items-center rounded-full bg-[#F05323] px-2 text-xs">{cartCount}</span>
+        </button>
+      )}
+
+      {/* Cart drawer */}
+      <Dialog.Root open={cartOpen} onOpenChange={setCartOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-[70] bg-stone-900/40 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
+          <Dialog.Content className="fixed inset-y-0 right-0 z-[71] flex w-full max-w-md flex-col bg-white shadow-2xl outline-none duration-300 data-[state=open]:animate-in data-[state=open]:slide-in-from-right data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right">
+            <div className="flex items-start justify-between gap-4 border-b border-stone-200 px-6 py-5">
+              <div>
+                <Dialog.Title className="text-lg font-semibold text-stone-900">Your cart</Dialog.Title>
+                <Dialog.Description className="mt-0.5 text-sm text-stone-500">
+                  {cartCount === 0
+                    ? "Nothing added yet."
+                    : `${cartCount} ${cartCount === 1 ? "item" : "items"} · we’ll confirm price & stock on WhatsApp`}
+                </Dialog.Description>
+              </div>
+              <Dialog.Close className="rounded-full border border-stone-200 px-3 py-1.5 text-sm font-medium text-stone-600 transition hover:border-stone-300 hover:text-stone-900 cursor-pointer">
+                Close
+              </Dialog.Close>
+            </div>
+
+            {cart.length === 0 ? (
+              <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+                <p className="text-base font-semibold text-stone-900">Your cart is empty</p>
+                <p className="mt-1 text-sm text-stone-500">Open a category and tap “Add to cart”.</p>
+                <Dialog.Close className="mt-5 inline-flex h-10 items-center rounded-full border border-stone-300 px-5 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 cursor-pointer">
+                  Browse products
+                </Dialog.Close>
+              </div>
+            ) : (
+              <>
+                <ul className="flex-1 divide-y divide-stone-100 overflow-y-auto px-6">
+                  {cart.map((it) => (
+                    <li key={it.id} className="flex gap-4 py-4">
+                      <div className="relative size-16 shrink-0 overflow-hidden rounded-xl bg-[#F4F1EC]">
+                        <img src={it.image} alt="" className={imgFit(it.image).replace("p-3", "p-1.5")} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold leading-snug text-stone-900">{it.title}</p>
+                        <p className="mt-0.5 truncate text-xs text-stone-500">{it.categoryTitle}</p>
+                        <div className="mt-2 flex items-center justify-between gap-3">
+                          <div className="flex h-8 items-center rounded-full border border-stone-300">
+                            <button
+                              type="button"
+                              onClick={() => changeQty(it.id, -1)}
+                              aria-label={`One less ${it.title}`}
+                              className="grid h-full w-8 place-items-center rounded-l-full text-stone-700 hover:bg-stone-50 cursor-pointer"
+                            >
+                              &minus;
+                            </button>
+                            <span className="w-6 text-center text-sm font-semibold">{it.qty}</span>
+                            <button
+                              type="button"
+                              onClick={() => changeQty(it.id, 1)}
+                              aria-label={`One more ${it.title}`}
+                              className="grid h-full w-8 place-items-center rounded-r-full text-stone-700 hover:bg-stone-50 cursor-pointer"
+                            >
+                              +
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeItem(it.id)}
+                            className="text-xs font-medium text-stone-500 underline-offset-2 hover:text-[#F05323] hover:underline cursor-pointer"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="border-t border-stone-200 px-6 py-5">
+                  <label htmlFor="cart-note" className="block text-sm font-medium text-stone-700">
+                    Note <span className="font-normal text-stone-400">(optional)</span>
+                  </label>
+                  <textarea
+                    id="cart-note"
+                    rows={2}
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    placeholder="Pack size, colour, site location…"
+                    className="mt-1.5 w-full resize-none rounded-xl border border-stone-200 px-3.5 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 outline-none transition focus:border-[#F05323] focus:ring-4 focus:ring-[#F05323]/10"
+                  />
+                  <a
+                    href={whatsappLink(buildOrderMessage(cart, note))}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-full bg-[#1DAA61] text-sm font-semibold text-white transition hover:bg-[#178F51]"
+                  >
+                    Order on WhatsApp
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setCart([])}
+                    className="mt-3 w-full text-center text-sm font-medium text-stone-500 hover:text-stone-900 cursor-pointer"
+                  >
+                    Clear cart
+                  </button>
+                </div>
+              </>
+            )}
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 }

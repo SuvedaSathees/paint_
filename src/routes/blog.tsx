@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { HelpStrip } from "@/components/help-strip";
 import { Button } from "@/components/ui/button";
 import {
   Calendar,
@@ -13,7 +14,6 @@ import {
   CheckCircle2,
   ShieldCheck,
   Zap,
-  Phone,
   Share2,
   Sparkles,
   Droplets,
@@ -663,45 +663,54 @@ function SheenSpectrumMatrix() {
   ];
 
   return (
-    <div className="my-8 rounded-2xl border border-[#E7E2D6] bg-white overflow-hidden shadow-2xs">
-      <div className="px-5 py-4 border-b border-[#E7E2D6] bg-stone-50/70 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <SlidersHorizontal className="size-4 text-accent" />
-          <span className="text-xs font-bold uppercase tracking-wider text-primary">
-            Sheen Spectrum &amp; Scrub Resistance Matrix
-          </span>
-        </div>
-        <span className="text-[11px] font-medium text-stone-500 font-mono">
-          ASTM D2486 / IS:15489
-        </span>
+    <div className="mt-5 overflow-hidden rounded-2xl border border-stone-200 bg-white">
+      <div className="flex items-center justify-between gap-3 border-b border-stone-200 px-4 py-3 sm:px-5 sm:py-3.5">
+        <span className="text-sm font-semibold text-stone-900">Sheen &amp; scrub resistance</span>
+        <span className="text-[11px] sm:text-xs text-stone-500">ASTM D2486 / IS:15489</span>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs sm:text-sm">
+      {/* Phones: one small card per finish */}
+      <ul className="divide-y divide-stone-100 sm:hidden">
+        {finishes.map((f) => (
+          <li key={f.name} className={`px-4 py-3.5 ${f.highlight ? "bg-orange-50/60" : ""}`}>
+            <div className="flex items-center justify-between gap-3">
+              <p className={`text-[14.5px] font-semibold ${f.highlight ? "text-[#F05323]" : "text-stone-900"}`}>{f.name}</p>
+              <span className="shrink-0 rounded-full bg-stone-100 px-2.5 py-0.5 text-[11.5px] font-semibold text-stone-700">
+                {f.sheen} sheen
+              </span>
+            </div>
+            <dl className="mt-2 grid grid-cols-[88px_1fr] gap-x-3 gap-y-1 text-[13px]">
+              <dt className="text-stone-500">Scrub</dt>
+              <dd className="text-stone-800">{f.scrub}</dd>
+              <dt className="text-stone-500">Best for</dt>
+              <dd className="text-stone-800">{f.bestFor}</dd>
+              <dt className="text-stone-500">Stain barrier</dt>
+              <dd className="text-stone-800">{f.stainResistance}</dd>
+            </dl>
+          </li>
+        ))}
+      </ul>
+
+      <div className="hidden overflow-x-auto sm:block">
+        <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-stone-200/80 bg-stone-50/40 text-stone-600 font-semibold text-[11px] uppercase tracking-wider">
-              <th className="py-3 px-4">Finish</th>
-              <th className="py-3 px-4">Sheen %</th>
-              <th className="py-3 px-4">Scrub Rating</th>
-              <th className="py-3 px-4">Best Suited Room</th>
-              <th className="py-3 px-4">Stain Barrier</th>
+            <tr className="border-b border-stone-200 bg-stone-50 text-xs font-semibold uppercase tracking-wider text-stone-500">
+              <th className="px-4 py-3">Finish</th>
+              <th className="px-4 py-3">Sheen</th>
+              <th className="px-4 py-3">Scrub rating</th>
+              <th className="px-4 py-3">Best for</th>
+              <th className="px-4 py-3">Stain barrier</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-100">
-            {finishes.map((f, i) => (
-              <tr
-                key={i}
-                className={f.highlight ? "bg-amber-50/50 font-medium" : "hover:bg-stone-50/50"}
-              >
-                <td className="py-3.5 px-4 font-bold text-primary flex items-center gap-2">
-                  {f.highlight && (
-                    <span className="size-2 rounded-full bg-accent shrink-0 animate-pulse" />
-                  )}
+            {finishes.map((f) => (
+              <tr key={f.name} className={f.highlight ? "bg-orange-50/60" : ""}>
+                <td className={`px-4 py-3.5 font-semibold ${f.highlight ? "text-[#F05323]" : "text-stone-900"}`}>
                   {f.name}
                 </td>
-                <td className="py-3.5 px-4 font-mono text-stone-700">{f.sheen}</td>
-                <td className="py-3.5 px-4 text-stone-700">{f.scrub}</td>
-                <td className="py-3.5 px-4 text-stone-700">{f.bestFor}</td>
-                <td className="py-3.5 px-4 text-stone-700">{f.stainResistance}</td>
+                <td className="whitespace-nowrap px-4 py-3.5 text-stone-700">{f.sheen}</td>
+                <td className="px-4 py-3.5 text-stone-700">{f.scrub}</td>
+                <td className="px-4 py-3.5 text-stone-700">{f.bestFor}</td>
+                <td className="px-4 py-3.5 text-stone-700">{f.stainResistance}</td>
               </tr>
             ))}
           </tbody>
@@ -715,59 +724,32 @@ function SheenSpectrumMatrix() {
  * Intelligent Section Body Renderer with Dynamic Bullet Card Formatting
  */
 function FormattedSectionContent({ body }: { body: string }) {
-  const lines = body.split("\n");
-  const hasBullets = lines.some((l) => l.trim().startsWith("•") || l.trim().startsWith("-"));
-
-  if (!hasBullets) {
-    return (
-      <div className="space-y-4 text-[16px] sm:text-[17px] text-stone-700 leading-[1.85] font-normal">
-        {lines.map((p, i) => (
-          <p key={i}>{p}</p>
-        ))}
-      </div>
-    );
-  }
-
+  const paragraphClass = "text-[15.5px] sm:text-[17px] leading-[1.75] sm:leading-[1.8] text-stone-700";
   const elements: React.ReactNode[] = [];
   let bulletBuffer: string[] = [];
 
   const flushBuffer = (key: string) => {
     if (bulletBuffer.length === 0) return;
     elements.push(
-      <div key={key} className="grid grid-cols-1 gap-3.5 my-6">
+      <ul key={key} className="divide-y divide-stone-200 overflow-hidden rounded-2xl border border-stone-200 bg-white">
         {bulletBuffer.map((b, bIdx) => {
           const raw = b.replace(/^[•\-\*]\s*/, "");
           const colonIdx = raw.indexOf(":");
           const title = colonIdx !== -1 ? raw.slice(0, colonIdx).trim() : "";
           const desc = colonIdx !== -1 ? raw.slice(colonIdx + 1).trim() : raw;
-
           return (
-            <div
-              key={bIdx}
-              className="group rounded-2xl bg-white border border-[#E7E2D6] p-5 shadow-2xs hover:border-accent/50 hover:shadow-xs transition-all duration-200 flex items-start gap-4"
-            >
-              <div className="size-9 rounded-xl bg-amber-50 text-amber-700 border border-amber-200/70 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-accent group-hover:text-white transition-colors duration-200">
-                <CheckCircle2 className="size-4.5" />
-              </div>
-              <div className="space-y-1">
-                {title && (
-                  <h4 className="font-bold text-primary text-[15px] sm:text-base leading-snug">
-                    {title}
-                  </h4>
-                )}
-                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
-                  {desc}
-                </p>
-              </div>
-            </div>
+            <li key={bIdx} className="px-4 py-3.5 sm:px-5 sm:py-4">
+              {title && <p className="font-semibold text-stone-900">{title}</p>}
+              <p className={`${title ? "mt-1 " : ""}text-[14px] sm:text-[15px] leading-relaxed text-stone-600`}>{desc}</p>
+            </li>
           );
         })}
-      </div>
+      </ul>,
     );
     bulletBuffer = [];
   };
 
-  lines.forEach((line, idx) => {
+  body.split("\n").forEach((line, idx) => {
     const trimmed = line.trim();
     if (trimmed.startsWith("•") || trimmed.startsWith("-")) {
       bulletBuffer.push(trimmed);
@@ -775,16 +757,16 @@ function FormattedSectionContent({ body }: { body: string }) {
       flushBuffer(`buf-${idx}`);
       if (trimmed) {
         elements.push(
-          <p key={`p-${idx}`} className="text-[16px] sm:text-[17px] text-stone-700 leading-[1.85] font-normal">
+          <p key={`p-${idx}`} className={paragraphClass}>
             {trimmed}
-          </p>
+          </p>,
         );
       }
     }
   });
   flushBuffer("buf-final");
 
-  return <div className="space-y-4">{elements}</div>;
+  return <div className="space-y-4 sm:space-y-5">{elements}</div>;
 }
 
 /**
@@ -838,393 +820,253 @@ function FullArticlePage({
   };
 
   const factsheet = articleFactsheets[article.id];
-  const otherArticles = allArticles.filter((a) => a.id !== article.id);
+  // Two suggestions for "Continue reading", same category first
+  const otherArticles = allArticles
+    .filter((a) => a.id !== article.id)
+    .sort((a, b) => Number(b.category === article.category) - Number(a.category === article.category))
+    .slice(0, 2);
+
+  const tocItems = [
+    ...article.sections.map((sec, idx) => ({
+      href: `#section-${idx}`,
+      label: sec.heading.replace(/^\d+\.\s*/, ""),
+    })),
+    ...(article.id === "birla-opus-sheen-guide"
+      ? [{ href: "#sheen-matrix", label: "Sheen comparison table" }]
+      : []),
+  ];
+  const num = (n: number) => String(n).padStart(2, "0");
+  const openOnKey = (e: React.KeyboardEvent, a: Article) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onSelectArticle(a);
+    }
+  };
+  const boxClass = "rounded-2xl border border-stone-200 bg-white";
+  const labelClass = "text-xs font-bold uppercase tracking-[0.18em]";
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-foreground flex flex-col selection:bg-accent/20">
-      {/* Real-time Reading Progress Bar */}
+    <div className="min-h-screen bg-[#FDFBF7] text-stone-900 flex flex-col selection:bg-[#F05323]/15">
+      {/* Reading progress */}
       <div
-        className="fixed top-0 left-0 h-[2.5px] bg-gradient-to-r from-accent via-[#F59E0B] to-accent z-50 transition-all duration-150 ease-out"
+        className="fixed top-0 left-0 z-[60] h-[3px] bg-[#F05323] transition-[width] duration-150 ease-out"
         style={{ width: `${readingProgress}%` }}
       />
 
       <SiteHeader />
 
-      {/* Main Editorial Article Stage */}
-      <main className="flex-1 pt-2 sm:pt-4">
-        {/* Clean Editorial Back & Share Strip */}
-        <div className="mx-auto max-w-6xl px-[15px] pt-4 pb-2 flex items-center justify-between gap-4">
+      <main className="flex-1">
+        {/* Header: text on the left, cover image on the right */}
+        <header className="mx-auto max-w-6xl px-4 pt-6 sm:px-6 sm:pt-12 lg:pt-14">
           <button
             type="button"
             onClick={onBack}
-            className="inline-flex items-center gap-2 text-xs sm:text-[13px] font-semibold text-stone-500 hover:text-accent transition-colors cursor-pointer group"
+            className="group inline-flex h-9 items-center gap-1.5 rounded-full border border-stone-200 bg-white pl-2.5 pr-3.5 text-[13px] font-medium text-stone-600 transition-colors hover:text-stone-900 cursor-pointer sm:h-auto sm:gap-2 sm:border-0 sm:bg-transparent sm:p-0 sm:text-sm sm:text-stone-500"
           >
-            <ArrowLeft className="size-4 text-accent group-hover:-translate-x-1 transition-transform" />
-            <span>Back to Technical Guides</span>
+            <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" />
+            All articles
           </button>
 
-          <div className="flex items-center gap-3">
-            <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium">
-              <Clock className="size-3 text-accent" />
-              {article.readTime}
-            </span>
-            <button
-              type="button"
-              onClick={handleShare}
-              className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white hover:bg-stone-50 px-3.5 py-1 text-xs font-semibold text-stone-700 hover:text-primary transition-all cursor-pointer shadow-2xs"
-            >
-              {copied ? (
-                <>
-                  <Check className="size-3 text-emerald-600" />
-                  <span className="text-emerald-700">Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Share2 className="size-3 text-accent" />
-                  <span>Share</span>
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-        {/* Article Header (Centered Luxury Editorial Showcase) */}
-        <header className="pt-10 sm:pt-14 pb-8 px-[15px] max-w-6xl mx-auto text-center">
-          <span className="text-[0.68rem] sm:text-[0.74rem] font-bold uppercase tracking-[0.26em] text-accent block mb-3.5 select-none">
-            &mdash; {article.categoryLabel} &mdash;
-          </span>
+          <div className="mt-5 grid items-center gap-5 sm:mt-6 sm:gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-12">
+            <div>
+              <p className={`${labelClass} text-[11px] sm:text-xs text-[#F05323]`}>{article.categoryLabel}</p>
+              <h1 className="mt-2 sm:mt-3 font-serif text-[1.6rem] leading-[1.22] text-primary sm:text-[2rem] lg:text-[2.25rem]">
+                {article.title}
+              </h1>
+              <p className="mt-3 sm:mt-4 text-[14.5px] leading-relaxed text-stone-600 sm:text-base">{article.summary}</p>
 
-          <h1 className="font-display font-serif text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[42px] font-normal tracking-tight text-primary leading-tight mb-5 max-w-5xl mx-auto">
-            {article.title}
-          </h1>
-
-          <p className="text-sm sm:text-base md:text-[17px] text-stone-600 leading-relaxed font-normal max-w-2xl mx-auto mb-7 line-clamp-2">
-            {article.summary}
-          </p>
-
-          {/* Clean Author Byline Strip */}
-          <div className="inline-flex flex-wrap items-center justify-center gap-3 sm:gap-6 py-2.5 px-5 sm:px-7 rounded-full bg-white border border-[#E7E2D6] shadow-2xs text-xs">
-            <div className="flex items-center gap-2.5 text-left">
-              <div className="size-8 rounded-full bg-primary text-white flex items-center justify-center font-serif font-bold text-xs shadow-xs">
-                {article.author.charAt(0)}
-              </div>
-              <div>
-                <span className="font-bold text-primary block leading-tight">{article.author}</span>
-                <span className="text-[10.5px] text-stone-500 font-medium">{article.authorRole}</span>
+              <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-2 border-t border-stone-200 pt-4 text-[13px] text-stone-500 sm:mt-6 sm:gap-x-2.5 sm:pt-5 sm:text-sm">
+                <span className="grid size-7 place-items-center rounded-full bg-[#0E2838] text-[12px] font-semibold text-white sm:hidden">{article.author.charAt(0)}</span>
+                <span className="font-semibold text-stone-800">{article.author}</span>
+                <span aria-hidden="true">&middot;</span>
+                <span className="hidden sm:inline">{article.date}</span>
+                <span aria-hidden="true" className="hidden sm:inline">&middot;</span>
+                <span>{article.readTime}</span>
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  aria-label="Share this article"
+                  className="ml-auto inline-flex h-9 items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 text-[13px] font-medium text-stone-700 transition hover:border-stone-300 hover:text-stone-900 cursor-pointer sm:px-4 sm:text-sm"
+                >
+                  <Share2 className="size-3.5 sm:hidden" />
+                  {copied ? "Link copied" : "Share"}
+                </button>
               </div>
             </div>
-            <span className="hidden sm:inline text-stone-300">&bull;</span>
-            <div className="flex items-center gap-1.5 text-stone-600 font-mono text-[11px]">
-              <Calendar className="size-3.5 text-accent" />
-              <span>{article.date}</span>
-            </div>
-            <span className="hidden sm:inline text-stone-300">&bull;</span>
-            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700">
-              <CheckCircle2 className="size-3 text-emerald-600" /> Lab Verified Standard
-            </span>
-          </div>
-        </header>
 
-        {/* Cinematic Featured Image Showcase */}
-        <div className="max-w-5xl mx-auto px-[15px] mb-12">
-          <div className="relative rounded-[24px] sm:rounded-[32px] overflow-hidden aspect-[16/9] sm:aspect-[21/9] bg-stone-900 border border-[#E7E2D6] shadow-sm group">
             <img
               src={article.image}
               alt={article.title}
-              className="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-700"
+              className="aspect-[16/10] w-full rounded-[20px] border border-stone-200 object-cover sm:rounded-2xl lg:aspect-[4/3]"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-            <div className="absolute bottom-3.5 left-5 right-5 flex items-center justify-between text-white/90 text-[11px] font-mono">
-              <span className="flex items-center gap-1.5">
-                <Sparkles className="size-3 text-amber-300" /> Akshara Technical Research Lab
-              </span>
-              <span className="hidden sm:inline">Erode Central Experience Center</span>
-            </div>
           </div>
-        </div>
+        </header>
 
-        {/* 2-Column Editorial Grid: Left Sticky Sidebar + Right Main Content */}
-        <div className="max-w-6xl mx-auto px-[15px] pb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-            {/* Left Column: Sticky Table of Contents, Factsheet & Specialist Card */}
-            <aside className="lg:col-span-4 space-y-6 lg:sticky lg:top-32">
-              {/* Table of Contents Card */}
-              {article.sections && article.sections.length > 0 && (
-                <div className="rounded-2xl border border-[#E7E2D6] bg-white p-5 shadow-2xs">
-                  <div className="flex items-center gap-2 mb-3.5 pb-2.5 border-b border-stone-100">
-                    <Bookmark className="size-3.5 text-accent" />
-                    <span className="text-[10.5px] font-bold uppercase tracking-[0.2em] text-primary">
-                      IN THIS GUIDE
-                    </span>
-                  </div>
-                  <nav className="space-y-2.5">
-                    {article.sections.map((sec, idx) => (
-                      <a
-                        key={idx}
-                        href={`#section-${idx}`}
-                        className="flex items-baseline gap-2.5 text-xs text-stone-600 hover:text-accent transition-colors group"
-                      >
-                        <span className="font-mono text-accent font-bold text-xs shrink-0">0{idx + 1}.</span>
-                        <span className="group-hover:underline leading-snug">{sec.heading.replace(/^\d+\.\s*/, "")}</span>
-                      </a>
+        {/* Body */}
+        <div className="mx-auto max-w-6xl px-4 pt-6 pb-10 sm:px-6 sm:pt-14 sm:pb-16">
+          <div className="grid items-start gap-6 sm:gap-10 lg:grid-cols-12 lg:gap-12">
+            {/* Sidebar */}
+            <aside className="space-y-3 sm:space-y-5 lg:sticky lg:top-28 lg:col-span-4">
+              {tocItems.length > 0 && (
+                <nav aria-label="On this page" className={`${boxClass} p-4 sm:p-5`}>
+                  <p className={`${labelClass} text-[11px] sm:text-xs text-stone-900`}>On this page</p>
+                  <ol className="mt-3 space-y-2.5 sm:mt-4 sm:space-y-3">
+                    {tocItems.map((t, i) => (
+                      <li key={t.href}>
+                        <a
+                          href={t.href}
+                          className="flex gap-3 text-[13.5px] sm:text-sm leading-snug text-stone-600 transition-colors hover:text-[#F05323]"
+                        >
+                          <span className="w-5 shrink-0 font-semibold text-[#F05323]">{num(i + 1)}</span>
+                          <span>{t.label}</span>
+                        </a>
+                      </li>
                     ))}
-                    {article.id === "birla-opus-sheen-guide" && (
-                      <a
-                        href="#sheen-matrix"
-                        className="flex items-baseline gap-2.5 text-xs text-stone-600 hover:text-accent transition-colors group"
-                      >
-                        <span className="font-mono text-accent font-bold text-xs shrink-0">04.</span>
-                        <span className="group-hover:underline leading-snug">Sheen Spectrum &amp; Scrub Matrix</span>
-                      </a>
-                    )}
-                  </nav>
-                </div>
+                  </ol>
+                </nav>
               )}
 
-              {/* Technical Factsheet Card */}
               {factsheet && (
-                <div className="rounded-2xl border border-[#E7E2D6] bg-white p-5 shadow-2xs space-y-3">
-                  <div className="flex items-center justify-between pb-3 border-b border-stone-100">
-                    <div className="flex items-center gap-2">
-                      <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className="text-[10.5px] font-bold uppercase tracking-[0.2em] text-primary">
-                        TECHNICAL SPECIFICATIONS
-                      </span>
-                    </div>
-                    <span className="text-[9.5px] font-mono font-bold text-stone-500 bg-stone-100 px-2 py-0.5 rounded-md">
-                      VERIFIED
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    {factsheet.specs.map((item, sIdx) => (
-                      <div
-                        key={sIdx}
-                        className="rounded-xl bg-stone-50/70 border border-stone-200/60 p-2.5 transition-all hover:bg-stone-50 hover:border-accent/40"
-                      >
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5 select-none">
+                <div className={`${boxClass} p-4 sm:p-5`}>
+                  <p className={`${labelClass} text-[11px] sm:text-xs text-stone-900`}>Key specifications</p>
+                  <dl className="mt-3 grid grid-cols-2 gap-2 sm:mt-2 sm:block sm:gap-0 sm:divide-y sm:divide-stone-100">
+                    {factsheet.specs.map((item) => (
+                      <div key={item.label} className="rounded-xl bg-[#FAF8F5] p-2.5 sm:rounded-none sm:bg-transparent sm:px-0 sm:py-3">
+                        <dt className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-stone-500">
                           {item.label}
-                        </span>
-                        <span className="text-xs sm:text-[12.5px] font-bold text-primary block leading-snug">
-                          {item.value}
-                        </span>
+                        </dt>
+                        <dd className="mt-0.5 text-[12.5px] sm:text-sm font-medium leading-snug text-stone-900">{item.value}</dd>
                       </div>
                     ))}
-                  </div>
+                  </dl>
                 </div>
               )}
-
-              {/* Quick WhatsApp Consultation Mini-Card */}
-              <div className="rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/70 to-orange-50/40 p-5 shadow-2xs space-y-3">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent block">
-                  SPECIALIST CONSULTATION
-                </span>
-                <p className="text-xs text-stone-700 leading-relaxed">
-                  Need contractor shade matching, bulk procurement, or IS compliance certificates?
-                </p>
-                <Button
-                  variant="hero"
-                  size="sm"
-                  asChild
-                  className="w-full rounded-xl text-xs font-semibold py-2 h-9 cursor-pointer justify-center shadow-2xs"
-                >
-                  <a
-                    href={`https://wa.me/919876543210?text=Hello%20Akshara%20Paints,%20I%20have%20a%20project%20inquiry%20regarding:%20${encodeURIComponent(
-                      article.title
-                    )}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center justify-center"
-                  >
-                    <span>WhatsApp Desk</span>
-                  </a>
-                </Button>
-              </div>
             </aside>
 
-            {/* Right Column: Main Article Body Content */}
-            <article className="lg:col-span-8 space-y-9">
-              {/* Executive Summary / Key Takeaway Card */}
-              <div className="p-6 sm:p-7 rounded-2xl bg-white border border-[#E7E2D6] border-l-4 border-l-accent shadow-2xs">
-                <div className="flex items-center gap-2 mb-2.5">
-                  <Quote className="size-4 text-accent" />
-                  <span className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-accent">
-                    EXECUTIVE SUMMARY &bull; KEY TAKEAWAY
-                  </span>
-                </div>
-                <blockquote className="font-serif italic text-base sm:text-[18px] text-primary leading-relaxed font-normal">
-                  &ldquo;{article.keyTakeaway}&rdquo;
-                </blockquote>
-              </div>
+            {/* Article */}
+            <article className="min-w-0 space-y-9 sm:space-y-12 lg:col-span-8">
+              <blockquote className={`${boxClass} border-l-4 border-l-[#F05323] p-4 sm:p-7`}>
+                <p className={`${labelClass} text-[11px] sm:text-xs text-[#F05323]`}>Key takeaway</p>
+                <p className="mt-2 sm:mt-3 text-[16px] sm:text-lg font-medium leading-relaxed text-primary">
+                  {article.keyTakeaway}
+                </p>
+              </blockquote>
 
-              {/* Core Article Sections with Section Numbers */}
-              <div className="space-y-12">
-                {article.sections.map((sec, idx) => (
-                  <section key={idx} id={`section-${idx}`} className="scroll-mt-24 space-y-4">
-                    <div className="flex items-center gap-3">
-                      <span className="font-serif text-accent text-xl sm:text-2xl font-bold font-mono select-none">
-                        0{idx + 1}.
-                      </span>
-                      <h2 className="font-display font-serif text-2xl sm:text-3xl text-primary font-normal tracking-tight">
-                        {sec.heading.replace(/^\d+\.\s*/, "")}
-                      </h2>
-                    </div>
-                    <div className="border-l-2 border-stone-200/80 pl-4 sm:pl-6 ml-2 sm:ml-3">
-                      <FormattedSectionContent body={sec.body} />
-                    </div>
-                  </section>
-                ))}
-              </div>
+              {article.sections.map((sec, idx) => (
+                <section key={idx} id={`section-${idx}`} className="scroll-mt-28">
+                  <p className="text-sm font-semibold text-[#F05323]">{num(idx + 1)}</p>
+                  <h2 className="mt-1 font-serif text-[20px] leading-snug text-primary sm:text-2xl">
+                    {sec.heading.replace(/^\d+\.\s*/, "")}
+                  </h2>
+                  <div className="mt-3 sm:mt-5">
+                    <FormattedSectionContent body={sec.body} />
+                  </div>
+                </section>
+              ))}
 
-              {/* Interactive Sheen Comparison Matrix Table (Birla Opus specific) */}
               {article.id === "birla-opus-sheen-guide" && (
-                <div id="sheen-matrix" className="scroll-mt-24">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="font-serif text-accent text-xl sm:text-2xl font-bold font-mono select-none">
-                      04.
-                    </span>
-                    <h2 className="font-display font-serif text-2xl sm:text-3xl text-primary font-normal tracking-tight">
-                      Technical Sheen Comparison Matrix
-                    </h2>
-                  </div>
+                <section id="sheen-matrix" className="scroll-mt-28">
+                  <p className="text-sm font-semibold text-[#F05323]">{num(article.sections.length + 1)}</p>
+                  <h2 className="mt-1 font-serif text-[20px] leading-snug text-primary sm:text-2xl">
+                    Sheen comparison table
+                  </h2>
                   <SheenSpectrumMatrix />
-                </div>
+                </section>
               )}
 
-              {/* Pro Specialist Tip Callout */}
               {factsheet && (
-                <div className="p-5 sm:p-6 rounded-2xl bg-amber-500/10 border border-amber-200/80 shadow-2xs">
-                  <div className="space-y-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900 block">
-                      AKSHARA SITE SPECIALIST TIP &bull; {factsheet.tipAuthor} ({factsheet.tipRole})
-                    </span>
-                    <p className="text-xs sm:text-sm text-stone-800 leading-relaxed font-normal">
-                      {factsheet.tipText}
-                    </p>
-                  </div>
-                </div>
+                <aside className="rounded-2xl border border-orange-100 bg-orange-50/70 p-4 sm:p-6">
+                  <p className={`${labelClass} text-[11px] sm:text-xs text-[#F05323]`}>Tip from our site team</p>
+                  <p className="mt-2 sm:mt-3 text-[14.5px] sm:text-[15px] leading-relaxed text-stone-800">{factsheet.tipText}</p>
+                  <p className="mt-3 text-sm text-stone-500">
+                    &mdash; {factsheet.tipAuthor}, {factsheet.tipRole}
+                  </p>
+                </aside>
               )}
 
-              {/* Tags Strip */}
-              <div className="pt-6 border-t border-stone-200/80 flex flex-wrap items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground mr-1">
-                  Tagged:
-                </span>
-                {article.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full bg-white text-stone-700 border border-stone-200 px-3.5 py-1 text-xs font-semibold shadow-2xs hover:border-accent/50 transition-colors"
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-
-              {/* Author Biography Card */}
-              <div className="p-6 sm:p-7 rounded-2xl bg-white border border-[#E7E2D6] flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-xs">
-                <div className="size-14 rounded-2xl bg-[#0E2838] text-white flex items-center justify-center font-serif font-black text-xl shrink-0 shadow-md">
-                  {article.author.charAt(0)}
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-primary text-base">{article.author}</h3>
-                    <span className="rounded-full bg-emerald-100 text-emerald-800 px-2.5 py-0.5 text-[10px] font-bold uppercase">
-                      Verified Specialist
+              {/* Tags + author */}
+              <div className="space-y-4 border-t border-stone-200 pt-6 sm:space-y-6 sm:pt-8">
+                <div className="flex flex-wrap gap-2">
+                  {article.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-medium text-stone-600"
+                    >
+                      #{tag}
                     </span>
-                  </div>
-                  <p className="text-xs text-stone-600 leading-relaxed">
-                    {article.authorRole} at Akshara Paints &amp; Hardware Erode. Specializing in Birla Opus formulations, IS standard compliance, and contractor material logistics.
-                  </p>
+                  ))}
                 </div>
-              </div>
 
-              {/* Action CTA Banner */}
-              <div className="p-7 sm:p-8 rounded-3xl bg-gradient-to-br from-[#111827] via-[#0F172A] to-[#0A0F1A] text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6 border border-white/10">
-                <div className="space-y-1.5 text-center sm:text-left">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-300 block">
-                    ENGINEERING DESK SUPPORT
+                <div className={`${boxClass} flex items-center gap-3 p-4 sm:gap-4 sm:p-6`}>
+                  <span className="grid size-11 sm:size-12 shrink-0 place-items-center rounded-full bg-[#0E2838] font-serif text-lg text-white">
+                    {article.author.charAt(0)}
                   </span>
-                  <h3 className="font-display font-serif text-xl sm:text-2xl font-normal tracking-tight text-white">
-                    Have a Technical Project Inquiry?
-                  </h3>
-                  <p className="text-xs sm:text-sm text-stone-300 max-w-md leading-relaxed">
-                    Consult with our engineering desk on specification sheets, Birla Opus color matches, or bulk site delivery schedules.
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full sm:w-auto">
-                  <a
-                    href={`https://wa.me/919876543210?text=Hello%20Akshara%20Paints,%20I%20have%20a%20question%20about%20your%20technical%20article:%20${encodeURIComponent(
-                      article.title
-                    )}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center justify-center rounded-full bg-[#25D366] hover:bg-[#20ba59] text-[#0A2616] px-6 py-2.5 text-xs sm:text-sm font-bold shadow-lg shadow-emerald-950/40 transition-all hover:scale-102 cursor-pointer w-full sm:w-auto"
-                  >
-                    <span>WhatsApp Specialist</span>
-                  </a>
-
-                  <a
-                    href="tel:+919876543210"
-                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/25 bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 text-xs sm:text-sm font-semibold backdrop-blur-xs transition-all hover:scale-102 cursor-pointer w-full sm:w-auto shadow-sm"
-                  >
-                    <Phone className="size-4 text-amber-300" />
-                    <span className="text-white">Call Desk</span>
-                  </a>
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">Written by</p>
+                    <p className="mt-0.5 font-semibold text-stone-900">{article.author}</p>
+                    <p className="text-sm text-stone-500">{article.authorRole}, Akshara Paints &amp; Hardware</p>
+                  </div>
                 </div>
               </div>
+
+              {/* Help strip */}
+              <HelpStrip
+                title="Have a question about this?"
+                text="Our team will help with products, shades and site quantities."
+                whatsappText={`Hello Akshara Paints, I have a question about your article: ${article.title}`}
+              />
             </article>
           </div>
         </div>
 
-        {/* Continue Reading: Other Technical Dispatches */}
+        {/* Continue reading — two small cards */}
         {otherArticles.length > 0 && (
-          <section className="py-14 sm:py-16 px-4 sm:px-7 lg:px-10 bg-stone-100/70 border-t border-[#E7E2D6]">
+          <section className="border-t border-stone-200 px-4 pt-8 pb-8 sm:px-6 sm:pt-10">
             <div className="mx-auto max-w-6xl">
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <span className="text-[0.68rem] sm:text-[0.74rem] font-bold uppercase tracking-[0.24em] text-accent block mb-1">
-                    &mdash; CONTINUE READING &mdash;
-                  </span>
-                  <h2 className="font-display font-serif text-2xl sm:text-3xl text-primary font-normal tracking-tight">
-                    More Technical Dispatches
-                  </h2>
-                </div>
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <h2 className="font-serif text-xl text-primary sm:text-2xl">Continue reading</h2>
                 <button
                   type="button"
                   onClick={onBack}
-                  className="text-xs sm:text-sm font-bold text-accent hover:underline cursor-pointer"
+                  className="shrink-0 text-[13px] font-semibold text-[#F05323] transition-colors hover:text-[#dd4615] cursor-pointer sm:text-sm"
                 >
-                  View All Guides &rarr;
+                  All articles &rarr;
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+              <div className="grid gap-3 md:grid-cols-2 md:gap-4">
                 {otherArticles.map((other) => (
-                  <div
+                  <article
                     key={other.id}
+                    role="link"
+                    tabIndex={0}
                     onClick={() => onSelectArticle(other)}
-                    className="group rounded-3xl border border-[#E7E2D6] bg-white px-[15px] py-5 shadow-xs hover:shadow-lg transition-all duration-300 cursor-pointer hover:-translate-y-1 flex flex-col justify-between"
+                    onKeyDown={(e) => openOnKey(e, other)}
+                    className="group flex cursor-pointer items-stretch overflow-hidden rounded-2xl border border-stone-200 bg-white outline-none transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(14,40,56,0.08)] focus-visible:ring-4 focus-visible:ring-[#F05323]/20"
                   >
-                    <div>
-                      <div className="flex items-center justify-end text-xs text-muted-foreground mb-2.5">
-                        <span className="flex items-center gap-1 font-medium">
-                          <Clock className="size-3 text-accent" /> {other.readTime}
+                    <div className="relative min-h-[100px] w-[104px] shrink-0 overflow-hidden bg-stone-100 sm:w-36">
+                      <img
+                        src={other.image}
+                        alt={other.title}
+                        loading="lazy"
+                        className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+                      />
+                    </div>
+                    <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 p-3 sm:p-4">
+                      <p className="truncate text-[10.5px] font-semibold uppercase tracking-wider text-[#F05323] sm:text-[11px]">
+                        {other.categoryLabel}
+                        <span className="font-medium normal-case tracking-normal text-stone-400">
+                          {" "}&middot; {other.readTime}
                         </span>
-                      </div>
-                      <h3
-                        className="font-display font-serif text-base sm:text-lg font-normal text-primary group-hover:text-accent transition-colors leading-snug truncate"
-                        title={other.title}
-                      >
+                      </p>
+                      <h3 className="line-clamp-2 font-serif text-[15.5px] leading-snug text-primary transition-colors group-hover:text-[#F05323] sm:text-[17px]">
                         {other.title}
                       </h3>
-                      <p className="mt-2 text-xs sm:text-[13px] text-muted-foreground line-clamp-2 leading-relaxed">
-                        {other.summary}
-                      </p>
+                      <span className="mt-0.5 inline-flex items-center gap-1 text-[12px] font-semibold text-stone-500 transition-colors group-hover:text-[#F05323]">
+                        Read article <ArrowRight className="size-3.5" />
+                      </span>
                     </div>
-
-                    <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-bold text-primary">
-                      <span>Read Full Guide</span>
-                      <ArrowRight className="size-4 text-accent group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
+                  </article>
                 ))}
               </div>
             </div>
@@ -1232,7 +1074,7 @@ function FullArticlePage({
         )}
       </main>
 
-      <SiteFooter />
+      <SiteFooter className="mt-0! sm:mt-0!" />
     </div>
   );
 }
@@ -1309,281 +1151,205 @@ function BlogPage() {
     return matchesCategory && matchesSearch;
   });
 
+  const showFeatured = selectedCategory === "all" && !searchQuery;
+  const gridArticles = showFeatured
+    ? filteredArticles.filter((a) => a.id !== featuredArticle.id)
+    : filteredArticles;
+  const categoryLabel = (id: Article["category"]) => categories.find((c) => c.id === id)?.label ?? "";
+  const gridHeading = searchQuery
+    ? `Results for “${searchQuery}”`
+    : selectedCategory === "all"
+      ? "Latest articles"
+      : categoryLabel(selectedCategory);
+  const openOnKey = (e: React.KeyboardEvent, article: Article) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleOpenArticle(article);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SiteHeader />
 
-      {/* Hero Header Section - Centered Luxury Architectural Showcase */}
-      <section className="relative pt-10 sm:pt-16 pb-5 sm:pb-16 px-3 sm:px-7 lg:px-10 border-b border-primary/10 overflow-hidden bg-gradient-to-b from-stone-50/80 via-white to-background">
-        <div className="absolute left-1/2 -top-28 -translate-x-1/2 size-[650px] rounded-full bg-radial from-accent/12 via-primary/5 to-transparent blur-3xl pointer-events-none" />
-
-        <div className="mx-auto max-w-4xl text-center relative z-10">
-          {/* Centered Kicker */}
-          <span className="text-[9px] sm:text-[0.74rem] font-bold uppercase tracking-[0.22em] text-accent block mb-1.5 sm:mb-3.5 select-none">
-            &mdash; TECHNICAL DISPATCHES &amp; INDUSTRY INSIGHTS &mdash;
-          </span>
-
-          {/* Centered Serif Main Heading */}
-          <h1 className="font-display font-serif text-2xl sm:text-5xl lg:text-6xl tracking-tight text-primary font-normal leading-tight mb-1.5 sm:mb-4">
-            Knowledge &amp; Insights
-          </h1>
-
-          {/* Centered Subtitle Paragraph */}
-          <p className="text-xs sm:text-sm md:text-[15px] text-muted-foreground tracking-wide leading-relaxed max-w-2xl mx-auto">
-            Practical engineering guides, Birla Opus shade theory, waterproofing chemistry, and electrical conduit compliance &mdash; authored by Akshara&apos;s technical specialists and site consultants.
-          </p>
-
-          {/* Clean Authority Metadata Strip */}
-          <div className="hidden sm:flex items-center justify-center gap-4 sm:gap-6 text-[11px] sm:text-xs font-semibold text-stone-500 mt-4 select-none">
-            <span>25+ Technical Publications</span>
-            <span className="opacity-30">&bull;</span>
-            <span>IS:9537 Electrical Codes</span>
-            <span className="opacity-30">&bull;</span>
-            <span>Birla Opus Color Studio</span>
-            <span className="opacity-30">&bull;</span>
-            <span>Field-Tested Applicator SOPs</span>
+      {/* Page header: title on the left, search & filters on the right */}
+      <section className="px-4 sm:px-7 lg:px-10 pt-7 sm:pt-14 pb-5 sm:pb-10 border-b border-stone-200/70">
+        <div className="mx-auto max-w-[1440px] flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
+          {/* Title */}
+          <div className="text-center lg:text-left">
+            <p className="flex items-center justify-center lg:justify-start gap-2.5 sm:gap-3 text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#F05323] sm:text-xs sm:tracking-[0.22em]">
+              <span aria-hidden className="h-px w-6 shrink-0 bg-current opacity-50 sm:w-8" />
+              <span className="sm:hidden">Guides &amp; insights</span>
+              <span className="hidden sm:inline">Technical dispatches &amp; industry insights</span>
+              <span aria-hidden className="h-px w-6 shrink-0 bg-current opacity-50 sm:w-8" />
+            </p>
+            <h1 className="mt-1.5 sm:mt-2 font-serif text-[2rem] leading-tight sm:text-5xl lg:text-[2.75rem] xl:text-5xl text-primary">
+              Knowledge &amp; Insights
+            </h1>
           </div>
 
-          {/* Controls Level 1: Centered Luxury Search Bar */}
-          <div className="mt-5 sm:mt-7 max-w-lg mx-auto w-full">
-            <div className="relative w-full">
-              <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 size-3.5 sm:size-4 text-stone-400 pointer-events-none" />
+          {/* Search & filters */}
+          <div className="flex w-full flex-col gap-3 lg:w-auto lg:shrink-0">
+            <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-stone-400 pointer-events-none" />
               <input
-                type="text"
+                type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search technical guides, standards, or materials..."
-                className="w-full h-10 sm:h-11 rounded-full border border-stone-200/90 bg-white/95 pl-10 sm:pl-11 pr-10 text-xs sm:text-sm text-foreground placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-2xs hover:border-stone-300"
+                placeholder="Search articles"
+                aria-label="Search articles"
+                className="w-full h-11 rounded-full border border-stone-200 bg-white pl-11 pr-16 text-sm text-foreground placeholder:text-stone-400 outline-none transition focus:border-[#F05323] focus:ring-4 focus:ring-[#F05323]/10 [&::-webkit-search-cancel-button]:hidden"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-stone-400 hover:text-stone-800 cursor-pointer p-1"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-stone-400 hover:text-stone-800 cursor-pointer"
                 >
                   Clear
                 </button>
               )}
             </div>
-          </div>
 
-          {/* Controls Level 2: Discrete Category Filter Chips (Single-Row Horizontal Scroll on Mobile) */}
-          <div className="mt-3 sm:mt-4 flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1 px-1 justify-start sm:justify-center max-w-4xl mx-auto">
-            {categories.map((cat) => {
-              const isActive = selectedCategory === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`h-[30px] sm:h-[34px] rounded-full px-3.5 sm:px-4 text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center shrink-0 border ${
-                    isActive
-                      ? "bg-[#0A2234] text-white border-[#0A2234] shadow-xs"
-                      : "bg-white/95 text-stone-600 border-stone-200/90 hover:text-stone-950 hover:bg-stone-50 hover:border-stone-300 shadow-2xs"
-                  }`}
-                >
-                  <span>{cat.label}</span>
-                  <span
-                    className={`ml-1.5 text-[10px] font-mono ${
-                      isActive ? "text-white/80 font-bold" : "text-stone-400"
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 sm:justify-center lg:justify-end">
+              {categories.map((cat) => {
+                const isActive = selectedCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setSelectedCategory(cat.id)}
+                    aria-pressed={isActive}
+                    className={`h-9 shrink-0 rounded-full border px-3.5 sm:px-4 text-[13px] font-semibold whitespace-nowrap transition-colors cursor-pointer flex items-center ${
+                      isActive
+                        ? "bg-[#0A2234] text-white border-[#0A2234]"
+                        : "bg-white text-stone-600 border-stone-200 hover:text-stone-900 hover:border-stone-300"
                     }`}
                   >
-                    ({cat.count})
-                  </span>
-                </button>
-              );
-            })}
+                    {cat.label}
+                    <span className={`ml-1.5 text-[11px] ${isActive ? "text-white/70" : "text-stone-400"}`}>
+                      {cat.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Featured Master Guide Showcase (Hidden on Mobile, Visible on Desktop) */}
-      {selectedCategory === "all" && !searchQuery && (
-        <section className="hidden md:block py-6 sm:py-14 px-3 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full">
-          <div className="relative rounded-2xl sm:rounded-[36px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
-            <div className="grid grid-cols-1 lg:grid-cols-12 items-center">
-              {/* Left Visual Half */}
-              <div className="lg:col-span-6 relative h-48 sm:h-96 lg:h-full min-h-[220px] sm:min-h-[320px] overflow-hidden">
+      {/* Featured article */}
+      {showFeatured && (
+        <section className="px-4 sm:px-7 lg:px-10 pt-5 sm:pt-10">
+          <div className="mx-auto max-w-[1440px]">
+            <article
+              role="link"
+              tabIndex={0}
+              onClick={() => handleOpenArticle(featuredArticle)}
+              onKeyDown={(e) => openOnKey(e, featuredArticle)}
+              className="group grid cursor-pointer overflow-hidden rounded-[22px] sm:rounded-3xl border border-stone-200 bg-white outline-none transition-shadow duration-300 hover:shadow-[0_18px_40px_rgba(14,40,56,0.08)] focus-visible:ring-4 focus-visible:ring-[#F05323]/20 lg:grid-cols-2"
+            >
+              <div className="relative h-48 overflow-hidden sm:h-72 lg:h-auto lg:min-h-[360px]">
                 <img
                   src={featuredArticle.image}
                   alt={featuredArticle.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                <div className="absolute top-3 sm:top-5 left-3 sm:left-5">
-                  <span className="rounded-full bg-accent text-white px-2.5 sm:px-3 py-0.5 sm:py-1 text-[0.62rem] sm:text-[0.68rem] font-bold uppercase tracking-wider shadow-sm">
-                    Featured Master Dispatch
-                  </span>
-                </div>
-                <div className="absolute bottom-3 sm:bottom-5 left-3 sm:left-5 right-3 sm:right-5 text-white/90 text-[10px] sm:text-xs flex items-center justify-between">
-                  <span className="flex items-center gap-1.5">
-                    <User className="size-3 sm:size-3.5 text-accent" /> {featuredArticle.author}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Clock className="size-3 sm:size-3.5" /> {featuredArticle.readTime}
-                  </span>
-                </div>
+                <span className="absolute left-3 top-3 rounded-full bg-white/95 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10.5px] sm:text-[11px] font-bold uppercase tracking-wider text-[#F05323] shadow-sm sm:left-5 sm:top-5">
+                  Featured
+                </span>
               </div>
 
-              {/* Right Editorial Half */}
-              <div className="lg:col-span-6 p-4 sm:p-12 space-y-3 sm:space-y-5">
-                <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <Calendar className="size-3.5 text-accent" /> {featuredArticle.date}
-                  </span>
-                  <span>&bull;</span>
-                  <span className="font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                    Peer Reviewed by Field Applicators
-                  </span>
-                </div>
-
-                <h2 className="font-display font-serif text-2xl sm:text-3xl lg:text-[34px] text-primary font-normal leading-tight group-hover:text-paint-deep transition-colors">
+              <div className="flex flex-col justify-center p-4 sm:p-8 lg:p-12">
+                <p className="text-[10.5px] sm:text-xs font-semibold uppercase tracking-wider text-[#F05323]">
+                  {categoryLabel(featuredArticle.category)}
+                </p>
+                <h2 className="mt-1.5 sm:mt-3 font-serif text-[20px] leading-snug text-primary sm:text-3xl sm:leading-tight lg:text-[2.1rem]">
                   {featuredArticle.title}
                 </h2>
-
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed line-clamp-2">
+                <p className="mt-2 sm:mt-4 line-clamp-2 sm:line-clamp-3 text-[13.5px] sm:text-[15px] leading-relaxed text-stone-600">
                   {featuredArticle.summary}
                 </p>
-
-                {/* Key Takeaway Quote Card */}
-                <div className="p-4 rounded-2xl bg-white border border-stone-200/80 shadow-xs">
-                  <p className="text-[10px] uppercase font-bold tracking-wider text-accent mb-1">
-                    Key Technical Takeaway:
-                  </p>
-                  <p className="text-xs font-medium text-foreground/90 leading-relaxed italic">
-                    &ldquo;{featuredArticle.keyTakeaway}&rdquo;
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {featuredArticle.tags.map((t) => (
-                    <span
-                      key={t}
-                      className="rounded-full bg-stone-100 text-stone-700 border border-stone-200 px-3 py-1 text-[11px] font-semibold"
-                    >
-                      #{t}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="pt-3 flex flex-wrap items-center gap-3">
-                  <Button
-                    variant="hero"
-                    size="default"
-                    onClick={() => handleOpenArticle(featuredArticle)}
-                    className="rounded-full px-6 py-2.5 cursor-pointer shadow-md"
-                  >
-                    <span>Read Full Dispatch</span>
-                    <ArrowRight className="size-4 ml-1.5" />
-                  </Button>
-                </div>
+                <p className="mt-3 sm:mt-5 text-[12.5px] sm:text-sm text-stone-500">
+                  {featuredArticle.author} &middot; {featuredArticle.date} &middot; {featuredArticle.readTime}
+                </p>
+                <span className="mt-4 sm:mt-7 inline-flex h-10 sm:h-11 w-full sm:w-fit justify-center items-center gap-2 rounded-full bg-[#F05323] px-6 text-sm font-semibold text-white transition-colors group-hover:bg-[#dd4615]">
+                  Read article
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                </span>
               </div>
-            </div>
+            </article>
           </div>
         </section>
       )}
 
-      {/* 3x3 Architectural Article Grid */}
-      <section className="py-12 sm:py-16 px-4 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full flex-1">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <div>
-            <span className="text-[0.68rem] sm:text-[0.74rem] font-bold uppercase tracking-[0.24em] text-accent block mb-1 select-none">
-              &mdash; CURATED ARCHITECTURAL JOURNAL &mdash;
-            </span>
-            <h2 className="font-display font-serif text-2xl sm:text-3xl text-primary font-normal tracking-tight">
-              {selectedCategory === "all"
-                ? "All Technical Dispatches & Engineering Guides"
-                : categories.find((c) => c.id === selectedCategory)?.label}
-            </h2>
-          </div>
-          <span className="text-xs text-muted-foreground font-semibold bg-white border border-stone-200 px-3.5 py-1.5 rounded-full shadow-xs">
-            Showing {filteredArticles.length} guides
-          </span>
+      {/* Article grid */}
+      <section className="px-4 sm:px-7 lg:px-10 pt-7 sm:pt-14 pb-10 sm:pb-16 mx-auto max-w-[1440px] w-full flex-1">
+        <div className="mb-3 sm:mb-6 flex items-end justify-between gap-4">
+          <h2 className="font-serif text-xl sm:text-3xl text-primary">{gridHeading}</h2>
+          <p className="shrink-0 text-[13px] sm:text-sm text-stone-500">
+            {gridArticles.length} {gridArticles.length === 1 ? "article" : "articles"}
+          </p>
         </div>
 
-        {filteredArticles.length === 0 ? (
-          <div className="text-center py-16 rounded-[28px] border border-stone-200 bg-white p-8">
-            <BookOpen className="size-10 text-muted-foreground mx-auto mb-3" />
-            <h3 className="font-display text-lg font-bold text-primary">No articles match your query</h3>
-            <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
-              Try searching for &apos;Birla Opus&apos;, &apos;conduit&apos;, or &apos;fasteners&apos;.
+        {gridArticles.length === 0 ? (
+          <div className="rounded-3xl border border-stone-200 bg-white px-6 py-16 text-center">
+            <h3 className="font-serif text-xl text-primary">No articles found</h3>
+            <p className="mt-2 text-sm text-stone-500">
+              Try &lsquo;Birla Opus&rsquo;, &lsquo;conduit&rsquo; or &lsquo;fasteners&rsquo;.
             </p>
-            <Button
-              variant="outline"
-              size="sm"
+            <button
+              type="button"
               onClick={() => {
                 setSearchQuery("");
                 setSelectedCategory("all");
               }}
-              className="mt-4 rounded-full"
+              className="mt-5 inline-flex h-10 items-center rounded-full border border-stone-300 bg-white px-5 text-sm font-semibold text-stone-800 transition hover:border-stone-400 hover:bg-stone-50 cursor-pointer"
             >
-              Reset Filters
-            </Button>
+              Show all articles
+            </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 sm:gap-8">
-            {filteredArticles.map((article) => (
+          <div
+            className={`grid gap-3 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 ${gridArticles.length % 4 === 0 ? "xl:grid-cols-4" : ""}`}
+          >
+            {gridArticles.map((article) => (
               <article
                 key={article.id}
+                role="link"
+                tabIndex={0}
                 onClick={() => handleOpenArticle(article)}
-                className="group relative flex flex-col justify-between rounded-[28px] sm:rounded-[32px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer"
+                onKeyDown={(e) => openOnKey(e, article)}
+                className="group flex cursor-pointer flex-row sm:flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white outline-none transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(14,40,56,0.08)] focus-visible:ring-4 focus-visible:ring-[#F05323]/20"
               >
-                {/* Visual Header */}
-                <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-stone-100">
+                <div className="relative min-h-[108px] w-[112px] shrink-0 self-stretch overflow-hidden bg-stone-100 sm:min-h-0 sm:w-auto sm:aspect-[16/10]">
                   <img
                     src={article.image}
                     alt={article.title}
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
+                    className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-[1.04] sm:static"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-
-                  {/* Top Badges */}
-                  <div className="absolute top-3.5 right-3.5">
-                    <span className="rounded-full bg-black/60 backdrop-blur-xs px-2.5 py-1 text-[0.65rem] font-bold text-white flex items-center gap-1 shadow-xs">
-                      <Clock className="size-3" /> {article.readTime}
-                    </span>
-                  </div>
-
-                  {/* Bottom Author Bar */}
-                  <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-[11px] text-white/90">
-                    <span className="flex items-center gap-1.5 font-medium truncate">
-                      <User className="size-3 text-accent" /> {article.author}
-                    </span>
-                    <span className="text-white/80 shrink-0">{article.date}</span>
-                  </div>
                 </div>
 
-                {/* Card Content */}
-                <div className="px-[15px] py-5 flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3
-                      className="font-display font-serif text-base sm:text-lg font-normal text-primary tracking-tight leading-snug group-hover:text-paint-deep transition-colors truncate"
-                      title={article.title}
-                    >
-                      {article.title}
-                    </h3>
-                    <p className="mt-2 text-xs sm:text-[13px] text-muted-foreground leading-relaxed line-clamp-2">
-                      {article.summary}
-                    </p>
+                <div className="flex min-w-0 flex-1 flex-col p-3 sm:p-6">
+                  <p className="truncate text-[10.5px] sm:text-xs font-semibold uppercase tracking-wider text-[#F05323]">
+                    {categoryLabel(article.category)}
+                    <span className="font-medium normal-case tracking-normal text-stone-400">
+                      {" "}&middot; {article.readTime}
+                    </span>
+                  </p>
+                  <h3 className="mt-1 sm:mt-2 line-clamp-2 font-serif text-[15.5px] sm:text-xl leading-snug text-primary transition-colors group-hover:text-[#F05323]">
+                    {article.title}
+                  </h3>
+                  <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-stone-600 max-sm:hidden">{article.summary}</p>
 
-                    {/* Tags */}
-                    <div className="mt-4 flex flex-wrap gap-1.5 pt-3 border-t border-stone-200/70">
-                      {article.tags.map((t) => (
-                        <span
-                          key={t}
-                          className="rounded-full bg-white border border-stone-200/80 px-2.5 py-0.5 text-[10.5px] font-semibold text-muted-foreground"
-                        >
-                          #{t}
-                        </span>
-                      ))}
+                  <div className="mt-auto pt-2 sm:pt-5">
+                    <div className="flex items-center justify-between gap-3 text-[12px] text-stone-500 sm:border-t sm:border-stone-100 sm:pt-4 sm:text-[13px]">
+                      <span className="truncate">
+                        {article.author} &middot; {article.date}
+                      </span>
+                      <ArrowRight className="size-4 shrink-0 text-[#F05323] transition-transform group-hover:translate-x-1" />
                     </div>
-                  </div>
-
-                  {/* Read Article Action */}
-                  <div className="mt-6 pt-4 border-t border-stone-200/80 flex items-center justify-between text-xs font-semibold text-primary">
-                    <span className="group-hover:text-accent transition-colors">Read Full Guide</span>
-                    <ArrowRight className="size-4 text-accent group-hover:translate-x-1.5 transition-transform" />
                   </div>
                 </div>
               </article>

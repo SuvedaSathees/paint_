@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Check,
@@ -180,6 +180,84 @@ const TONES: ToneOption[] = [
   { id: "emerald", name: "Emerald Forest", hex: "#2D4A3E", roomImage: "/room-forest.jpg", code: "BO-6622" },
 ];
 
+const MOBILE_SPACE_LABEL: Record<string, string> = {
+  room: "Room",
+  "2bhk": "2BHK",
+  villa: "Villa",
+  exterior: "Exterior",
+  commercial: "Site",
+};
+
+const MOBILE_FINISH_LABEL: Record<string, string> = {
+  standard: "Standard",
+  premium: "Premium",
+  "bulk-drum": "Bulk 20L",
+};
+
+// Same per-litre rates used in the estimate below.
+const MOBILE_FINISH_RATE: Record<string, number> = {
+  standard: 285,
+  premium: 415,
+  "bulk-drum": 235,
+};
+
+const MOBILE_CONDITION_LABEL: Record<string, string> = {
+  repaint: "Repainting",
+  fresh: "New plaster",
+};
+
+const MOBILE_CONDITION_DETAIL: Record<string, string> = {
+  repaint: "2 coats on existing paint",
+  fresh: "Primer + 2 coats",
+};
+
+function ChoiceGroup({
+  label,
+  detail,
+  children,
+}: {
+  label: string;
+  detail?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div>
+      <div className="mb-2 flex items-baseline justify-between gap-3">
+        <span className="text-[13px] font-semibold text-stone-900">{label}</span>
+        {detail && <span className="truncate text-[12px] text-stone-500">{detail}</span>}
+      </div>
+      <div className="flex">{children}</div>
+    </div>
+  );
+}
+
+function Tile({
+  active,
+  onClick,
+  className = "",
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`flex flex-col items-center justify-center rounded-2xl border px-1 text-center transition-all cursor-pointer active:scale-[0.97] ${
+        active
+          ? "border-[#1D4A38] bg-[#1D4A38] text-white shadow-[0_4px_12px_rgba(29,74,56,0.25)]"
+          : "border-stone-200 bg-[#FBFAF7] text-stone-700 hover:border-stone-300"
+      } ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
 export function PaintEstimator() {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [selectedSpace, setSelectedSpace] = useState<SpaceOption>(SPACES[1]!); // 2BHK default
@@ -210,202 +288,122 @@ export function PaintEstimator() {
   };
 
   return (
-    <section className="pt-6 sm:pt-[50px] pb-6 sm:pb-0 px-3 sm:px-7 lg:px-10 mx-auto max-w-[1360px] w-full">
+    <section className="pt-10 sm:pt-[50px] pb-12 sm:pb-0 px-4 sm:px-7 lg:px-10 mx-auto max-w-[1360px] w-full lg:flex lg:min-h-[100dvh] lg:flex-col lg:justify-center lg:py-8 shortlg:py-3">
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto mb-4 sm:mb-12">
-        <span className="text-[0.68rem] sm:text-xs font-bold uppercase tracking-[0.24em] text-accent block mb-1">
-          &mdash; INSTANT PAINT CALCULATOR &mdash;
+      <div className="text-center max-w-3xl mx-auto mb-5 sm:mb-12 lg:mb-6 shortlg:mb-3">
+        <span className="flex items-center justify-center gap-2.5 sm:gap-3 whitespace-nowrap text-[10.5px] sm:text-xs font-bold uppercase tracking-[0.18em] sm:tracking-[0.24em] text-accent mb-2 sm:mb-1">
+          <span aria-hidden className="h-px w-6 shrink-0 bg-current opacity-50 sm:w-8" />
+          <span className="sm:hidden">Instant paint calculator</span>
+          <span className="hidden sm:inline">INSTANT PAINT CALCULATOR</span>
+          <span aria-hidden className="h-px w-6 shrink-0 bg-current opacity-50 sm:w-8" />
         </span>
-        <h2 className="font-display text-2xl sm:text-4xl lg:text-5xl font-serif tracking-tight text-primary">
+        <h2 className="font-display text-[1.75rem] leading-tight sm:leading-none sm:text-4xl lg:text-5xl shortlg:text-4xl font-serif tracking-tight text-primary">
           Precision Paint Estimator
         </h2>
-        <p className="mt-1 text-xs sm:text-sm text-muted-foreground tracking-wide leading-relaxed max-w-2xl mx-auto">
+        <p className="mx-auto mt-2 max-w-[300px] text-[13px] leading-relaxed text-muted-foreground sm:hidden">
+          Pick your options — the price updates instantly.
+        </p>
+        <p className="hidden sm:block mt-1 text-xs sm:text-sm text-muted-foreground tracking-wide leading-relaxed max-w-2xl mx-auto shortlg:hidden">
           Calculate exact paint liters, primer requirements, and budget estimates tailored to your project.
         </p>
       </div>
 
       {/* ========================================================================= */}
-      {/* MOBILE ONE-PAGE ESTIMATOR (< lg): Fits completely on 1 screen, 0 scrolling */}
+      {/* MOBILE / TABLET ESTIMATOR (< lg): room preview + one-screen choices       */}
       {/* ========================================================================= */}
-      <div className="block lg:hidden rounded-2xl bg-white border border-stone-200/90 shadow-md p-3 sm:p-4">
-        {/* Step Indicator Pills in 1 Single Line */}
-        <div className="grid grid-cols-4 gap-1 p-1 bg-stone-100/90 rounded-xl mb-3">
-          {[
-            { step: 1, label: "Space", val: selectedSpace.name.replace("Single ", "").split(" ")[0] },
-            { step: 2, label: "Finish", val: selectedFinish.badge.replace("Birla ", "").split(" ")[0] },
-            { step: 3, label: "Surface", val: selectedCondition.name.split(" ")[0] },
-            { step: 4, label: "Shade", val: selectedTone.name.split(" ")[0], hex: selectedTone.hex },
-          ].map(({ step, label, val, hex }) => {
-            const isCurrent = currentStep === step;
-            const isPassed = currentStep > step;
-            return (
-              <button
-                key={step}
-                type="button"
-                onClick={() => setCurrentStep(step)}
-                className={`py-1 px-0.5 rounded-lg text-center transition-all cursor-pointer ${
-                  isCurrent
-                    ? "bg-[#1D4A38] text-white shadow-xs font-bold"
-                    : isPassed
-                    ? "bg-white text-emerald-800 font-semibold"
-                    : "text-stone-500 hover:text-stone-800"
-                }`}
-              >
-                <div className="flex items-center justify-center gap-1">
-                  {hex && <span className="size-1.5 rounded-full shrink-0" style={{ backgroundColor: hex }} />}
-                  <span className="text-[0.6rem] uppercase tracking-wider block leading-tight">
-                    0{step} {label}
-                  </span>
-                </div>
-                <span className="text-[0.55rem] block opacity-85 mt-0.5 leading-tight whitespace-nowrap overflow-hidden">
-                  {val}
-                </span>
-              </button>
-            );
-          })}
+      <div className="mx-auto block w-full max-w-xl overflow-hidden rounded-[24px] border border-stone-200/90 bg-white shadow-[0_8px_30px_rgba(15,30,54,0.08)] lg:hidden">
+        {/* Room preview with live estimate */}
+        <div className="relative h-[156px] w-full overflow-hidden bg-stone-200">
+          {TONES.map((tone) => (
+            <img
+              key={tone.id}
+              src={tone.roomImage}
+              alt={`Room painted in ${tone.name}`}
+              loading="lazy"
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
+                selectedTone.id === tone.id ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          ))}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
+
+          <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/90 py-1 pl-1 pr-2.5 text-[11.5px] font-semibold text-stone-800 shadow-sm backdrop-blur">
+            <span className="size-4 rounded-full ring-1 ring-black/10" style={{ backgroundColor: selectedTone.hex }} />
+            {selectedTone.name}
+          </span>
+
+          <div className="absolute inset-x-3.5 bottom-3 flex items-end justify-between gap-3 text-white">
+            <div className="min-w-0">
+              <span className="block text-[10.5px] font-bold uppercase tracking-[0.16em] text-white/70">
+                Your estimate
+              </span>
+              <strong className="mt-0.5 block font-serif text-[27px] font-semibold leading-none tracking-tight">
+                ₹{estimatedMin.toLocaleString("en-IN")} – {estimatedMax.toLocaleString("en-IN")}
+              </strong>
+            </div>
+            <span className="shrink-0 rounded-full bg-white/18 px-3 py-1.5 text-[13px] font-bold ring-1 ring-white/30 backdrop-blur">
+              ~{totalLiters} L paint
+            </span>
+          </div>
         </div>
 
-        {/* Step Content Area (Compact height ~155px) */}
-        <div className="min-h-[155px] flex flex-col justify-center">
-          {/* Step 1: Space */}
-          {currentStep === 1 && (
-            <div className="grid grid-cols-2 gap-1.5">
+        {/* Choices — everything on one screen, the estimate updates instantly */}
+        <div className="space-y-3.5 p-4">
+          <ChoiceGroup label="Space" detail={selectedSpace.subtitle.split("•")[0]?.trim()}>
+            <div className="grid w-full grid-cols-5 gap-1.5">
               {SPACES.map((space) => {
                 const Icon = space.icon;
-                const isSelected = selectedSpace.id === space.id;
-                const isCommercial = space.id === "commercial";
+                const active = selectedSpace.id === space.id;
                 return (
-                  <button
-                    key={space.id}
-                    type="button"
-                    onClick={() => {
-                      setSelectedSpace(space);
-                      setCurrentStep(2);
-                    }}
-                    className={`p-2 rounded-xl border text-left transition-all flex items-center gap-2 cursor-pointer ${
-                      isCommercial ? "col-span-2" : ""
-                    } ${
-                      isSelected
-                        ? "bg-[#1D4A38] text-white border-[#1D4A38] shadow-xs"
-                        : "bg-stone-50 hover:bg-stone-100 text-stone-900 border-stone-200/80"
-                    }`}
-                  >
-                    <div
-                      className={`size-6 rounded-lg flex items-center justify-center shrink-0 ${
-                        isSelected
-                          ? "bg-white/20 text-white"
-                          : "bg-white text-stone-700 border border-stone-200"
-                      }`}
-                    >
-                      <Icon className="size-3" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <span className="block text-[0.66rem] font-bold leading-tight break-words">
-                        {space.name}
-                      </span>
-                      <span
-                        className={`block text-[0.55rem] font-mono leading-tight mt-0.5 ${
-                          isSelected ? "text-white/75" : "text-stone-500"
-                        }`}
-                      >
-                        {space.subtitle.split("•")[0]?.trim()}
-                      </span>
-                    </div>
-                    {isSelected && <Check className="size-3 stroke-[3] shrink-0 text-white" />}
-                  </button>
+                  <Tile key={space.id} active={active} onClick={() => setSelectedSpace(space)} className="h-[62px] gap-1">
+                    <Icon className="size-[18px]" strokeWidth={1.9} />
+                    <span className="text-[11px] font-semibold leading-none">
+                      {MOBILE_SPACE_LABEL[space.id] ?? space.name}
+                    </span>
+                  </Tile>
                 );
               })}
             </div>
-          )}
+          </ChoiceGroup>
 
-          {/* Step 2: Finish */}
-          {currentStep === 2 && (
-            <div className="space-y-1.5">
+          <ChoiceGroup label="Finish" detail={selectedFinish.type.split("•")[0]?.trim()}>
+            <div className="grid w-full grid-cols-3 gap-1.5">
               {FINISHES.map((finish) => {
-                const isSelected = selectedFinish.id === finish.id;
+                const active = selectedFinish.id === finish.id;
                 return (
-                  <button
-                    key={finish.id}
-                    type="button"
-                    onClick={() => {
-                      setSelectedFinish(finish);
-                      setCurrentStep(3);
-                    }}
-                    className={`w-full p-2 rounded-xl border text-left transition-all flex items-center justify-between gap-2 cursor-pointer ${
-                      isSelected
-                        ? "bg-[#1D4A38] text-white border-[#1D4A38] shadow-xs"
-                        : "bg-stone-50 hover:bg-stone-100 text-stone-900 border-stone-200/80"
-                    }`}
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className={`text-[0.58rem] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${
-                            isSelected ? "bg-white/20 text-white" : "bg-stone-200 text-stone-700"
-                          }`}
-                        >
-                          {finish.badge}
-                        </span>
-                        <strong className="text-[0.72rem] font-bold truncate">
-                          {finish.name.split("—")[0]?.trim()}
-                        </strong>
-                      </div>
-                      <p
-                        className={`text-[0.6rem] truncate mt-0.5 ${
-                          isSelected ? "text-white/80" : "text-stone-500"
-                        }`}
-                      >
-                        {finish.type.split("•")[0]?.trim()}
-                      </p>
-                    </div>
-                    {isSelected && <Check className="size-3.5 stroke-[3] shrink-0 text-white" />}
-                  </button>
+                  <Tile key={finish.id} active={active} onClick={() => setSelectedFinish(finish)} className="py-2.5">
+                    <span className="text-[13px] font-semibold leading-tight">
+                      {MOBILE_FINISH_LABEL[finish.id] ?? finish.name}
+                    </span>
+                    <span className={`mt-0.5 text-[11.5px] ${active ? "text-white/75" : "text-stone-500"}`}>
+                      ₹{MOBILE_FINISH_RATE[finish.id]}/litre
+                    </span>
+                  </Tile>
                 );
               })}
             </div>
-          )}
+          </ChoiceGroup>
 
-          {/* Step 3: Condition */}
-          {currentStep === 3 && (
-            <div className="space-y-2">
+          <ChoiceGroup label="Walls">
+            <div className="grid w-full grid-cols-2 gap-1.5">
               {CONDITIONS.map((cond) => {
-                const isSelected = selectedCondition.id === cond.id;
+                const active = selectedCondition.id === cond.id;
                 return (
-                  <button
-                    key={cond.id}
-                    type="button"
-                    onClick={() => {
-                      setSelectedCondition(cond);
-                      setCurrentStep(4);
-                    }}
-                    className={`w-full p-2.5 rounded-xl border text-left transition-all flex items-center justify-between gap-2 cursor-pointer ${
-                      isSelected
-                        ? "bg-[#1D4A38] text-white border-[#1D4A38] shadow-xs"
-                        : "bg-stone-50 hover:bg-stone-100 text-stone-900 border-stone-200/80"
-                    }`}
-                  >
-                    <div className="min-w-0 flex-1">
-                      <strong className="block text-[0.78rem] font-bold leading-tight">
-                        {cond.name}
-                      </strong>
-                      <p
-                        className={`text-[0.62rem] mt-0.5 ${
-                          isSelected ? "text-white/80" : "text-stone-500"
-                        }`}
-                      >
-                        {cond.desc.split("•")[0]?.trim()}
-                      </p>
-                    </div>
-                    {isSelected && <Check className="size-3.5 stroke-[3] shrink-0 text-white" />}
-                  </button>
+                  <Tile key={cond.id} active={active} onClick={() => setSelectedCondition(cond)} className="py-2.5">
+                    <span className="text-[13px] font-semibold leading-tight">
+                      {MOBILE_CONDITION_LABEL[cond.id] ?? cond.name}
+                    </span>
+                    <span className={`mt-0.5 text-[11.5px] ${active ? "text-white/75" : "text-stone-500"}`}>
+                      {MOBILE_CONDITION_DETAIL[cond.id]}
+                    </span>
+                  </Tile>
                 );
               })}
             </div>
-          )}
+          </ChoiceGroup>
 
-          {/* Step 4: Shade */}
-          {currentStep === 4 && (
-            <div className="grid grid-cols-4 gap-1.5">
+          <ChoiceGroup label="Shade" detail={`${selectedTone.name} · ${selectedTone.code}`}>
+            <div className="flex w-full justify-between">
               {TONES.map((tone) => {
                 const isSelected = selectedTone.id === tone.id;
                 return (
@@ -413,83 +411,29 @@ export function PaintEstimator() {
                     key={tone.id}
                     type="button"
                     onClick={() => setSelectedTone(tone)}
-                    className={`p-1 rounded-xl border text-center transition-all cursor-pointer ${
-                      isSelected
-                        ? "border-stone-900 ring-2 ring-stone-900/20 bg-stone-50 shadow-xs"
-                        : "border-stone-200 hover:border-stone-300 bg-white"
+                    aria-label={tone.name}
+                    aria-pressed={isSelected}
+                    className={`grid size-8 place-items-center rounded-full border border-black/10 transition cursor-pointer ${
+                      isSelected ? "ring-2 ring-[#1D4A38] ring-offset-2" : "hover:scale-110"
                     }`}
+                    style={{ backgroundColor: tone.hex }}
                   >
-                    <span
-                      className="h-6 w-full rounded-lg block shadow-2xs border border-black/10 relative"
-                      style={{ backgroundColor: tone.hex }}
-                    >
-                      {isSelected && (
-                        <Check className="size-2.5 stroke-[3] text-white absolute inset-0 m-auto drop-shadow-xs" />
-                      )}
-                    </span>
-                    <span className="block text-[0.52rem] font-mono uppercase text-stone-400 mt-0.5 truncate">
-                      {tone.code}
-                    </span>
-                    <strong className="block text-[0.6rem] font-bold text-stone-900 truncate">
-                      {tone.name.split(" ")[0]}
-                    </strong>
+                    {isSelected && <Check className="size-3.5 stroke-[3] text-white drop-shadow" />}
                   </button>
                 );
               })}
             </div>
-          )}
-        </div>
+          </ChoiceGroup>
 
-        {/* Bottom Compact Estimate Bar & Action Buttons */}
-        <div className="mt-3 pt-2 border-t border-stone-200 flex items-center justify-between gap-2">
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[0.62rem] text-stone-500">Volume:</span>
-              <strong className="font-mono font-bold text-xs text-amber-900">~{totalLiters}L</strong>
-            </div>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="text-[0.62rem] text-stone-500">Est. Price:</span>
-              <strong className="font-serif font-bold text-xs sm:text-sm text-stone-900">
-                ₹{estimatedMin.toLocaleString("en-IN")} – ₹{estimatedMax.toLocaleString("en-IN")}
-              </strong>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1.5 shrink-0">
-            {currentStep > 1 && (
-              <button
-                type="button"
-                onClick={() => setCurrentStep((p) => Math.max(1, p - 1))}
-                className="px-2.5 py-1 rounded-full text-[0.65rem] font-medium border border-stone-300 text-stone-600 bg-white cursor-pointer hover:bg-stone-50"
-              >
-                Back
-              </button>
-            )}
-
-            {currentStep < 4 ? (
-              <button
-                type="button"
-                onClick={() => setCurrentStep((p) => Math.min(4, p + 1))}
-                className="px-3.5 py-1.5 rounded-full text-[0.68rem] font-bold bg-[#1D4A38] text-white shadow-xs cursor-pointer hover:bg-[#15382b]"
-              >
-                Next
-              </button>
-            ) : (
-              <Button
-                size="sm"
-                asChild
-                className="rounded-full text-[0.68rem] font-bold bg-[#E03A00] hover:bg-[#c83400] text-white h-7 px-3.5 shadow-xs"
-              >
-                <a
-                  href={`https://wa.me/919443722255?text=Hello%20Akshara%20Paints,%20I%20used%20your%20Instant%20Paint%20Calculator:%0A- Space: ${encodeURIComponent(selectedSpace.name)}%0A- Finish: ${encodeURIComponent(selectedFinish.name)}%0A- Condition: ${encodeURIComponent(selectedCondition.name)}%0A- Shade: ${encodeURIComponent(selectedTone.name)} (${selectedTone.code})%0A- Est. Volume: ~${totalLiters}L%0A- Est. Price: ₹${estimatedMin.toLocaleString("en-IN")} - ₹${estimatedMax.toLocaleString("en-IN")}%0APlease provide an official quote.`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <span>Quote &rarr;</span>
-                </a>
-              </Button>
-            )}
-          </div>
+          <a
+            href={`https://wa.me/919443722255?text=Hello%20Akshara%20Paints,%20I%20used%20your%20Instant%20Paint%20Calculator:%0A- Space: ${encodeURIComponent(selectedSpace.name)}%0A- Finish: ${encodeURIComponent(selectedFinish.name)}%0A- Condition: ${encodeURIComponent(selectedCondition.name)}%0A- Shade: ${encodeURIComponent(selectedTone.name)} (${selectedTone.code})%0A- Est. Volume: ~${totalLiters}L%0A- Est. Price: ₹${estimatedMin.toLocaleString("en-IN")} - ₹${estimatedMax.toLocaleString("en-IN")}%0APlease provide an official quote.`}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-4! flex h-12 w-full items-center justify-center gap-1.5 rounded-full bg-[#1D4A38] text-[14px] font-semibold text-white shadow-[0_6px_16px_rgba(29,74,56,0.25)] transition-colors hover:bg-[#15382b]"
+          >
+            Get exact quote
+            <ArrowRight className="size-4" />
+          </a>
         </div>
       </div>
 
@@ -531,7 +475,7 @@ export function PaintEstimator() {
                   key={step}
                   type="button"
                   onClick={() => setCurrentStep(step)}
-                  className={`text-left group cursor-pointer focus:outline-none transition-all duration-200 rounded-2xl p-2.5 sm:px-3 sm:py-2.5 flex items-center gap-2.5 sm:gap-3 border h-[64px] w-full min-w-0 ${
+                  className={`text-left group cursor-pointer focus:outline-none transition-all duration-200 rounded-2xl p-2.5 sm:px-3 sm:py-2.5 flex items-center gap-2.5 sm:gap-3 border h-[52px] w-full min-w-0 ${
                     isCurrent
                       ? "bg-[#1D4A38] text-white shadow-sm border-[#1D4A38]"
                       : isPassed
@@ -599,26 +543,26 @@ export function PaintEstimator() {
         </div>
 
         {/* 2-Column Desktop Body */}
-        <div className="flex flex-row items-stretch w-full min-h-[420px]">
+        <div className="flex flex-row items-stretch w-full min-h-[476px]">
           {/* Left Column: Interactive Wizard Steps (56% width) */}
-          <div className="w-[56%] py-6 px-8 flex flex-col justify-between min-w-0">
+          <div className="w-[56%] py-4 px-8 flex flex-col justify-between min-w-0">
             <div>
               {/* Step 1: Space */}
               {currentStep === 1 && (
-                <div className="space-y-4 animate-fade-in min-h-[430px] flex flex-col justify-between">
+                <div className="space-y-3 animate-fade-in flex flex-col justify-between">
                   <div>
                     <span className="text-xs font-bold uppercase tracking-[0.24em] text-accent block">
                       TAP 1 OF 4
                     </span>
-                    <h3 className="font-serif text-[30px] text-[#0A2234] font-normal tracking-tight mt-1">
+                    <h3 className="font-serif text-[24px] text-[#0A2234] font-normal tracking-tight mt-1">
                       Which space are you painting?
                     </h3>
-                    <p className="text-[13.5px] text-stone-500 mt-1">
+                    <p className="hidden">
                       Choose the area to calculate square footage and coverage requirements.
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 pt-2">
+                  <div className="grid grid-cols-2 gap-2 pt-0">
                     {SPACES.map((space) => {
                       const Icon = space.icon;
                       const isSelected = selectedSpace.id === space.id;
@@ -631,7 +575,7 @@ export function PaintEstimator() {
                             setSelectedSpace(space);
                             setCurrentStep(2);
                           }}
-                          className={`p-4 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between gap-3 h-[118px] ${
+                          className={`p-2.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between gap-1 ${
                             isSelected
                               ? "bg-[#1D4A38] border-[#1D4A38] text-white shadow-md"
                               : "bg-[#FAF9F6] hover:bg-[#F4F2EC] border-[#E8E6E0] hover:border-stone-300 text-stone-900"
@@ -640,7 +584,7 @@ export function PaintEstimator() {
                           <div className="flex items-center justify-between w-full">
                             <div className="flex items-center gap-2.5">
                               <div
-                                className={`size-8 rounded-xl flex items-center justify-center transition-colors ${
+                                className={`size-7 rounded-xl flex items-center justify-center transition-colors ${
                                   isSelected
                                     ? "bg-[#295F4A] border border-white/10 text-white shadow-inner"
                                     : isCommercial
@@ -652,7 +596,7 @@ export function PaintEstimator() {
                               </div>
                               {isCommercial && (
                                 <span
-                                  className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                                  className={`whitespace-nowrap text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                                     isSelected
                                       ? "bg-[#295F4A] text-white border border-white/15"
                                       : "bg-amber-100 text-amber-900 border border-amber-200"
@@ -699,15 +643,15 @@ export function PaintEstimator() {
 
               {/* Step 2: Finish */}
               {currentStep === 2 && (
-                <div className="space-y-4 animate-fade-in min-h-[430px] flex flex-col justify-between">
+                <div className="space-y-3 animate-fade-in flex flex-col justify-between">
                   <div>
                     <span className="text-xs font-bold uppercase tracking-[0.24em] text-accent block">
                       TAP 2 OF 4
                     </span>
-                    <h3 className="font-serif text-[30px] text-[#0A2234] font-normal tracking-tight mt-1">
+                    <h3 className="font-serif text-[24px] text-[#0A2234] font-normal tracking-tight mt-1">
                       Which finish formulation?
                     </h3>
-                    <p className="text-[13.5px] text-stone-500 mt-1">
+                    <p className="hidden">
                       Pick between trade-grade durable emulsion or Birla Opus designer luxury.
                     </p>
                   </div>
@@ -726,7 +670,7 @@ export function PaintEstimator() {
                             setSelectedFinish(finish);
                             setCurrentStep(3);
                           }}
-                          className={`w-full px-4 py-3.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex items-center justify-between gap-3.5 h-[78px] ${
+                          className={`w-full px-4 py-3.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex items-center justify-between gap-3.5 h-[62px] ${
                             isSelected
                               ? "bg-[#1D4A38] border-[#1D4A38] text-white shadow-md ring-1 ring-[#1D4A38]/30"
                               : "bg-[#FAF9F6] hover:bg-[#F4F2EC] border-[#E8E6E0] hover:border-stone-300 text-stone-900"
@@ -797,7 +741,7 @@ export function PaintEstimator() {
                       );
                     })}
 
-                    <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200/90 text-xs text-stone-700 mt-3 space-y-2.5">
+                    <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200/90 text-xs text-stone-700 mt-3 space-y-2.5 hidden">
                       <div className="flex items-center justify-between font-mono font-semibold text-[10.5px] uppercase text-stone-500 tracking-wider">
                         <span>Formulation Specification</span>
                         <span className="text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200 font-bold text-[10px]">
@@ -831,15 +775,15 @@ export function PaintEstimator() {
 
               {/* Step 3: Condition */}
               {currentStep === 3 && (
-                <div className="space-y-4 animate-fade-in min-h-[430px] flex flex-col justify-between">
+                <div className="space-y-3 animate-fade-in flex flex-col justify-between">
                   <div>
                     <span className="text-xs font-bold uppercase tracking-[0.24em] text-accent block">
                       TAP 3 OF 4
                     </span>
-                    <h3 className="font-serif text-[30px] text-[#0A2234] font-normal tracking-tight mt-1">
+                    <h3 className="font-serif text-[24px] text-[#0A2234] font-normal tracking-tight mt-1">
                       What is the wall condition?
                     </h3>
-                    <p className="text-[13.5px] text-stone-500 mt-1">
+                    <p className="hidden">
                       Fresh plaster absorbs more paint and requires primer, while repainting needs less.
                     </p>
                   </div>
@@ -919,7 +863,7 @@ export function PaintEstimator() {
                       );
                     })}
 
-                    <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200/90 text-xs text-stone-700 mt-3 space-y-2.5">
+                    <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200/90 text-xs text-stone-700 mt-3 space-y-2.5 hidden">
                       <div className="flex items-center justify-between font-mono font-semibold text-[10.5px] uppercase text-stone-500 tracking-wider">
                         <span>Application Protocol</span>
                         <span className="text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 font-bold">
@@ -951,15 +895,15 @@ export function PaintEstimator() {
 
               {/* Step 4: Shade */}
               {currentStep === 4 && (
-                <div className="space-y-4 animate-fade-in min-h-[430px] flex flex-col justify-between">
+                <div className="space-y-3 animate-fade-in flex flex-col justify-between">
                   <div>
                     <span className="text-xs font-bold uppercase tracking-[0.24em] text-accent block">
                       TAP 4 OF 4 &bull; FINAL STEP
                     </span>
-                    <h3 className="font-serif text-[30px] text-[#0A2234] font-normal tracking-tight mt-1">
+                    <h3 className="font-serif text-[24px] text-[#0A2234] font-normal tracking-tight mt-1">
                       Which shade palette?
                     </h3>
-                    <p className="text-[13.5px] text-stone-500 mt-1">
+                    <p className="hidden">
                       Select your intended shade to tint your batch in our computerized lab.
                     </p>
                   </div>
@@ -1024,7 +968,7 @@ export function PaintEstimator() {
             </div>
 
             {/* Bottom Controls */}
-            <div className="flex items-center justify-between pt-4 mt-4 border-t border-stone-200">
+            <div className="flex items-center justify-between pt-3 mt-3 border-t border-stone-200">
               <button
                 type="button"
                 onClick={handleReset}
@@ -1071,7 +1015,7 @@ export function PaintEstimator() {
           </div>
 
           {/* Right Column: Studio Showcase & Output (44% width) */}
-          <div className="w-[44%] bg-stone-50 border-l border-stone-200 py-6 px-7 flex flex-col justify-between gap-4 min-w-0">
+          <div className="w-[44%] bg-stone-50 border-l border-stone-200 py-4 px-7 flex flex-col justify-between gap-3 min-w-0">
             <div className="flex items-center justify-between pb-3 border-b border-stone-200 shrink-0">
               <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-stone-500">
                 Automated Tin Fill
@@ -1081,7 +1025,7 @@ export function PaintEstimator() {
               </span>
             </div>
 
-            <div className="relative rounded-2xl overflow-hidden shadow-md border border-stone-200/90 w-full min-h-[300px] flex-1 flex flex-col justify-end bg-stone-200 group">
+            <div className="relative rounded-2xl overflow-hidden shadow-md border border-stone-200/90 w-full min-h-[150px] flex-1 flex flex-col justify-end bg-stone-200 group">
               <img
                 src={selectedTone.roomImage}
                 alt={selectedTone.name}
@@ -1143,7 +1087,7 @@ export function PaintEstimator() {
               </p>
             </div>
 
-            <div className="mt-2 p-3 rounded-xl bg-amber-50/80 border border-amber-200/80 flex items-center justify-between text-xs">
+            <div className="px-3 py-2 rounded-xl bg-amber-50/80 border border-amber-200/80 flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <div className="size-7 rounded-lg bg-stone-900 text-amber-400 flex items-center justify-center shrink-0">
                   <Truck className="size-3.5" />

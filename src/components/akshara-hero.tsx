@@ -11,6 +11,21 @@ export { heroNavItems };
 
 const SCROLL_DISTANCE = 3800;
 
+// The opening animation only plays when Home itself is loaded or refreshed in the browser.
+// Reaching Home from the menu, the logo or any link opens straight on the finished hero.
+let introHasPlayed = false;
+
+function shouldPlayIntro() {
+  if (introHasPlayed) return false;
+  try {
+    const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+    if (nav?.name) return new URL(nav.name).pathname === "/";
+  } catch {
+    /* fall through */
+  }
+  return true;
+}
+
 const DESKTOP_STATS = [
   { value: 5000, suffix: "+", label: "Colours in Stock" },
   { value: 15, suffix: "+", label: "Years in Erode" },
@@ -37,7 +52,23 @@ export function AksharaHero() {
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
   const wallCanvasRef = useRef<HTMLCanvasElement>(null);
   const rollerRef = useRef<HTMLDivElement>(null);
-  const [isAnimationEnded, setIsAnimationEnded] = useState(false);
+  const [returning] = useState(() => typeof window !== "undefined" && !shouldPlayIntro());
+  const returningRef = useRef(returning);
+  const [isAnimationEnded, setIsAnimationEnded] = useState(returning);
+  // Mobile: the nav is fixed at the top; it switches to the light style once the dark hero is scrolled past.
+  const [mobilePastHero, setMobilePastHero] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const update = () => setMobilePastHero(window.scrollY > window.innerHeight - 72);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
 
   useEffect(() => {
     // Safety fallback: reveal text after 4.8s even if mobile browser delays autoplay
@@ -81,8 +112,35 @@ export function AksharaHero() {
     requestAnimationFrame(step);
   };
 
+  // A fresh load or refresh of Home always starts from the very beginning,
+  // even if the browser or router would restore the old scroll position.
+  useEffect(() => {
+    if (returningRef.current || window.location.hash === "#finale") return;
+    const toTop = () => window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+    let userMoved = false;
+    const markMoved = () => {
+      userMoved = true;
+    };
+    toTop();
+    window.addEventListener("wheel", markMoved, { passive: true, once: true });
+    window.addEventListener("touchstart", markMoved, { passive: true, once: true });
+    window.addEventListener("keydown", markMoved, { once: true });
+    const timers = [60, 300, 800].map((ms) =>
+      window.setTimeout(() => {
+        if (!userMoved && window.scrollY > 20) toTop();
+      }, ms),
+    );
+    return () => {
+      timers.forEach((t) => window.clearTimeout(t));
+      window.removeEventListener("wheel", markMoved);
+      window.removeEventListener("touchstart", markMoved);
+      window.removeEventListener("keydown", markMoved);
+    };
+  }, []);
+
   useEffect(() => {
     if (!rootRef.current) return;
+    introHasPlayed = true;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduceMotion) {
@@ -104,6 +162,7 @@ export function AksharaHero() {
     // ==========================================================
     mm.add("(min-width: 768px)", () => {
       const video = desktopVideoRef.current;
+      const skipToFinale = returningRef.current;
       let isSeeking = false;
       let pendingSeek: number | null = null;
 
@@ -131,7 +190,7 @@ export function AksharaHero() {
 
       const onMeta = () => {
         if (video) {
-          video.currentTime = 0.001;
+          video.currentTime = skipToFinale ? Math.max(0.001, video.duration - 0.05) : 0.001;
         }
       };
 
@@ -185,7 +244,7 @@ export function AksharaHero() {
       const skipOpening = () => {
         if (opening.progress() < 1) opening.timeScale(6);
       };
-      if (window.scrollY > 20 || window.location.hash === "#finale") {
+      if (skipToFinale || window.scrollY > 20 || window.location.hash === "#finale") {
         opening.progress(1);
         reveal?.finish();
       }
@@ -287,7 +346,41 @@ export function AksharaHero() {
           4.0
         );
 
+      // Arriving at Home from another page or link: open directly on the finished hero
+      const jumpTimers: number[] = [];
+      let userMoved = false;
+      const markMoved = () => {
+        userMoved = true;
+      };
+      if (skipToFinale) {
+        const jump = () => {
+          const st = timeline.scrollTrigger;
+          window.scrollTo({ top: st ? st.end : SCROLL_DISTANCE, behavior: "instant" as ScrollBehavior });
+          st?.update();
+          timeline.progress(1);
+          st?.getTween()?.progress(1);
+        };
+        // If the router's own scroll-to-top lands after our jump, put the finale back
+        const ensure = () => {
+          if (!userMoved && window.scrollY < 50) jump();
+        };
+        jumpTimers.push(
+          window.setTimeout(() => {
+            jump();
+            window.addEventListener("wheel", markMoved, { passive: true, once: true });
+            window.addEventListener("touchstart", markMoved, { passive: true, once: true });
+            window.addEventListener("keydown", markMoved, { once: true });
+          }, 60),
+          window.setTimeout(ensure, 350),
+          window.setTimeout(ensure, 900),
+        );
+      }
+
       return () => {
+        jumpTimers.forEach((t) => window.clearTimeout(t));
+        window.removeEventListener("wheel", markMoved);
+        window.removeEventListener("touchstart", markMoved);
+        window.removeEventListener("keydown", markMoved);
         if (video) {
           video.removeEventListener("seeked", handleSeeked);
         }
@@ -303,7 +396,16 @@ export function AksharaHero() {
     // ==========================================================
     mm.add("(max-width: 767px)", () => {
       const mobileVideo = mobileVideoRef.current;
-      if (mobileVideo) {
+      if (mobileVideo && returningRef.current) {
+        // Returning visit: show the last frame with the finale text, no replay
+        const toEnd = () => {
+          mobileVideo.pause();
+          mobileVideo.currentTime = Math.max(0, mobileVideo.duration - 0.05);
+        };
+        mobileVideo.pause();
+        if (mobileVideo.readyState >= 1) toEnd();
+        else mobileVideo.addEventListener("loadedmetadata", toEnd, { once: true });
+      } else if (mobileVideo) {
         mobileVideo.currentTime = 0;
         mobileVideo.loop = false;
         mobileVideo.play().catch(() => {
@@ -352,7 +454,7 @@ export function AksharaHero() {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
     } else {
-      smoothScrollTo(toEnd ? SCROLL_DISTANCE : 0, 1000);
+      smoothScrollTo(SCROLL_DISTANCE, 1000);
     }
   };
 
@@ -361,6 +463,15 @@ export function AksharaHero() {
       {/* ========================================================================= */}
       {/* MOBILE HERO (< 768px): Full-bleed cinematic video with finale text reveal */}
       {/* ========================================================================= */}
+      {/* Fixed mobile navbar: stays on top while scrolling the whole Home page */}
+      <div className="fixed inset-x-0 top-0 z-[60] px-3.5 pt-3 md:hidden">
+        <SiteHeader
+          variant={mobilePastHero ? "default" : "hero"}
+          onNavigate={handleNavigate}
+          autoHide={false}
+        />
+      </div>
+
       <section
         className="block md:hidden relative w-full min-h-[100dvh] h-[100dvh] overflow-hidden bg-[#071624] text-white select-none flex flex-col justify-between"
         aria-label="Akshara Paints and Hardware mobile introduction"
@@ -392,10 +503,8 @@ export function AksharaHero() {
           }`}
         />
 
-        {/* Floating Mobile Header (Icon Navbar) */}
-        <div className="relative z-30 pt-3 px-3.5 sm:px-6 w-full">
-          <SiteHeader variant="hero" onNavigate={handleNavigate} />
-        </div>
+        {/* Space for the fixed mobile navbar (rendered below, outside the hero) */}
+        <div aria-hidden className="relative z-30 h-[64px] w-full shrink-0" />
 
         {/* Tap to skip hint while animation is playing */}
         {!isAnimationEnded && (

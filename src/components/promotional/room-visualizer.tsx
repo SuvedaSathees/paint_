@@ -101,24 +101,30 @@ export function RoomVisualizer() {
   const [selectedShade, setSelectedShade] = useState<ShadeCard>(SAMPLE_SHADES[0]);
 
   return (
-    <section className="pt-6 sm:pt-10 pb-10 sm:pb-14 px-3 sm:px-6 lg:px-8 mx-auto max-w-[1360px] w-full">
+    <section className="pt-10 sm:pt-10 pb-10 sm:pb-14 px-4 sm:px-6 lg:px-8 mx-auto max-w-[1360px] w-full lg:flex lg:min-h-[100dvh] lg:flex-col lg:justify-center lg:py-10 shortlg:py-5">
       {/* Header */}
-      <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-9">
-        <span className="text-[0.68rem] sm:text-xs font-bold uppercase tracking-[0.24em] text-accent block mb-1.5">
-          &mdash; ARCHITECTURAL COLOR STUDIO &mdash;
+      <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-9 shortlg:mb-5">
+        <span className="flex items-center justify-center gap-2.5 sm:gap-3 whitespace-nowrap text-[10.5px] sm:text-xs font-bold uppercase tracking-[0.18em] sm:tracking-[0.24em] text-accent mb-2 sm:mb-1.5">
+          <span aria-hidden className="h-px w-6 shrink-0 bg-current opacity-50 sm:w-8" />
+          <span className="sm:hidden">Architectural color studio</span>
+          <span className="hidden sm:inline">ARCHITECTURAL COLOR STUDIO</span>
+          <span aria-hidden className="h-px w-6 shrink-0 bg-current opacity-50 sm:w-8" />
         </span>
-        <h2 className="font-display text-2xl sm:text-4xl lg:text-5xl font-serif font-semibold tracking-tight text-primary">
+        <h2 className="font-display text-[1.75rem] leading-tight sm:leading-none sm:text-4xl lg:text-5xl shortlg:text-4xl font-serif font-semibold tracking-tight text-primary">
           Live Room Color Visualizer
         </h2>
-        <p className="mt-2 text-xs sm:text-sm text-muted-foreground tracking-wide leading-relaxed max-w-lg mx-auto">
+        <p className="mx-auto mt-2 max-w-[300px] text-[13px] leading-relaxed text-muted-foreground sm:hidden">
+          Tap a shade to see it on a real living room.
+        </p>
+        <p className="hidden sm:block mt-2 text-xs sm:text-sm text-muted-foreground tracking-wide leading-relaxed max-w-lg mx-auto">
           Experience certified Birla Opus designer shades against natural daylight and room textures before tinting in our computerized lab.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-center rounded-2xl sm:rounded-3xl border border-primary/12 bg-card/75 p-3.5 sm:p-6 lg:p-8 shadow-lg backdrop-blur-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-center rounded-[22px] sm:rounded-3xl border border-stone-200/90 sm:border-primary/12 bg-white sm:bg-card/75 p-3 sm:p-6 lg:p-8 shortlg:p-5 shadow-[0_2px_12px_rgba(15,30,54,0.05)] sm:shadow-lg backdrop-blur-sm">
         {/* Left: Realistic Room Preview Canvas (Preserved Living Room Experience) */}
         <div className="lg:col-span-7 flex flex-col justify-center">
-          <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden rounded-xl sm:rounded-2xl border border-primary/15 bg-stone-900 shadow-xl">
+          <div className="relative aspect-[16/11] sm:aspect-[16/9] lg:aspect-auto lg:h-[min(52dvh,440px)] w-full overflow-hidden rounded-xl sm:rounded-2xl border border-primary/15 bg-stone-900 shadow-xl">
             {/* Photorealistic Living Room Images with Smooth Cross-Fade */}
             {SAMPLE_SHADES.map((shade) => (
               <img
@@ -154,7 +160,7 @@ export function RoomVisualizer() {
             </div>
 
             {/* Bottom-Right Sheen Badge */}
-            <div className="absolute bottom-2.5 right-2.5 sm:bottom-3.5 sm:right-3.5 z-20 rounded-full bg-black/75 backdrop-blur-md px-2.5 py-1 sm:px-3 sm:py-1.5 border border-white/20 text-white shadow-md">
+            <div className="absolute bottom-2.5 right-2.5 sm:bottom-3.5 sm:right-3.5 z-20 hidden sm:block rounded-full bg-black/75 backdrop-blur-md px-2.5 py-1 sm:px-3 sm:py-1.5 border border-white/20 text-white shadow-md">
               <span className="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-white">
                 {selectedShade.sheen}
               </span>
@@ -163,19 +169,52 @@ export function RoomVisualizer() {
         </div>
 
         {/* Right: Compact & Responsive Swatch Box */}
-        <div className="lg:col-span-5 space-y-2.5 sm:space-y-3.5">
+        <div className="lg:col-span-5 space-y-3 sm:space-y-3.5">
           {/* Swatches Header */}
           <div className="flex items-center justify-between px-0.5">
-            <span className="text-[0.72rem] sm:text-xs font-bold uppercase tracking-[0.14em] text-primary">
-              Birla Opus Designer Swatches:
+            <span className="text-[14px] font-semibold text-primary sm:text-xs sm:font-bold sm:uppercase sm:tracking-[0.14em]">
+              <span className="sm:hidden">Pick a shade</span>
+              <span className="hidden sm:inline">Birla Opus Designer Swatches:</span>
             </span>
-            <span className="text-[0.68rem] sm:text-xs text-muted-foreground font-medium">
-              Tap any chip to apply
+            <span className="text-[12px] sm:text-xs text-muted-foreground font-medium">
+              <span className="sm:hidden">{SAMPLE_SHADES.length} shades</span>
+              <span className="hidden sm:inline">Tap any chip to apply</span>
             </span>
           </div>
 
+          {/* Mobile: round colour chips */}
+          <div className="grid grid-cols-4 gap-x-2 gap-y-3 sm:hidden">
+            {SAMPLE_SHADES.map((shade) => {
+              const isSelected = selectedShade.id === shade.id;
+              return (
+                <button
+                  key={shade.id}
+                  type="button"
+                  onClick={() => setSelectedShade(shade)}
+                  aria-label={`Select shade ${shade.name} (${shade.code})`}
+                  aria-pressed={isSelected}
+                  className="flex flex-col items-center gap-1.5 text-center cursor-pointer"
+                >
+                  <span
+                    className={`grid size-12 place-items-center rounded-full border border-black/10 transition ${
+                      isSelected ? "ring-2 ring-accent ring-offset-2" : ""
+                    }`}
+                    style={{ backgroundColor: shade.hex }}
+                  >
+                    {isSelected && (
+                      <Check className={`size-4 stroke-[3] ${shade.id === "linen" ? "text-stone-700" : "text-white"}`} />
+                    )}
+                  </span>
+                  <span className={`text-[11px] leading-tight ${isSelected ? "font-semibold text-primary" : "text-stone-600"}`}>
+                    {shade.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
           {/* Compact 4-Column Swatch Grid (Zero Ellipsis Dots, Full Names Cleanly Wrapped) */}
-          <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+          <div className="hidden sm:grid grid-cols-4 gap-1.5 sm:gap-2">
             {SAMPLE_SHADES.map((shade) => {
               const isSelected = selectedShade.id === shade.id;
               return (
@@ -221,7 +260,7 @@ export function RoomVisualizer() {
           </div>
 
           {/* Simple & Neat Selected Shade Box */}
-          <div className="rounded-xl sm:rounded-2xl bg-secondary/50 p-2.5 sm:p-3.5 border border-primary/10">
+          <div className="rounded-2xl bg-stone-50 sm:bg-secondary/50 p-3.5 border border-stone-200/80 sm:border-primary/10">
             <div className="flex items-center justify-between gap-2 mb-1.5">
               <div className="flex items-center gap-2 min-w-0">
                 <span
@@ -229,20 +268,21 @@ export function RoomVisualizer() {
                   style={{ backgroundColor: selectedShade.hex }}
                 />
                 <div className="flex items-baseline gap-1.5 min-w-0">
-                  <strong className="font-display text-xs sm:text-sm font-bold text-primary">
+                  <strong className="font-display text-sm font-bold text-primary">
                     {selectedShade.name}
                   </strong>
-                  <span className="font-mono text-[0.68rem] sm:text-xs text-muted-foreground">
+                  <span className="font-mono text-xs text-muted-foreground">
                     ({selectedShade.code})
                   </span>
                 </div>
               </div>
-              <span className="text-[0.58rem] sm:text-[0.65rem] rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 px-2 py-0.5 font-bold uppercase tracking-wider shrink-0">
-                100% In Stock
+              <span className="text-[10px] sm:text-[0.65rem] rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 px-2 py-0.5 font-bold uppercase tracking-wider shrink-0">
+                <span className="sm:hidden">In stock</span>
+                <span className="hidden sm:inline">100% In Stock</span>
               </span>
             </div>
 
-            <p className="text-[0.72rem] sm:text-xs text-muted-foreground leading-snug mb-2.5">
+            <p className="text-[12.5px] sm:text-xs text-muted-foreground leading-snug mb-3 sm:mb-2.5">
               {selectedShade.description}
             </p>
 
@@ -251,7 +291,7 @@ export function RoomVisualizer() {
                 variant="hero"
                 size="sm"
                 asChild
-                className="rounded-full cursor-pointer text-[0.72rem] sm:text-xs font-bold py-1.5 px-2 shadow-sm justify-center"
+                className="h-10 sm:h-8 rounded-full cursor-pointer text-[13px] sm:text-xs font-bold py-1.5 px-2 shadow-sm justify-center"
               >
                 <Link to="/visualizer">
                   <Camera className="size-3 mr-1" />
@@ -263,7 +303,7 @@ export function RoomVisualizer() {
                 variant="outline"
                 size="sm"
                 asChild
-                className="rounded-full cursor-pointer text-[0.72rem] sm:text-xs font-semibold py-1.5 px-2 border-primary/25 justify-center bg-white/70"
+                className="h-10 sm:h-8 rounded-full cursor-pointer text-[13px] sm:text-xs font-semibold py-1.5 px-2 border-primary/25 justify-center bg-white/70"
               >
                 <a
                   href={`https://wa.me/919443722255?text=Hi%20Akshara%20Paints,%20I%20would%20like%20to%20order%20a%20tester%20or%20tin%20for%20shade%20${encodeURIComponent(selectedShade.name)}%20(${selectedShade.code})`}

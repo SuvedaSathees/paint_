@@ -36,12 +36,12 @@ export const Route = createFileRoute("/visualizer")({
 
 function VisualizerPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF9F5] text-stone-900 selection:bg-accent/30 selection:text-stone-900">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#F05323]/15">
       <SiteHeader />
-      <main className="flex-1 pt-14 sm:pt-20 pb-20 sm:pb-16 overflow-x-hidden">
+      <main className="flex-1 overflow-x-hidden">
         <ColorVisualizer />
       </main>
-      <SiteFooter />
+      <SiteFooter className="mt-0! sm:mt-0!" />
     </div>
   );
 }

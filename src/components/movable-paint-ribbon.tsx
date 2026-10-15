@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 
+/** Maximum vertical swing (viewBox units) of the ribbon from its resting shape. */
+const MAX_SWING = 24;
+
 /**
  * MovablePaintRibbon Component
  * 
@@ -138,7 +141,10 @@ export function MovablePaintRibbon({ className = "" }: { className?: string }) {
           }
         }
 
-        return ambient + drag + hover + ripples;
+        // Soft-limit the total swing so the ribbon (and its shadow) always stays
+        // inside the visible band — strong drags ease out instead of clipping.
+        const raw = ambient + drag + hover + ripples;
+        return MAX_SWING * Math.tanh(raw / MAX_SWING);
       };
 
       // Format point with displacement
@@ -280,7 +286,7 @@ export function MovablePaintRibbon({ className = "" }: { className?: string }) {
       onPointerLeave={() => {
         isHoveredRef.current = false;
       }}
-      className={`relative w-full overflow-hidden select-none bg-transparent -mb-1 touch-none group ${
+      className={`relative w-full overflow-x-clip overflow-y-visible select-none bg-transparent pt-5 pb-5 sm:pt-6 sm:pb-6 lg:pt-7 lg:pb-8 touch-none group ${
         isCurrentlyDragging ? "cursor-grabbing" : "cursor-grab"
       } ${className}`}
       aria-label="Architectural paint wave"
@@ -291,6 +297,8 @@ export function MovablePaintRibbon({ className = "" }: { className?: string }) {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         preserveAspectRatio="none"
+        overflow="visible"
+        style={{ overflow: "visible" }}
         className="w-full h-16 sm:h-22 lg:h-28 block pointer-events-none"
         aria-hidden="true"
       >

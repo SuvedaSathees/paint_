@@ -5,7 +5,7 @@ import { PaintEstimator } from "@/components/promotional/paint-estimator";
 import { ProductCatalogSection } from "@/components/promotional/product-catalog-section";
 export function HomeContent() {
   return (
-    <div id="experience" className="relative bg-background text-foreground z-20">
+    <div id="experience" className="relative bg-background text-foreground z-20 [&_[id]]:scroll-mt-[72px] md:[&_[id]]:scroll-mt-0">
       {/* 0. Product Categories — 5 Core Divisions */}
       <ProductCatalogSection />
 

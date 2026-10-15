@@ -2,8 +2,9 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { HelpStrip } from "@/components/help-strip";
+import { ArrowRight, Search, Wrench } from "lucide-react";
+import { whatsappLink } from "@/lib/store-info";
 
 export const Route = createFileRoute("/services")({
   head: () => ({
@@ -175,12 +176,13 @@ function ServicesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewStates, setViewStates] = useState<Record<string, "before" | "after">>({});
 
-  const categories: { id: ServiceCategory; label: string }[] = [
-    { id: "all", label: "All" },
-    { id: "paints", label: "Color & Waterproofing" },
-    { id: "logistics", label: "Fleet & Estimation" },
-    { id: "structural", label: "Hardware & Labor" },
+  const categories: { id: ServiceCategory; label: string; count: number }[] = [
+    { id: "all", label: "All", count: servicesData.length },
+    { id: "paints", label: "Color & Waterproofing", count: servicesData.filter((x) => x.category === "paints").length },
+    { id: "logistics", label: "Fleet & Estimation", count: servicesData.filter((x) => x.category === "logistics").length },
+    { id: "structural", label: "Hardware & Labor", count: servicesData.filter((x) => x.category === "structural").length },
   ];
+  const categoryLabel = (id: ServiceItem["category"]) => categories.find((c) => c.id === id)?.label ?? "";
 
   const filteredServices = servicesData.filter((s) => {
     const matchesCategory = selectedCategory === "all" || s.category === selectedCategory;
@@ -193,65 +195,54 @@ function ServicesPage() {
     return matchesCategory && matchesSearch;
   });
 
+  const gridHeading = searchQuery.trim()
+    ? `Results for “${searchQuery.trim()}”`
+    : selectedCategory === "all"
+      ? "All services"
+      : categoryLabel(selectedCategory);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SiteHeader />
 
-      {/* Hero Header Section - Centered Luxury Architectural Layout */}
-      <section className="relative pt-10 sm:pt-16 pb-5 sm:pb-14 px-3 sm:px-7 lg:px-10 border-b border-primary/10 overflow-hidden bg-gradient-to-b from-stone-50/80 via-white to-background">
-        <div className="absolute left-1/2 -top-28 -translate-x-1/2 size-[650px] rounded-full bg-radial from-accent/12 via-primary/5 to-transparent blur-3xl pointer-events-none" />
-
-        <div className="mx-auto max-w-4xl text-center relative z-10">
-          <span className="text-[9px] sm:text-[0.74rem] font-bold uppercase tracking-[0.22em] text-accent block mb-1.5 sm:mb-3 select-none">
-            &mdash; EXPERT CRAFTSMANSHIP &amp; CONTRACTOR SERVICES &mdash;
-          </span>
-
-          <h1 className="font-display font-serif text-2xl sm:text-5xl lg:text-6xl tracking-tight text-primary font-normal leading-tight mb-1.5 sm:mb-4">
-            Professional Services
-          </h1>
-
-          <p className="text-xs sm:text-sm md:text-[15px] text-muted-foreground tracking-wide leading-relaxed max-w-xl mx-auto">
-            Computerized Birla Opus shade dispensing, custom fastener sizing, and scheduled job-site logistics across Erode.
-          </p>
-
-          <p className="hidden sm:block mt-3 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-accent/90">
-            Serving Erode / Perundurai SIPCOT / Bhavani / Modakkurichi
-          </p>
-
-          {/* Compact 1-Row Proof Metric Ribbon */}
-          <div className="mt-3.5 sm:mt-8 grid grid-cols-4 gap-1.5 sm:gap-3 max-w-3xl mx-auto">
-            <div className="rounded-xl sm:rounded-2xl border border-stone-200/80 bg-white/95 p-1.5 sm:p-3 text-center shadow-2xs">
-              <span className="font-serif text-sm sm:text-2xl font-bold text-primary block">2,200+</span>
-              <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-bold tracking-wider leading-none">Shades</span>
-            </div>
-            <div className="rounded-xl sm:rounded-2xl border border-stone-200/80 bg-white/95 p-1.5 sm:p-3 text-center shadow-2xs">
-              <span className="font-serif text-sm sm:text-2xl font-bold text-primary block">&lt; 3 Min</span>
-              <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-bold tracking-wider leading-none">Tinting</span>
-            </div>
-            <div className="rounded-xl sm:rounded-2xl border border-stone-200/80 bg-white/95 p-1.5 sm:p-3 text-center shadow-2xs">
-              <span className="font-serif text-sm sm:text-2xl font-bold text-primary block">35 km</span>
-              <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-bold tracking-wider leading-none">Fleet</span>
-            </div>
-            <div className="rounded-xl sm:rounded-2xl border border-stone-200/80 bg-white/95 p-1.5 sm:p-3 text-center shadow-2xs">
-              <span className="font-serif text-sm sm:text-2xl font-bold text-primary block">M6–M36</span>
-              <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-bold tracking-wider leading-none">Bolts</span>
-            </div>
+      {/* Page header: title on the left, search & filters on the right */}
+      <section className="px-4 sm:px-7 lg:px-10 pt-7 sm:pt-14 pb-5 sm:pb-10 border-b border-stone-200/70">
+        <div className="mx-auto max-w-[1440px] flex flex-col gap-4 sm:gap-6 xl:flex-row xl:items-end xl:justify-between xl:gap-8">
+          <div className="text-center xl:text-left">
+            <p className="flex items-center justify-center xl:justify-start gap-2.5 sm:gap-3 text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#F05323] sm:text-xs sm:tracking-[0.22em]">
+              <span aria-hidden className="h-px w-6 shrink-0 bg-current opacity-50 sm:w-8" />
+              <span className="sm:hidden">Expert contractor services</span>
+              <span className="hidden sm:inline">Expert craftsmanship &amp; contractor services</span>
+              <span aria-hidden className="h-px w-6 shrink-0 bg-current opacity-50 sm:w-8" />
+            </p>
+            <h1 className="mt-1.5 sm:mt-2 font-serif text-[2rem] leading-tight sm:text-5xl text-primary">
+              Professional Services
+            </h1>
           </div>
 
-          {/* Search Input & Category Filter Tabs (Single-Row Horizontal Scroll on Mobile) */}
-          <div className="mt-4 sm:mt-7 flex flex-col md:flex-row items-center justify-center gap-2 sm:gap-3 w-full max-w-4xl mx-auto">
-            <div className="relative w-full sm:w-64 shrink-0">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-3.5 text-stone-400 pointer-events-none" />
+          <div className="flex w-full flex-col gap-3 xl:w-auto xl:shrink-0">
+            <div className="relative mx-auto w-full max-w-xl xl:max-w-none">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-stone-400 pointer-events-none" />
               <input
-                type="text"
+                type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search services..."
-                className="w-full h-9 sm:h-[36px] rounded-full border border-stone-200/90 bg-white/95 pl-9 pr-4 text-xs sm:text-[13px] text-foreground placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-2xs"
+                aria-label="Search services"
+                className="w-full h-11 rounded-full border border-stone-200 bg-white pl-11 pr-16 text-sm text-foreground placeholder:text-stone-400 outline-none transition focus:border-[#F05323] focus:ring-4 focus:ring-[#F05323]/10 [&::-webkit-search-cancel-button]:hidden"
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-stone-400 hover:text-stone-800 cursor-pointer"
+                >
+                  Clear
+                </button>
+              )}
             </div>
 
-            <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1 px-1 justify-start sm:justify-center max-w-4xl mx-auto w-full sm:w-auto">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 sm:justify-center xl:justify-end">
               {categories.map((cat) => {
                 const isActive = selectedCategory === cat.id;
                 return (
@@ -259,13 +250,17 @@ function ServicesPage() {
                     key={cat.id}
                     type="button"
                     onClick={() => setSelectedCategory(cat.id)}
-                    className={`h-[30px] sm:h-[34px] rounded-full px-3.5 sm:px-4 text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center shrink-0 border ${
+                    aria-pressed={isActive}
+                    className={`h-9 shrink-0 rounded-full border px-3.5 sm:px-4 text-[13px] font-semibold whitespace-nowrap transition-colors cursor-pointer flex items-center ${
                       isActive
-                        ? "bg-[#0A2234] text-white border-[#0A2234] shadow-xs"
-                        : "bg-white/95 text-stone-600 border-stone-200/90 hover:text-stone-950 hover:bg-stone-50 hover:border-stone-300 shadow-2xs"
+                        ? "bg-[#0A2234] text-white border-[#0A2234]"
+                        : "bg-white text-stone-600 border-stone-200 hover:text-stone-900 hover:border-stone-300"
                     }`}
                   >
                     {cat.label}
+                    <span className={`ml-1.5 text-[11px] ${isActive ? "text-white/70" : "text-stone-400"}`}>
+                      {cat.count}
+                    </span>
                   </button>
                 );
               })}
@@ -274,174 +269,107 @@ function ServicesPage() {
         </div>
       </section>
 
-      {/* 12 Core Services Showcase - Clean Minimal Architectural Cards */}
-      <section className="py-12 sm:py-16 px-4 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full flex-1">
+      {/* Services grid */}
+      <section className="px-4 sm:px-7 lg:px-10 pt-4 sm:pt-14 pb-10 mx-auto max-w-[1440px] w-full flex-1">
+        <div className="mb-3 sm:mb-6 flex items-end justify-between gap-4">
+          <h2 className={`font-serif text-lg sm:text-3xl text-primary ${searchQuery.trim() ? "" : "hidden sm:block"}`}>{gridHeading}</h2>
+          <p className="shrink-0 text-[13px] sm:text-sm text-stone-500">
+            {filteredServices.length} {filteredServices.length === 1 ? "service" : "services"}
+          </p>
+        </div>
+
         {filteredServices.length === 0 ? (
-          <div className="text-center py-16 rounded-[28px] border border-stone-200 bg-[#FAF8F5] p-8 max-w-md mx-auto">
-            <h3 className="font-display font-serif text-lg font-normal text-primary">No services found</h3>
-            <p className="text-xs text-muted-foreground mt-1">
-              Try a different keyword or reset your category filters
-            </p>
-            <Button
-              variant="outline"
-              size="sm"
+          <div className="rounded-3xl border border-stone-200 bg-white px-6 py-16 text-center">
+            <h3 className="font-serif text-xl text-primary">No services found</h3>
+            <p className="mt-2 text-sm text-stone-500">Try a different word, or show all services.</p>
+            <button
+              type="button"
               onClick={() => {
                 setSearchQuery("");
                 setSelectedCategory("all");
               }}
-              className="mt-4 rounded-full"
+              className="mt-5 inline-flex h-10 items-center rounded-full border border-stone-300 bg-white px-5 text-sm font-semibold text-stone-800 transition hover:border-stone-400 hover:bg-stone-50 cursor-pointer"
             >
-              Reset Filters
-            </Button>
+              Show all services
+            </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-8">
-            {filteredServices.map((srv) => (
-              <article
-                key={srv.id}
-                className="group relative flex flex-col justify-between rounded-[18px] sm:rounded-[32px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-2xs sm:shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5"
-              >
-                {/* Visual Header */}
-                <div className="relative h-32 sm:h-52 w-full overflow-hidden bg-stone-100">
-                  <img
-                    src={
-                      srv.beforeImage && srv.afterImage
-                        ? (viewStates[srv.id] ?? "after") === "before"
-                          ? srv.beforeImage
-                          : srv.afterImage
-                        : srv.image
-                    }
-                    alt={srv.title}
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+          <div
+            className={`grid grid-cols-2 gap-2.5 sm:gap-6 lg:grid-cols-3 ${filteredServices.length % 4 === 0 ? "xl:grid-cols-4" : ""}`}
+          >
+            {filteredServices.map((srv) => {
+              const hasCompare = Boolean(srv.beforeImage && srv.afterImage);
+              const view = viewStates[srv.id] ?? "after";
+              return (
+                <article
+                  key={srv.id}
+                  className="group flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(14,40,56,0.08)]"
+                >
+                  <div className="relative aspect-[4/3] sm:aspect-[16/10] overflow-hidden bg-stone-100">
+                    <img
+                      src={hasCompare ? (view === "before" ? srv.beforeImage : srv.afterImage) : srv.image}
+                      alt={srv.title}
+                      loading="lazy"
+                      className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                    />
 
-                  {/* Interactive Before / After Visual Toggle */}
-                  {srv.beforeImage && srv.afterImage && (
-                    <>
-                      <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-20 flex items-center rounded-full bg-stone-900/80 p-0.5 backdrop-blur-md border border-white/25 text-[8px] sm:text-[10px] font-semibold text-white shadow-md">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setViewStates((prev) => ({ ...prev, [srv.id]: "before" }));
-                          }}
-                          className={`px-1.5 sm:px-2.5 py-0.5 rounded-full transition-all cursor-pointer ${
-                            viewStates[srv.id] === "before"
-                              ? "bg-white text-stone-950 shadow-xs"
-                              : "text-white/80 hover:text-white"
-                          }`}
-                        >
-                          Before
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setViewStates((prev) => ({ ...prev, [srv.id]: "after" }));
-                          }}
-                          className={`px-1.5 sm:px-2.5 py-0.5 rounded-full transition-all cursor-pointer ${
-                            (viewStates[srv.id] ?? "after") === "after"
-                              ? "bg-white text-stone-950 shadow-xs"
-                              : "text-white/80 hover:text-white"
-                          }`}
-                        >
-                          After
-                        </button>
+                    {hasCompare && (
+                      <div className="absolute right-1.5 top-1.5 flex rounded-full bg-white/95 p-0.5 text-[10px] sm:text-xs font-semibold shadow-sm sm:right-3 sm:top-3">
+                        {(["before", "after"] as const).map((v) => (
+                          <button
+                            key={v}
+                            type="button"
+                            onClick={() => setViewStates((prev) => ({ ...prev, [srv.id]: v }))}
+                            aria-pressed={view === v}
+                            className={`rounded-full px-2 py-0.5 sm:px-3 sm:py-1 capitalize transition-colors cursor-pointer ${
+                              view === v ? "bg-[#0A2234] text-white" : "text-stone-600 hover:text-stone-900"
+                            }`}
+                          >
+                            {v}
+                          </button>
+                        ))}
                       </div>
+                    )}
+                  </div>
 
-                      <div className="absolute bottom-2 left-2 sm:bottom-2.5 sm:left-3 z-10 pointer-events-none">
-                        <span className="inline-block rounded-md bg-black/60 px-1.5 py-0.5 text-[8px] sm:text-[9.5px] font-semibold uppercase tracking-wider text-white backdrop-blur-xs">
-                          {viewStates[srv.id] === "before" ? "Damp Wall" : "Restored"}
-                        </span>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {/* Card Body */}
-                <div className="px-2.5 sm:px-[15px] py-2.5 sm:py-5 flex-1 flex flex-col justify-between">
-                  <div>
-                    {/* Subtle Turnaround Indicator Tag */}
-                    <span className="text-[8px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-accent block mb-0.5 sm:mb-1">
-                      {srv.highlight}
-                    </span>
-
-                    <h3
-                      className="font-display font-serif text-xs sm:text-xl font-bold sm:font-normal text-primary tracking-tight leading-tight sm:leading-snug group-hover:text-paint-deep transition-colors"
-                    >
-                      {srv.title}
-                    </h3>
-                    <p className="mt-1 sm:mt-2 text-[9.5px] sm:text-[13px] text-muted-foreground leading-snug sm:leading-relaxed">
-                      {srv.description}
+                  <div className="flex flex-1 flex-col p-3 sm:p-6">
+                    <p className="truncate text-[9.5px] sm:text-xs font-semibold uppercase tracking-wider text-[#F05323]">
+                      {categoryLabel(srv.category)}
                     </p>
-                  </div>
+                    <h3 className="mt-1 sm:mt-2 line-clamp-2 min-h-[2.5em] sm:min-h-0 sm:line-clamp-none font-serif text-[14.5px] sm:text-xl leading-snug text-primary">{srv.title}</h3>
+                    <p className="mt-1 sm:mt-2 line-clamp-2 sm:line-clamp-none text-[11.5px] sm:text-sm leading-snug sm:leading-relaxed text-stone-600">{srv.description}</p>
+                    <p className="mt-3 text-[13px] font-medium text-stone-500 max-sm:hidden">{srv.highlight.replace(/\s*\|\s*/g, " · ")}</p>
 
-                  {/* Card Action */}
-                  <div className="mt-2.5 sm:mt-6 pt-2 sm:pt-4 border-t border-stone-200/80">
-                    <Button
-                      variant="hero"
-                      size="sm"
-                      asChild
-                      className="w-full h-7 sm:h-9 rounded-full text-[10px] sm:text-xs font-semibold cursor-pointer shadow-xs justify-center"
-                    >
+                    <div className="mt-auto pt-2.5 sm:pt-5">
                       <a
-                        href={`https://wa.me/919876543210?text=Hello%20Akshara%20Paints,%20I%20would%20like%20to%20inquire%20about%20your%20service:%20${encodeURIComponent(
-                          srv.title
-                        )}`}
+                        href={whatsappLink(`Hello Akshara Paints, I would like to know about your service: ${srv.title}`)}
                         target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center justify-center"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between gap-2 sm:gap-3 border-t border-stone-100 pt-2.5 sm:pt-4 text-[12px] sm:text-sm font-semibold text-stone-900 transition-colors hover:text-[#F05323]"
                       >
-                        <span>{srv.ctaLabel}</span>
+                        {srv.ctaLabel}
+                        <ArrowRight className="size-3.5 sm:size-4 shrink-0 text-[#F05323] transition-transform group-hover:translate-x-1" />
                       </a>
-                    </Button>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         )}
       </section>
 
-      {/* Streamlined Bottom Consultation Strip */}
-      <section className="pb-12 sm:pb-16 px-3 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full">
-        <div className="rounded-2xl sm:rounded-[28px] border border-stone-200/90 bg-gradient-to-br from-white via-stone-50/90 to-amber-50/40 p-4 sm:p-8 shadow-xs hover:shadow-md transition-all flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-center sm:text-left">
-          <div className="space-y-1.5">
-            <span className="inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Senior Technical Desk Active
-            </span>
-            <h3 className="font-display font-serif text-lg sm:text-2xl font-normal text-primary leading-snug">
-              Need a Custom Site Service or Bulk Contractor Quote?
-            </h3>
-            <p className="text-xs sm:text-[13px] text-muted-foreground leading-relaxed max-w-xl">
-              Speak directly with our senior technical desk for project scheduling and material takeoff assistance across Erode district.
-            </p>
-          </div>
-          <Button
-            variant="hero"
-            size="default"
-            asChild
-            className="rounded-full px-6 sm:px-8 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold cursor-pointer shadow-md shrink-0 w-full sm:w-auto"
-          >
-            <a
-              href="https://wa.me/919443722255?text=Hello%20Akshara%20Paints,%20I%20have%20a%20custom%20service%20inquiry%20regarding%20my%20project%20in%20Erode"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center justify-center gap-1.5"
-            >
-              <span>Consult Technical Desk</span>
-              <span className="text-accent-foreground font-bold">&rarr;</span>
-            </a>
-          </Button>
-        </div>
+      {/* Help strip */}
+      <section className="px-4 sm:px-7 lg:px-10 pb-6 sm:pb-8 mx-auto max-w-[1440px] w-full">
+        <HelpStrip
+          icon={Wrench}
+          title="Need a custom service or a bulk quote?"
+          text="Talk to our team about site schedules, quantities and delivery across Erode."
+          whatsappText="Hello Akshara Paints, I have a custom service enquiry for my project in Erode."
+        />
       </section>
 
-      <SiteFooter />
+      <SiteFooter className="mt-0! sm:mt-0!" />
     </div>
   );
 }

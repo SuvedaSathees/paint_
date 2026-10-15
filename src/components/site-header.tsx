@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type CSSProperties } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Home,
@@ -13,7 +13,6 @@ import {
   X,
   ChevronRight,
 } from "lucide-react";
-import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 
 export const leftNavItems = [
   { label: "Home", href: "/" },
@@ -29,14 +28,27 @@ export const rightNavItems = [
 
 export const navItems = [...leftNavItems, ...rightNavItems];
 
+/** Soft tinted tile for each mobile-menu icon; solid when the page is active. */
+function iconTileStyle(color: string, active: boolean, dark: boolean): CSSProperties {
+  if (active) {
+    // On the dark (hero) menu the active row is already orange, so use a frosted tile there.
+    return dark
+      ? { backgroundColor: "rgba(255,255,255,0.22)", color: "#fff" }
+      : { backgroundColor: color, color: "#fff", boxShadow: `0 4px 12px ${color}40` };
+  }
+  return dark
+    ? { backgroundColor: `${color}38`, color: "#fff", boxShadow: `inset 0 0 0 1px ${color}55` }
+    : { backgroundColor: `${color}1A`, color, boxShadow: `inset 0 0 0 1px ${color}29` };
+}
+
 export const mobileNavItems = [
-  { label: "Home", href: "/", icon: Home, subtitle: "Showcase & Interactive Hub" },
-  { label: "Birla Opus Studio", href: "/visualizer", icon: Palette, subtitle: "Virtual Wall Color Simulator", badge: "3D Paint" },
-  { label: "Products & Materials", href: "/products", icon: Layers, subtitle: "Paints, Pipes, Fasteners & Hardware" },
-  { label: "Contractor Services", href: "/services", icon: Wrench, subtitle: "Site Consultation & Tinting" },
-  { label: "Blog & Paint Guides", href: "/blog", icon: BookOpen, subtitle: "Technical Selection & Tips" },
-  { label: "Branches & Showrooms", href: "/branches", icon: MapPin, subtitle: "Flagship & Warehouses in Erode" },
-  { label: "Contact Us", href: "/contact", icon: Phone, subtitle: "Instant Quotes & Site Dispatch" },
+  { label: "Home", href: "/", icon: Home, color: "#0A2234", subtitle: "Showcase & Interactive Hub" },
+  { label: "Birla Opus Studio", href: "/visualizer", icon: Palette, color: "#F05323", subtitle: "Virtual Wall Color Simulator", badge: "3D Paint" },
+  { label: "Products & Materials", href: "/products", icon: Layers, color: "#C0772C", subtitle: "Paints, Pipes, Fasteners & Hardware" },
+  { label: "Contractor Services", href: "/services", icon: Wrench, color: "#0F766E", subtitle: "Site Consultation & Tinting" },
+  { label: "Blog & Paint Guides", href: "/blog", icon: BookOpen, color: "#4A6B82", subtitle: "Technical Selection & Tips" },
+  { label: "Branches & Showrooms", href: "/branches", icon: MapPin, color: "#9F4A54", subtitle: "Flagship & Warehouses in Erode" },
+  { label: "Contact Us", href: "/contact", icon: Phone, color: "#15803D", subtitle: "Instant Quotes & Site Dispatch" },
 ];
 
 export function BrandMark({
@@ -105,12 +117,15 @@ interface SiteHeaderProps {
   onNavigate?: (toEnd: boolean) => void;
   className?: string;
   variant?: "default" | "hero";
+  /** When false the bar stays visible while scrolling (no hide-on-scroll-down). */
+  autoHide?: boolean;
 }
 
 export function SiteHeader({
   onNavigate,
   className,
   variant = "default",
+  autoHide = true,
 }: SiteHeaderProps = {}) {
   const isHero = variant === "hero";
   const [isVisible, setIsVisible] = useState(true);
@@ -127,6 +142,10 @@ export function SiteHeader({
 
   // Smart auto-hide on scroll down, smooth reveal on scroll up
   useEffect(() => {
+    if (!autoHide) {
+      setIsVisible(true);
+      return;
+    }
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
@@ -151,7 +170,7 @@ export function SiteHeader({
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, autoHide]);
 
   const isLinkActive = (href: string) => {
     return href === "/" ? currentPath === "/" : currentPath.startsWith(href);
@@ -252,8 +271,8 @@ export function SiteHeader({
                           }`}
                         >
                           <div className="flex items-center gap-3 min-w-0">
-                            <div className={`size-8.5 rounded-xl flex items-center justify-center shrink-0 ${active ? "bg-white/20 text-white" : "bg-stone-100 dark:bg-white/10 text-stone-700 dark:text-stone-200"}`}>
-                              <Icon className="size-4.5" />
+                            <div className="size-9 rounded-xl flex items-center justify-center shrink-0 transition-colors" style={iconTileStyle(item.color, active, isHero)}>
+                              <Icon className="size-[18px]" strokeWidth={2} />
                             </div>
                             <div className="flex flex-col min-w-0">
                               <span className="text-sm font-semibold truncate">{item.label}</span>
@@ -275,8 +294,8 @@ export function SiteHeader({
                         }`}
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className={`size-8.5 rounded-xl flex items-center justify-center shrink-0 ${active ? "bg-white/20 text-white" : "bg-stone-100 dark:bg-white/10 text-stone-700 dark:text-stone-200"}`}>
-                            <Icon className="size-4.5" />
+                          <div className="size-9 rounded-xl flex items-center justify-center shrink-0 transition-colors" style={iconTileStyle(item.color, active, isHero)}>
+                            <Icon className="size-[18px]" strokeWidth={2} />
                           </div>
                           <div className="flex flex-col min-w-0">
                             <div className="flex items-center gap-2">
@@ -304,7 +323,6 @@ export function SiteHeader({
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold text-xs py-2.5 rounded-xl shadow-xs transition-transform"
                   >
-                    <WhatsAppIcon className="size-4" />
                     <span>WhatsApp Desk</span>
                   </a>
 

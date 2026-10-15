@@ -1,16 +1,4 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
-import {
-  Undo2,
-  Redo2,
-  RotateCcw,
-  Download,
-  Sliders,
-  SplitSquareVertical,
-  Camera,
-  Upload,
-  X,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { PaintColor } from "./color-data";
 
 export type ToolMode = "smart-fill" | "brush" | "eraser";
@@ -608,15 +596,15 @@ export function CanvasWorkspace({
 
     // Text details
     eCtx.fillStyle = "#ffffff";
-    eCtx.font = "bold 15px sans-serif";
+    eCtx.font = "bold 15px Manrope, sans-serif";
     eCtx.fillText(selectedColor.name, bx + 84, by + 34);
 
     eCtx.fillStyle = "#F5D061";
-    eCtx.font = "600 11px sans-serif";
+    eCtx.font = "600 11px Manrope, sans-serif";
     eCtx.fillText(`Birla Opus ${selectedColor.code} • ${selectedColor.sheen}`, bx + 84, by + 52);
 
     eCtx.fillStyle = "rgba(255, 255, 255, 0.7)";
-    eCtx.font = "10px sans-serif";
+    eCtx.font = "10px Manrope, sans-serif";
     eCtx.fillText("Akshara Paints & Hardware • Erode", bx + 84, by + 68);
 
     eCtx.restore();
@@ -628,305 +616,121 @@ export function CanvasWorkspace({
     link.click();
   };
 
+  const tools: { id: ToolMode; label: string }[] = [
+    { id: "smart-fill", label: "Tap to paint" },
+    { id: "brush", label: "Brush" },
+    { id: "eraser", label: "Eraser" },
+  ];
+  const hint = isComparing
+    ? "Drag the handle to compare before and after."
+    : activeTool === "smart-fill"
+      ? "Tap any wall to paint it."
+      : activeTool === "brush"
+        ? "Drag over the wall to paint by hand."
+        : "Drag to remove paint from furniture or windows.";
+  const smallBtn =
+    "h-9 rounded-full border border-stone-200 bg-white px-2 text-[13px] font-medium text-stone-600 transition hover:bg-stone-100 hover:text-stone-900 disabled:opacity-40 disabled:hover:bg-transparent cursor-pointer sm:border-transparent sm:bg-transparent sm:px-3 sm:text-sm";
+
   return (
-    <div className="flex flex-col gap-4 w-full">
-      {/* Hidden File Inputs */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleFileUpload}
-        className="hidden"
-      />
-      <input
-        ref={cameraInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        onChange={handleFileUpload}
-        className="hidden"
-      />
-
-      {/* 1. Mobile-Only Clean Action Bar (< sm) */}
-      <div className="flex sm:hidden items-center justify-between gap-1 rounded-xl border border-stone-200/90 bg-white p-1 shadow-2xs">
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTool("smart-fill");
-              setIsComparing(false);
-            }}
-            className={`flex items-center justify-center rounded-lg px-2.5 py-1.5 text-[11px] font-bold transition-all cursor-pointer ${
-              activeTool === "smart-fill" && !isComparing
-                ? "bg-[#071624] text-white shadow-2xs"
-                : "text-stone-600 hover:text-stone-900 bg-stone-100"
-            }`}
-          >
-            <span>Tap Wall</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTool("brush");
-              setIsComparing(false);
-            }}
-            className={`flex items-center justify-center rounded-lg px-2.5 py-1.5 text-[11px] font-bold transition-all cursor-pointer ${
-              activeTool === "brush" && !isComparing
-                ? "bg-[#071624] text-white shadow-2xs"
-                : "text-stone-600 hover:text-stone-900 bg-stone-100"
-            }`}
-          >
-            <span>Brush</span>
-          </button>
+    <div className="flex w-full flex-col gap-3">
+      {/* Toolbar */}
+      <div className="grid gap-2 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="grid grid-cols-3 rounded-full border border-stone-200 bg-stone-50 p-1 sm:inline-flex" role="group" aria-label="Painting tool">
+          {tools.map((t) => {
+            const isActive = activeTool === t.id && !isComparing;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => {
+                  setActiveTool(t.id);
+                  setIsComparing(false);
+                }}
+                aria-pressed={isActive}
+                className={`h-8 rounded-full px-2 text-[13px] font-semibold transition cursor-pointer sm:px-3.5 sm:text-sm ${
+                  isActive ? "bg-white text-stone-900 shadow-sm" : "text-stone-500 hover:text-stone-900"
+                }`}
+              >
+                {t.label}
+              </button>
+            );
+          })}
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="grid grid-cols-4 items-center gap-1 sm:flex sm:flex-wrap">
           <button
             type="button"
             onClick={() => setIsComparing(!isComparing)}
-            className={`flex items-center gap-1 rounded-lg px-2 py-1.5 text-[11px] font-bold transition-all cursor-pointer border ${
+            aria-pressed={isComparing}
+            className={`h-9 rounded-full border px-2 text-[13px] font-semibold transition cursor-pointer sm:px-4 sm:text-sm ${
               isComparing
-                ? "bg-stone-900 text-white border-stone-900 shadow-2xs"
-                : "bg-stone-50 text-stone-700 border-stone-200"
+                ? "border-[#0A2234] bg-[#0A2234] text-white"
+                : "border-stone-200 bg-white text-stone-700 hover:border-stone-300"
             }`}
           >
-            <SplitSquareVertical className="size-3 text-[#F05323]" />
-            <span>Compare</span>
+            <span className="sm:hidden">Compare</span>
+            <span className="hidden sm:inline">Before / After</span>
           </button>
-
-          <button
-            type="button"
-            onClick={handleReset}
-            className="rounded-lg p-1.5 text-stone-600 hover:bg-stone-100 border border-stone-200 bg-stone-50 cursor-pointer"
-            title="Reset paint"
-          >
-            <RotateCcw className="size-3.5" />
+          <button type="button" disabled={history.length <= 1} onClick={handleUndo} className={smallBtn}>
+            Undo
           </button>
-
-          <button
-            type="button"
-            onClick={handleDownload}
-            className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[11px] font-bold bg-emerald-700 text-white shadow-2xs cursor-pointer"
-            title="Save photo"
-          >
-            <Download className="size-3" />
-            <span>Save</span>
+          <button type="button" disabled={redoStack.length === 0} onClick={handleRedo} className={smallBtn}>
+            Redo
+          </button>
+          <button type="button" onClick={handleReset} className={smallBtn}>
+            Reset
           </button>
         </div>
       </div>
 
-      {/* 2. Desktop Full Action Ribbon (>= sm) */}
-      <div className="hidden sm:flex items-center justify-between gap-2 rounded-2xl border border-stone-200/80 bg-white/95 p-2.5 shadow-2xs backdrop-blur-md">
-        {/* Desktop-only secondary input buttons */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => fileInputRef.current?.click()}
-            className="h-8 gap-1.5 rounded-xl border-stone-200 px-2.5 text-xs font-semibold text-stone-700 hover:bg-stone-50 shrink-0 cursor-pointer"
-          >
-            <Upload className="size-3.5 text-[#F05323]" />
-            <span>Upload</span>
-          </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
-                cameraInputRef.current?.click();
-              } else {
-                startCamera();
-              }
-            }}
-            className="h-8 gap-1.5 rounded-xl border-stone-200 px-2.5 text-xs font-semibold text-stone-700 hover:bg-stone-50 shrink-0 cursor-pointer"
-          >
-            <Camera className="size-3.5 text-stone-600" />
-            <span>Camera</span>
-          </Button>
-        </div>
-
-        {/* Primary Tool selector */}
-        <div className="flex items-center gap-1 rounded-xl bg-stone-100/90 p-1 border border-stone-200/50">
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTool("smart-fill");
-              setIsComparing(false);
-            }}
-            className={`flex items-center justify-center rounded-lg px-3 py-1 text-xs font-semibold transition-all shrink-0 cursor-pointer ${
-              activeTool === "smart-fill" && !isComparing
-                ? "bg-white text-stone-900 shadow-2xs border border-stone-200 font-bold"
-                : "text-stone-600 hover:text-stone-900"
-            }`}
-            title="Tap any wall to intelligently fill with selected paint color"
-          >
-            <span>Smart Tap</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTool("brush");
-              setIsComparing(false);
-            }}
-            className={`flex items-center justify-center rounded-lg px-3 py-1 text-xs font-semibold transition-all shrink-0 cursor-pointer ${
-              activeTool === "brush" && !isComparing
-                ? "bg-white text-stone-900 shadow-2xs border border-stone-200 font-bold"
-                : "text-stone-600 hover:text-stone-900"
-            }`}
-            title="Paint walls manually with a roller brush"
-          >
-            <span>Brush</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTool("eraser");
-              setIsComparing(false);
-            }}
-            className={`flex items-center justify-center rounded-lg px-3 py-1 text-xs font-semibold transition-all shrink-0 cursor-pointer ${
-              activeTool === "eraser" && !isComparing
-                ? "bg-white text-stone-900 shadow-2xs border border-stone-200 font-bold"
-                : "text-stone-600 hover:text-stone-900"
-            }`}
-            title="Erase paint from window frames or furniture"
-          >
-            <span>Eraser</span>
-          </button>
-        </div>
-
-        {/* Secondary controls: Compare, Undo, Redo, Reset, Save */}
-        <div className="flex items-center gap-1.5 shrink-0 ml-auto">
-          <Button
-            variant={isComparing ? "default" : "outline"}
-            size="sm"
-            onClick={() => setIsComparing(!isComparing)}
-            className={`h-8 gap-1 rounded-xl px-2.5 text-xs font-semibold shrink-0 cursor-pointer ${
-              isComparing ? "bg-stone-900 text-white" : "border-stone-200 text-stone-700 hover:bg-stone-50"
-            }`}
-            title="Split comparison: Slide left/right to see before vs. after"
-          >
-            <SplitSquareVertical className="size-3.5 text-[#F05323]" />
-            <span>Compare</span>
-          </Button>
-
-          <div className="flex items-center gap-0.5 border-l border-stone-200 pl-1 shrink-0">
-            <button
-              type="button"
-              disabled={history.length <= 1}
-              onClick={handleUndo}
-              className="rounded-lg p-1.5 text-stone-600 hover:bg-stone-100 disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer"
-              title="Undo last stroke"
-            >
-              <Undo2 className="size-4" />
-            </button>
-            <button
-              type="button"
-              disabled={redoStack.length === 0}
-              onClick={handleRedo}
-              className="rounded-lg p-1.5 text-stone-600 hover:bg-stone-100 disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer"
-              title="Redo stroke"
-            >
-              <Redo2 className="size-4" />
-            </button>
-            <button
-              type="button"
-              onClick={handleReset}
-              className="rounded-lg p-1.5 text-stone-600 hover:bg-stone-100 cursor-pointer"
-              title="Reset all paint"
-            >
-              <RotateCcw className="size-4" />
-            </button>
-          </div>
-
-          <Button
-            variant="default"
-            size="sm"
-            onClick={handleDownload}
-            className="h-8 gap-1 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-2xs px-3 shrink-0 cursor-pointer"
-          >
-            <Download className="size-3.5" />
-            <span>Save</span>
-          </Button>
-        </div>
-      </div>
-
-      {/* Dynamic Tool Adjusters Bar: Desktop Only (Hidden on Mobile) */}
-      <div className="hidden sm:flex flex-wrap items-center justify-between gap-2 rounded-xl border border-stone-200/60 bg-stone-50/80 px-3.5 py-2 text-xs text-stone-600">
-        <div className="flex items-center gap-4 shrink-0">
-          {activeTool === "smart-fill" && (
-            <div className="flex items-center gap-2">
-              <Sliders className="size-3.5 text-[#F05323]" />
-              <span className="font-semibold text-stone-700 text-xs">Wall Tolerance:</span>
+      {/* Tool setting */}
+      {!isComparing && (
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl bg-stone-50 px-3.5 py-2 sm:px-4 sm:py-2.5">
+          <label className="flex w-full items-center gap-3 text-[13px] font-medium text-stone-700 sm:w-auto sm:text-sm">
+            <span className="shrink-0">{activeTool === "smart-fill" ? "Fill sensitivity" : "Brush size"}</span>
+            {activeTool === "smart-fill" ? (
               <input
                 type="range"
                 min="10"
                 max="55"
                 value={tolerance}
                 onChange={(e) => setTolerance(Number(e.target.value))}
-                className="w-28 accent-[#F05323] cursor-pointer"
+                className="w-full min-w-0 flex-1 cursor-pointer accent-[#F05323] sm:w-40 sm:flex-none"
               />
-              <span className="text-stone-500 font-mono text-[11px] w-5">{tolerance}</span>
-            </div>
-          )}
-
-          {(activeTool === "brush" || activeTool === "eraser") && (
-            <div className="flex items-center gap-2">
-              <Sliders className="size-3.5 text-stone-800" />
-              <span className="font-semibold text-stone-700 text-xs">Size:</span>
+            ) : (
               <input
                 type="range"
                 min="10"
                 max="90"
                 value={brushSize}
                 onChange={(e) => setBrushSize(Number(e.target.value))}
-                className="w-28 accent-stone-900 cursor-pointer"
+                className="w-full min-w-0 flex-1 cursor-pointer accent-[#F05323] sm:w-40 sm:flex-none"
               />
-              <span className="text-stone-500 font-mono text-[11px] w-7">{brushSize}px</span>
-            </div>
-          )}
-        </div>
-
-        {/* Selected Color Chip preview */}
-        <div className="flex items-center gap-2 ml-auto">
-          <div
-            className="size-4 rounded-full border border-black/20 shadow-inner shrink-0"
-            style={{ backgroundColor: selectedColor.hex }}
-          />
-          <span className="font-semibold text-stone-800 text-xs truncate">
-            {selectedColor.name}
+            )}
+          </label>
+          <span className="hidden text-xs text-stone-500 sm:ml-auto sm:inline">
+            {activeTool === "smart-fill" ? "Raise it if paint misses parts of the wall." : hint}
           </span>
-          <button
-            type="button"
-            onClick={() => onOpenEstimate(selectedColor)}
-            className="text-xs font-semibold text-emerald-800 hover:text-emerald-900 cursor-pointer underline shrink-0 ml-1"
-          >
-            Estimate &rarr;
-          </button>
         </div>
-      </div>
+      )}
 
-      {/* Main Canvas Stage: Adaptive Mobile Height */}
+      {/* Canvas */}
       <div
         id="canvas-stage-wrapper"
         ref={containerRef}
-        className="relative w-full overflow-hidden rounded-2xl border border-stone-200/90 bg-stone-900/5 shadow-inner flex items-center justify-center min-h-[220px] max-h-[46vh] sm:min-h-[380px] sm:max-h-[62vh] lg:min-h-[500px] lg:max-h-[72vh] touch-none"
+        className="relative flex min-h-[220px] max-h-[46vh] w-full items-center justify-center overflow-hidden rounded-xl bg-stone-100 touch-none sm:min-h-[380px] sm:max-h-[62vh] lg:min-h-[480px] lg:max-h-[70vh]"
       >
         {isLoadingImage && (
-          <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
-            <div className="size-8 animate-spin rounded-full border-3 border-[#F05323] border-t-transparent" />
-            <p className="mt-3 text-xs font-semibold text-stone-700">Loading Room Canvas...</p>
+          <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-white/85">
+            <div className="size-8 animate-spin rounded-full border-[3px] border-[#F05323] border-t-transparent" />
+            <p className="mt-3 text-sm font-medium text-stone-600">Loading room…</p>
           </div>
         )}
 
-        {/* Mobile Tap Feedback Ripple */}
         {tapRipple && (
           <span
             key={tapRipple.id}
-            className="pointer-events-none absolute z-25 -translate-x-1/2 -translate-y-1/2 rounded-full ring-4 ring-[#F05323] bg-[#F05323]/30 animate-ping size-8 sm:size-10"
+            className="pointer-events-none absolute z-20 size-9 -translate-x-1/2 -translate-y-1/2 animate-ping rounded-full bg-[#F05323]/30 ring-4 ring-[#F05323]"
             style={{ left: tapRipple.x, top: tapRipple.y }}
           />
         )}
@@ -938,27 +742,21 @@ export function CanvasWorkspace({
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerCancel}
           style={{ touchAction: "none" }}
-          className={`max-w-full max-h-[46vh] sm:max-h-[62vh] lg:max-h-[70vh] w-auto h-auto block mx-auto rounded-xl select-none touch-none ${
-            isComparing
-              ? "cursor-ew-resize"
-              : activeTool === "smart-fill"
-              ? "cursor-crosshair"
-              : "cursor-pointer"
+          className={`mx-auto block h-auto max-h-[46vh] w-auto max-w-full select-none touch-none sm:max-h-[62vh] lg:max-h-[70vh] ${
+            isComparing ? "cursor-ew-resize" : activeTool === "smart-fill" ? "cursor-crosshair" : "cursor-pointer"
           }`}
         />
 
-        {/* Before / After Draggable Split Handle */}
         {isComparing && (
           <div
-            className="absolute inset-0 pointer-events-none"
+            className="pointer-events-none absolute inset-0"
             onPointerMove={(e) => {
               if (isDraggingSlider) handleSliderDrag(e.clientX);
             }}
             onPointerUp={() => setIsDraggingSlider(false)}
           >
-            {/* Split Handle Bar */}
             <div
-              className="absolute top-0 bottom-0 w-8 -translate-x-1/2 flex items-center justify-center cursor-ew-resize touch-none select-none z-20 pointer-events-auto"
+              className="pointer-events-auto absolute bottom-0 top-0 z-20 flex w-8 -translate-x-1/2 cursor-ew-resize touch-none select-none items-center justify-center"
               style={{ left: `${sliderPos}%` }}
               onPointerDown={(e) => {
                 try {
@@ -979,97 +777,27 @@ export function CanvasWorkspace({
               }}
               onPointerCancel={() => setIsDraggingSlider(false)}
             >
-              <div className="w-0.5 h-full bg-white shadow-xl pointer-events-none" />
-              <div className="absolute size-7 sm:size-8 rounded-full bg-white shadow-lg border border-stone-300 flex items-center justify-center text-stone-700 font-bold text-xs pointer-events-none">
-                ⇄
+              <div className="pointer-events-none h-full w-0.5 bg-white shadow-xl" />
+              <div className="pointer-events-none absolute grid size-9 place-items-center rounded-full border border-stone-200 bg-white text-xs font-bold text-stone-700 shadow-lg">
+                &#8596;
               </div>
             </div>
 
-            {/* Badges */}
-            <span className="absolute top-3 sm:top-4 left-3 sm:left-4 rounded-lg bg-black/60 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
-              Original
+            <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-stone-800 shadow-sm">
+              Before
             </span>
-            <span className="absolute top-3 sm:top-4 right-3 sm:right-4 rounded-lg bg-emerald-900/80 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-emerald-100 backdrop-blur-md border border-emerald-400/30">
-              Birla Opus {selectedColor.name}
+            <span className="absolute right-3 top-3 rounded-full bg-[#F05323] px-3 py-1 text-xs font-semibold text-white shadow-sm">
+              After &middot; {selectedColor.name}
             </span>
           </div>
         )}
 
-        {/* Usage hint overlay */}
-        {!isComparing && (
-          <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 pointer-events-none rounded-lg sm:rounded-xl bg-black/60 px-2.5 py-1 text-[10px] sm:text-[11px] font-medium text-white/95 backdrop-blur-md">
-            {activeTool === "smart-fill"
-              ? "Tap wall to paint"
-              : activeTool === "brush"
-              ? "Drag to paint"
-              : "Drag to erase"}
+        {!isComparing && !isLoadingImage && (
+          <div className="pointer-events-none absolute bottom-2.5 left-1/2 max-w-[92%] -translate-x-1/2 whitespace-nowrap rounded-full bg-stone-900/70 px-3 py-1.5 text-[11px] font-medium text-white sm:bottom-3 sm:px-3.5 sm:text-xs">
+            {hint}
           </div>
         )}
       </div>
-
-      {/* Live Desktop/Webcam Camera Modal */}
-      {showCameraModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-md">
-          <div className="relative w-full max-w-xl overflow-hidden rounded-3xl bg-stone-900 p-6 text-white shadow-2xl border border-white/10">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Camera className="size-5 text-accent" />
-                <h3 className="font-display font-semibold text-lg">Snap Your Room</h3>
-              </div>
-              <button
-                type="button"
-                onClick={stopCamera}
-                className="rounded-full p-1 text-white/70 hover:bg-white/10 hover:text-white"
-              >
-                <X className="size-5" />
-              </button>
-            </div>
-
-            {cameraError ? (
-              <div className="rounded-2xl bg-rose-950/50 p-6 text-center border border-rose-800/40 my-4">
-                <p className="text-sm text-rose-200">{cameraError}</p>
-                <Button
-                  onClick={() => fileInputRef.current?.click()}
-                  variant="outline"
-                  className="mt-4 border-white/20 text-white hover:bg-white/10"
-                >
-                  <Upload className="size-4 mr-2" /> Upload From Computer
-                </Button>
-              </div>
-            ) : (
-              <>
-                <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black border border-white/10">
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="h-full w-full object-cover"
-                  />
-                  <div className="absolute inset-0 pointer-events-none border border-white/20 rounded-2xl" />
-                </div>
-
-                <div className="mt-6 flex items-center justify-center gap-4">
-                  <Button
-                    onClick={capturePhoto}
-                    size="lg"
-                    className="rounded-full bg-accent hover:bg-accent/90 text-stone-900 font-bold px-8 shadow-lg shadow-accent/20"
-                  >
-                    <Camera className="size-5 mr-2" /> Capture Wall Photo
-                  </Button>
-                  <Button
-                    onClick={stopCamera}
-                    variant="ghost"
-                    className="text-white/70 hover:text-white hover:bg-white/10"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

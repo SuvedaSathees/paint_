@@ -65,22 +65,28 @@ export function BeforeAfterSlider({
   };
 
   return (
-    <section className="pt-8 sm:pt-[50px] pb-8 sm:pb-[50px] px-3 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full">
+    <section className="pt-12 sm:pt-[50px] pb-10 sm:pb-[50px] px-4 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full lg:flex lg:min-h-[100dvh] lg:flex-col lg:justify-center lg:py-8 shortlg:py-5">
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-12">
-        <span className="text-[0.68rem] sm:text-xs font-bold uppercase tracking-[0.24em] text-accent block mb-1.5">
-          &mdash; PROVEN SURFACE EXCELLENCE &mdash;
+      <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-12 lg:mb-7 shortlg:mb-4">
+        <span className="flex items-center justify-center gap-2.5 sm:gap-3 whitespace-nowrap text-[10.5px] sm:text-xs font-bold uppercase tracking-[0.18em] sm:tracking-[0.24em] text-accent mb-2 sm:mb-1.5">
+          <span aria-hidden className="h-px w-6 shrink-0 bg-current opacity-50 sm:w-8" />
+          <span className="sm:hidden">Proven surface excellence</span>
+          <span className="hidden sm:inline">PROVEN SURFACE EXCELLENCE</span>
+          <span aria-hidden className="h-px w-6 shrink-0 bg-current opacity-50 sm:w-8" />
         </span>
-        <h2 className="font-display text-2xl sm:text-4xl lg:text-5xl font-serif font-semibold tracking-tight text-primary">
+        <h2 className="font-display text-[1.75rem] leading-tight sm:leading-none sm:text-4xl lg:text-5xl shortlg:text-4xl font-serif font-semibold tracking-tight text-primary">
           {title}
         </h2>
-        <p className="mt-2 text-xs sm:text-sm md:text-base text-muted-foreground tracking-wide leading-relaxed max-w-2xl mx-auto">
+        <p className="mx-auto mt-2 max-w-[300px] text-[13px] leading-relaxed text-muted-foreground sm:hidden">
+          Drag the brush to compare a damp, peeling wall with a fresh Birla Opus finish.
+        </p>
+        <p className="hidden sm:block mt-2 text-xs sm:text-sm md:text-base text-muted-foreground tracking-wide leading-relaxed max-w-2xl mx-auto">
           {subtitle}
         </p>
       </div>
 
       {/* Main Interactive Comparison Card */}
-      <div className="relative rounded-2xl sm:rounded-3xl border border-primary/15 bg-card/75 p-3 sm:p-6 lg:p-7 shadow-xl backdrop-blur-sm">
+      <div className="relative rounded-[22px] sm:rounded-3xl border border-stone-200/90 sm:border-primary/15 bg-white sm:bg-card/75 p-3 sm:p-6 lg:p-7 shortlg:p-4 shadow-[0_2px_12px_rgba(15,30,54,0.05)] sm:shadow-xl backdrop-blur-sm">
         {/* Comparison Stage Container */}
         <div
           ref={containerRef}
@@ -95,7 +101,7 @@ export function BeforeAfterSlider({
           aria-valuemin={0}
           aria-valuemax={100}
           aria-label="Before and after transformation slider"
-          className="relative aspect-[4/3] sm:aspect-[16/9] w-full max-h-[600px] overflow-hidden rounded-xl sm:rounded-2xl shadow-inner select-none cursor-ew-resize touch-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="relative aspect-[4/3] sm:aspect-[16/9] lg:aspect-auto lg:h-[min(60dvh,680px)] shortlg:h-[56dvh] w-full max-h-[680px] overflow-hidden rounded-xl sm:rounded-2xl shadow-inner select-none cursor-ew-resize touch-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           {/* 1. Base Layer: BEFORE AKSHARA (Full frame) */}
           <div className="absolute inset-0 w-full h-full bg-stone-900">
@@ -190,82 +196,82 @@ export function BeforeAfterSlider({
         </div>
 
         {/* Mobile Quick Tap Controls */}
-        <div className="flex sm:hidden items-center justify-center gap-1.5 mt-2.5">
+        <div className="mt-3 grid grid-cols-3 gap-1 rounded-full bg-stone-100 p-1 sm:hidden" role="group" aria-label="Compare view">
           <button
             type="button"
             onClick={() => setSliderPos(5)}
-            className={`px-2.5 py-1 rounded-full text-[0.62rem] font-bold border transition-colors cursor-pointer ${
-              sliderPos < 25 ? "bg-primary text-white border-primary" : "bg-stone-100 text-stone-700 border-stone-200"
+            className={`h-8 rounded-full text-[12.5px] font-semibold transition-colors cursor-pointer ${
+              sliderPos < 25 ? "bg-white text-primary shadow-sm" : "text-stone-500"
             }`}
           >
-            Show Before
+            Before
           </button>
           <button
             type="button"
             onClick={() => setSliderPos(50)}
-            className={`px-2.5 py-1 rounded-full text-[0.62rem] font-bold border transition-colors cursor-pointer ${
-              sliderPos >= 25 && sliderPos <= 75 ? "bg-accent text-white border-accent shadow-xs" : "bg-stone-100 text-stone-700 border-stone-200"
+            className={`h-8 rounded-full text-[12.5px] font-semibold transition-colors cursor-pointer ${
+              sliderPos >= 25 && sliderPos <= 75 ? "bg-white text-primary shadow-sm" : "text-stone-500"
             }`}
           >
-            50/50 Split
+            Split
           </button>
           <button
             type="button"
             onClick={() => setSliderPos(95)}
-            className={`px-2.5 py-1 rounded-full text-[0.62rem] font-bold border transition-colors cursor-pointer ${
-              sliderPos > 75 ? "bg-primary text-white border-primary" : "bg-stone-100 text-stone-700 border-stone-200"
+            className={`h-8 rounded-full text-[12.5px] font-semibold transition-colors cursor-pointer ${
+              sliderPos > 75 ? "bg-white text-primary shadow-sm" : "text-stone-500"
             }`}
           >
-            Show After
+            After
           </button>
         </div>
 
         {/* Transformation Highlights (Clean 2x2 Grid on Mobile, 4-Column on Desktop) */}
-        <div className="mt-4 sm:mt-6 pt-3.5 sm:pt-5 border-t border-primary/10">
+        <div className="mt-3 sm:mt-6 pt-3 sm:pt-5 shortlg:mt-3 shortlg:pt-3 border-t border-primary/10">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 w-full">
-            <div className="flex items-center gap-2 sm:gap-2.5 rounded-xl sm:rounded-2xl bg-secondary/50 p-2.5 sm:p-3 border border-primary/10 shadow-2xs">
-              <CheckCircle2 className="size-3.5 sm:size-4 text-accent shrink-0" />
+            <div className="flex items-center gap-2 sm:gap-2.5 rounded-xl sm:rounded-2xl bg-stone-50 sm:bg-secondary/50 p-2.5 sm:p-3 border border-stone-200/70 sm:border-primary/10 sm:shadow-2xs">
+              <CheckCircle2 className="size-4 text-accent shrink-0" />
               <div className="text-left min-w-0">
-                <span className="block text-[0.68rem] sm:text-xs font-bold uppercase tracking-wider text-primary leading-tight truncate">
+                <span className="block text-[12.5px] sm:text-xs font-semibold sm:font-bold sm:uppercase sm:tracking-wider text-primary leading-tight sm:truncate">
                   Teflon™ Shield
                 </span>
-                <span className="block text-[0.58rem] sm:text-[0.65rem] text-muted-foreground leading-tight mt-0.5 truncate">
+                <span className="block text-[11px] sm:text-[0.65rem] text-muted-foreground leading-tight mt-0.5 sm:truncate">
                   Stains wipe off easily
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-2.5 rounded-xl sm:rounded-2xl bg-secondary/50 p-2.5 sm:p-3 border border-primary/10 shadow-2xs">
-              <CheckCircle2 className="size-3.5 sm:size-4 text-accent shrink-0" />
+            <div className="flex items-center gap-2 sm:gap-2.5 rounded-xl sm:rounded-2xl bg-stone-50 sm:bg-secondary/50 p-2.5 sm:p-3 border border-stone-200/70 sm:border-primary/10 sm:shadow-2xs">
+              <CheckCircle2 className="size-4 text-accent shrink-0" />
               <div className="text-left min-w-0">
-                <span className="block text-[0.68rem] sm:text-xs font-bold uppercase tracking-wider text-primary leading-tight truncate">
+                <span className="block text-[12.5px] sm:text-xs font-semibold sm:font-bold sm:uppercase sm:tracking-wider text-primary leading-tight sm:truncate">
                   100k Scrub Life
                 </span>
-                <span className="block text-[0.58rem] sm:text-[0.65rem] text-muted-foreground leading-tight mt-0.5 truncate">
+                <span className="block text-[11px] sm:text-[0.65rem] text-muted-foreground leading-tight mt-0.5 sm:truncate">
                   High abrasion tested
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-2.5 rounded-xl sm:rounded-2xl bg-secondary/50 p-2.5 sm:p-3 border border-primary/10 shadow-2xs">
-              <CheckCircle2 className="size-3.5 sm:size-4 text-accent shrink-0" />
+            <div className="flex items-center gap-2 sm:gap-2.5 rounded-xl sm:rounded-2xl bg-stone-50 sm:bg-secondary/50 p-2.5 sm:p-3 border border-stone-200/70 sm:border-primary/10 sm:shadow-2xs">
+              <CheckCircle2 className="size-4 text-accent shrink-0" />
               <div className="text-left min-w-0">
-                <span className="block text-[0.68rem] sm:text-xs font-bold uppercase tracking-wider text-primary leading-tight truncate">
+                <span className="block text-[12.5px] sm:text-xs font-semibold sm:font-bold sm:uppercase sm:tracking-wider text-primary leading-tight sm:truncate">
                   Micro-Crack Seal
                 </span>
-                <span className="block text-[0.58rem] sm:text-[0.65rem] text-muted-foreground leading-tight mt-0.5 truncate">
+                <span className="block text-[11px] sm:text-[0.65rem] text-muted-foreground leading-tight mt-0.5 sm:truncate">
                   Flawless plaster hide
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-2.5 rounded-xl sm:rounded-2xl bg-secondary/50 p-2.5 sm:p-3 border border-primary/10 shadow-2xs">
-              <CheckCircle2 className="size-3.5 sm:size-4 text-accent shrink-0" />
+            <div className="flex items-center gap-2 sm:gap-2.5 rounded-xl sm:rounded-2xl bg-stone-50 sm:bg-secondary/50 p-2.5 sm:p-3 border border-stone-200/70 sm:border-primary/10 sm:shadow-2xs">
+              <CheckCircle2 className="size-4 text-accent shrink-0" />
               <div className="text-left min-w-0">
-                <span className="block text-[0.68rem] sm:text-xs font-bold uppercase tracking-wider text-primary leading-tight truncate">
+                <span className="block text-[12.5px] sm:text-xs font-semibold sm:font-bold sm:uppercase sm:tracking-wider text-primary leading-tight sm:truncate">
                   Zero Odor VOC
                 </span>
-                <span className="block text-[0.58rem] sm:text-[0.65rem] text-muted-foreground leading-tight mt-0.5 truncate">
+                <span className="block text-[11px] sm:text-[0.65rem] text-muted-foreground leading-tight mt-0.5 sm:truncate">
                   Move-in same evening
                 </span>
               </div>

@@ -18,11 +18,15 @@ interface ServiceCard {
   rotationClass: string;
   translateHover: string;
   link: string;
+  short: string;
+  mobileCta: string;
 }
 
 const SERVICE_CARDS: ServiceCard[] = [
   {
     id: "dealer",
+    short: "Official dealer with an in-store tinting lab.",
+    mobileCta: "Shop paints",
     num: "NO. 01 · AUTHORIZED DEALER",
     title: "Birla Opus Paints",
     category: "Decorative & Protective Paints",
@@ -48,6 +52,8 @@ const SERVICE_CARDS: ServiceCard[] = [
   },
   {
     id: "conduits",
+    short: "ISI:9537 rigid PVC pipes and junction boxes.",
+    mobileCta: "Shop conduits",
     num: "NO. 02 · ISI CERTIFIED",
     title: "Electrical Conduits",
     category: "Concealed & Surface Wiring Safety",
@@ -73,6 +79,8 @@ const SERVICE_CARDS: ServiceCard[] = [
   },
   {
     id: "fasteners",
+    short: "Grade 8.8 and stainless steel fasteners.",
+    mobileCta: "Shop fasteners",
     num: "NO. 03 · INDUSTRIAL GRADE",
     title: "Bolts & Fasteners",
     category: "Structural & Engineering Hardware",
@@ -98,6 +106,8 @@ const SERVICE_CARDS: ServiceCard[] = [
   },
   {
     id: "delivery",
+    short: "Paint drums and bundles delivered to your site.",
+    mobileCta: "Book delivery",
     num: "NO. 04 · SAME-DAY DISPATCH",
     title: "Job-Site Delivery",
     category: "Direct Supply to Project Sites",
@@ -131,23 +141,73 @@ export function ServiceSwatchDeck() {
   };
 
   return (
-    <section className="pt-8 sm:pt-[60px] pb-8 px-2 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full overflow-hidden">
+    <section className="pt-12 sm:pt-[60px] pb-10 sm:pb-8 px-4 sm:px-7 lg:px-10 mx-auto max-w-[1440px] w-full overflow-hidden">
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto mb-5 sm:mb-14">
-        <span className="text-[8.5px] sm:text-xs font-bold uppercase tracking-[0.16em] sm:tracking-[0.24em] text-accent block mb-1.5 whitespace-nowrap select-none">
-          <span className="sm:hidden">&mdash; GOLD STANDARD IN PAINTS &amp; HARDWARE &mdash;</span>
-          <span className="hidden sm:inline">&mdash; THE GOLD STANDARD IN PAINTS &amp; HARDWARE &mdash;</span>
+      <div className="text-center max-w-3xl mx-auto mb-7 sm:mb-14">
+        <span className="flex items-center justify-center gap-2.5 sm:gap-3 whitespace-nowrap text-[10.5px] sm:text-xs font-bold uppercase tracking-[0.16em] sm:tracking-[0.24em] text-accent mb-2 sm:mb-1.5 select-none">
+          <span aria-hidden className="h-px w-6 shrink-0 bg-current opacity-50 sm:w-8" />
+          <span className="sm:hidden">Gold standard in paints &amp; hardware</span>
+          <span className="hidden sm:inline">THE GOLD STANDARD IN PAINTS &amp; HARDWARE</span>
+          <span aria-hidden className="h-px w-6 shrink-0 bg-current opacity-50 sm:w-8" />
         </span>
-        <h2 className="font-display text-2xl sm:text-5xl lg:text-6xl font-serif tracking-tight text-primary">
+        <h2 className="font-display text-[2rem] leading-tight sm:leading-none sm:text-5xl lg:text-6xl font-serif tracking-tight text-primary">
           Why Choose Akshara
         </h2>
-        <p className="mt-2 text-xs sm:text-sm md:text-base text-muted-foreground tracking-wide leading-relaxed max-w-xl mx-auto">
+        <p className="mx-auto mt-2 max-w-[310px] text-[13px] leading-relaxed text-muted-foreground sm:hidden">
+          Genuine Birla Opus paints, certified hardware and site delivery &mdash; from one trusted store.
+        </p>
+        <p className="hidden sm:block mt-2 text-xs sm:text-sm md:text-base text-muted-foreground tracking-wide leading-relaxed max-w-xl mx-auto">
           Official Birla Opus color excellence with an unmatched industrial hardware supply chain. Tap any card to flip and inspect full specifications.
         </p>
       </div>
 
+      {/* Mobile: clean 2 × 2 swatch cards (no flip) */}
+      <div className="mx-auto grid max-w-md grid-cols-2 gap-3 sm:hidden">
+        {SERVICE_CARDS.map((card) => {
+          const [numPart, labelPart] = card.num.split(" · ");
+          const number = numPart.replace(/\D/g, "");
+          const keySpecs = [card.specs[0], card.specs[2]];
+          return (
+            <Link
+              key={card.id}
+              to={card.link}
+              className="group flex flex-col overflow-hidden rounded-[20px] border border-stone-200/90 bg-white shadow-[0_2px_12px_rgba(15,30,54,0.05)] transition-transform active:scale-[0.98]"
+            >
+              <div className="relative h-[72px] px-3 pt-2.5 text-white" style={{ backgroundColor: card.color }}>
+                <span className="block text-[9.5px] font-bold uppercase leading-tight tracking-[0.1em] text-white/95">
+                  {labelPart}
+                </span>
+                <span className="absolute bottom-1.5 right-3 font-serif text-[30px] font-bold leading-none text-white/35">
+                  {number}
+                </span>
+              </div>
+              <div className="flex flex-1 flex-col p-3">
+                <h3 className="font-serif text-[15px] font-bold leading-tight tracking-tight text-stone-950">
+                  {card.title}
+                </h3>
+                <p className="mt-1 text-[11.5px] leading-snug text-stone-500">{card.short}</p>
+                <dl className="mt-2.5 space-y-1 border-t border-stone-100 pt-2.5">
+                  {keySpecs.map((spec) => (
+                    <div key={spec.label} className="flex items-baseline justify-between gap-2 text-[11px]">
+                      <dt className="capitalize text-stone-500">{spec.label.toLowerCase()}</dt>
+                      <dd className="font-semibold text-stone-900">{spec.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <span className="mt-auto flex items-center gap-1 pt-3 text-[12px] font-semibold text-stone-900">
+                  {card.mobileCta}
+                  <span aria-hidden style={{ color: card.color }} className="transition-transform group-hover:translate-x-0.5">
+                    &rarr;
+                  </span>
+                </span>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+
       {/* 4 Cards Display: 2 in a Row on Mobile (Like Flipkart), 4 in a Row on Desktop */}
-      <div className="relative pt-1 sm:pt-6 pb-4 sm:pb-20 max-w-6xl mx-auto w-full">
+      <div className="relative hidden sm:block pt-1 sm:pt-6 pb-4 sm:pb-20 max-w-6xl mx-auto w-full">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-5 w-full place-items-center">
           {SERVICE_CARDS.map((card) => {
             const isFlipped = flippedCardId === card.id;

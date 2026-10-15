@@ -21,6 +21,7 @@ import {
   Cpu,
   ToggleRight,
   Shield,
+  ChevronRight,
 } from "lucide-react";
 
 // ─── Data Exactly from User Screenshot ────────────────────────────────────────
@@ -33,6 +34,7 @@ const CATEGORIES = [
     eyebrow: "AUTHORISED DEALER",
     title: "Birla Opus Paints",
     desc: "Interior & exterior emulsions, primers, textures and computerized tinting on-site.",
+    short: "Interior & exterior emulsions, primers and on-site tinting.",
     features: [
       { line1: "Luxury", line2: "Emulsion", icon: Gem },
       { line1: "Weather", line2: "Guard", icon: Sun },
@@ -50,6 +52,7 @@ const CATEGORIES = [
     eyebrow: "ISI:9537 CERTIFIED PVC",
     title: "Electrical Conduit Pipes",
     desc: "Rigid PVC conduit pipes, junction boxes and fittings for concealed wiring.",
+    short: "PVC conduit pipes, junction boxes and wiring fittings.",
     features: [
       { line1: "Rigid", line2: "PVC", icon: ShieldCheck },
       { line1: "Junction", line2: "Boxes", icon: Box },
@@ -67,6 +70,7 @@ const CATEGORIES = [
     eyebrow: "INDUSTRIAL FASTENERS",
     title: "Bolt And Nuts",
     desc: "Hex bolts, hex nuts, washers and anchor fasteners in zinc-plated and SS.",
+    short: "Hex bolts, nuts, washers and anchor fasteners.",
     features: [
       { line1: "Hex", line2: "Bolts", icon: Wrench },
       { line1: "Hex", line2: "Nuts", icon: Hexagon },
@@ -84,6 +88,7 @@ const CATEGORIES = [
     eyebrow: "CONSTRUCTION ESSENTIALS",
     title: "Building Materials",
     desc: "Cement, sand, binding wire, steel rods, solid blocks and structural supplies.",
+    short: "Cement, sand, steel rods, binding wire and blocks.",
     features: [
       { line1: "Cement", line2: "Supply", icon: Package },
       { line1: "Steel", line2: "Rods", icon: Hammer },
@@ -101,6 +106,7 @@ const CATEGORIES = [
     eyebrow: "SWITCHGEAR & FITTINGS",
     title: "Electrical & Hardware",
     desc: "Distribution boxes, MCBs, modular switches, hand tools and job accessories.",
+    short: "MCBs, modular switches, hand tools and accessories.",
     features: [
       { line1: "MCB", line2: "Boxes", icon: Cpu },
       { line1: "Modular", line2: "Switches", icon: ToggleRight },
@@ -173,11 +179,11 @@ function CategoryCard({
         transform: inView ? "translateY(0) scale(1)" : "translateY(24px) scale(0.97)",
         transition: `opacity 0.5s cubic-bezier(0.22,1,0.36,1) ${index * 60}ms, transform 0.5s cubic-bezier(0.22,1,0.36,1) ${index * 60}ms`,
       }}
-      className="group relative flex flex-col overflow-hidden rounded-[26px] xl:rounded-[28px] border border-stone-200/90 bg-white shadow-[0_4px_18px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.11)] transition-all duration-300 w-full h-fit"
+      className="group relative flex flex-col overflow-hidden rounded-[26px] xl:rounded-[28px] border border-stone-200/90 bg-white shadow-[0_4px_18px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.11)] transition-all duration-300 w-full h-full"
       aria-label={cat.title}
     >
       {/* 1 ── Product Image Block with Signature Organic Wave Divider */}
-      <div className="relative h-[190px] xl:h-[210px] w-full overflow-hidden bg-[#F6F3ED]">
+      <div className="relative h-[160px] xl:h-[175px] shortlg:h-[135px] w-full shrink-0 overflow-hidden bg-[#F6F3ED]">
         <img
           src={cat.image}
           alt={`${cat.title} at Akshara Paints & Hardware`}
@@ -207,7 +213,7 @@ function CategoryCard({
       </div>
 
       {/* 2 ── Content Block: Snug and compact, matching screenshot pixel-for-pixel */}
-      <div className="flex flex-col p-3.5 xl:p-4 bg-white relative">
+      <div className="flex flex-1 flex-col p-3.5 xl:p-4 bg-white relative">
         {/* Subtle Warm Beige Accent Wave in Bottom-Right Corner (Exact from Screenshot) */}
         <div className="absolute bottom-0 right-0 w-[65%] h-[42px] pointer-events-none overflow-hidden rounded-br-[26px] xl:rounded-br-[28px] z-0">
           <svg
@@ -264,14 +270,14 @@ function CategoryCard({
         </div>
 
         {/* 3 ── Action Button Strip: Sits right below the icons without spacious gap */}
-        <div className="flex items-center justify-between mt-2.5 pt-1 relative z-10">
+        <div className="flex items-center justify-between mt-auto pt-3 relative z-10">
           <Link
             to={cat.link}
             className="inline-flex items-center justify-center bg-[#111827] hover:bg-black active:scale-[0.97] text-white rounded-full py-1.5 px-3.5 xl:px-4 text-[9.5px] xl:text-[10.5px] font-bold tracking-wide shadow-xs transition-all duration-200 cursor-pointer"
           >
             <span>{cat.ctaText}</span>
           </Link>
-          <div className="text-[7px] xl:text-[7.5px] font-bold text-stone-400 uppercase tracking-tight text-right leading-[1.15] max-w-[85px]">
+          <div className="text-[7px] xl:text-[7.5px] font-bold text-[#C0772C] uppercase tracking-tight text-right leading-[1.15] max-w-[85px]">
             {cat.microcopy.map((line, idx) => (
               <div key={idx}>{line}</div>
             ))}
@@ -282,79 +288,55 @@ function CategoryCard({
   );
 }
 
-// ─── Mobile Category Card: Clean Small Box Like Service ───────────────────────
+// ─── Mobile Category Card: clean row (image · text · arrow) ──────────────────
 
 function MobileCategoryCard({
   cat,
   index,
   inView,
-  isLastOdd = false,
 }: {
   cat: (typeof CATEGORIES)[0];
   index: number;
   inView: boolean;
-  isLastOdd?: boolean;
 }) {
   return (
-    <article
+    <Link
+      to={cat.link}
       style={{
         opacity: inView ? 1 : 0,
-        transform: inView ? "translateY(0) scale(1)" : "translateY(16px) scale(0.98)",
+        transform: inView ? "translateY(0)" : "translateY(14px)",
         transition: `opacity 0.4s cubic-bezier(0.22,1,0.36,1) ${index * 50}ms, transform 0.4s cubic-bezier(0.22,1,0.36,1) ${index * 50}ms`,
       }}
-      className={`group relative flex flex-col justify-between rounded-[18px] sm:rounded-[22px] border border-[#E7E2D6] bg-[#FAF8F5] overflow-hidden shadow-2xs hover:shadow-md transition-all duration-300 w-full ${
-        isLastOdd ? "col-span-2 justify-self-center w-[calc(50%-5px)] max-w-[calc(50%-5px)]" : ""
-      }`}
-      aria-label={cat.title}
+      className="group flex items-center gap-3 rounded-[20px] border border-stone-200/90 bg-white p-2.5 pr-3 shadow-[0_2px_12px_rgba(15,30,54,0.05)] transition-shadow duration-300 hover:shadow-[0_8px_24px_rgba(15,30,54,0.09)] active:scale-[0.99]"
+      aria-label={`${cat.title} — ${cat.ctaText}`}
     >
-      {/* Visual Header - compact like service */}
-      <div className="relative h-[115px] sm:h-[135px] w-full overflow-hidden bg-stone-100">
+      <div className="relative size-[80px] shrink-0 overflow-hidden rounded-[14px] bg-[#F6F3ED]">
         <img
           src={cat.image}
           alt={`${cat.title} at Akshara Paints`}
-          width={280}
-          height={135}
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+          width={168}
+          height={168}
+          className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/20 pointer-events-none" />
-
-        {/* Compact Status Badge */}
-        <div className="absolute top-2 right-2 z-10 flex items-center bg-black/80 backdrop-blur-xs text-white rounded-full px-2 py-0.5 text-[7px] sm:text-[8px] font-extrabold uppercase tracking-wider shadow-xs border border-white/10 select-none">
-          <span>{cat.badge}</span>
-        </div>
       </div>
 
-      {/* Card Body - clean small box like service */}
-      <div className="p-2.5 sm:p-3 flex-1 flex flex-col justify-between">
-        <div>
-          {/* Eyebrow */}
-          <span className="text-[7.5px] sm:text-[8.5px] font-bold uppercase tracking-wider text-[#C0772C] block mb-0.5 truncate">
-            {cat.eyebrow}
-          </span>
-          <h3 className="font-display font-serif text-[12.5px] sm:text-sm font-bold text-[#0F1E36] tracking-tight leading-tight line-clamp-1 group-hover:text-[#F05323] transition-colors">
-            {cat.title}
-          </h3>
-          <p className="mt-1 text-[9px] sm:text-[10px] text-stone-500 leading-snug line-clamp-2">
-            {cat.desc}
-          </p>
-        </div>
-
-        {/* Card Action - clean compact button like service */}
-        <div className="mt-2.5 pt-2 border-t border-stone-200/80">
-          <Button
-            variant="hero"
-            size="sm"
-            asChild
-            className="w-full h-7 rounded-full text-[10px] font-semibold cursor-pointer shadow-xs justify-center"
-          >
-            <Link to={cat.link} className="flex items-center justify-center">
-              <span>{cat.ctaText} &rarr;</span>
-            </Link>
-          </Button>
-        </div>
+      <div className="min-w-0 flex-1">
+        <span className="block truncate text-[10px] font-bold uppercase tracking-[0.12em] text-[#C0772C]">
+          {cat.eyebrow}
+        </span>
+        <h3 className="mt-0.5 font-serif text-[16px] font-bold leading-tight tracking-tight text-[#0F1E36]">
+          {cat.title}
+        </h3>
+        <p className="mt-1 text-[12.5px] leading-snug text-stone-500">{cat.short}</p>
       </div>
-    </article>
+
+      <ChevronRight
+        aria-hidden
+        className="size-5 shrink-0 text-stone-300 transition-colors group-hover:text-[#F05323]"
+        strokeWidth={2.25}
+      />
+    </Link>
   );
 }
 
@@ -371,47 +353,44 @@ export function ProductCatalogSection() {
       className="relative bg-[#FCFCFA] overflow-hidden"
     >
       {/* 1 ── Section Header + Product Grid */}
-      <div className="mx-auto max-w-[1580px] px-3 sm:px-5 lg:px-8 pt-8 sm:pt-12 pb-6 sm:pb-12">
+      <div className="mx-auto max-w-[1580px] px-4 sm:px-5 lg:px-8 pt-12 sm:pt-12 pb-12 sm:pb-12 min-[860px]:flex min-[860px]:min-h-[100dvh] min-[860px]:flex-col min-[860px]:justify-center min-[860px]:py-8 shortlg:py-5">
         <div
           ref={headerRef}
-          className="text-center max-w-2xl mx-auto mb-6 sm:mb-10 mt-2 sm:mt-4"
+          className="text-center max-w-2xl mx-auto mb-7 sm:mb-8 shortlg:mb-5"
           style={{
             opacity: headerInView ? 1 : 0,
             transform: headerInView ? "translateY(0)" : "translateY(20px)",
             transition: "opacity 0.7s ease, transform 0.7s ease",
           }}
         >
-          <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.22em] text-[#D97706] block mb-1.5">
-            &mdash; EVERYTHING UNDER ONE ROOF &mdash;
+          <span className="mb-2 flex items-center justify-center gap-2.5 sm:gap-3 whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.2em] text-[#D97706] sm:mb-1.5 sm:text-xs sm:tracking-[0.22em]">
+            <span aria-hidden className="h-px w-6 shrink-0 bg-current opacity-50 sm:w-8" />
+            Everything under one roof
+            <span aria-hidden className="h-px w-6 shrink-0 bg-current opacity-50 sm:w-8" />
           </span>
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-serif font-bold tracking-tight text-[#0F1E36] mb-2.5">
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl shortlg:text-4xl font-serif font-bold tracking-tight text-[#0F1E36] mb-2.5">
             What We Sell
           </h2>
-          <p className="text-xs sm:text-sm text-stone-500 tracking-wide leading-relaxed">
+          <p className="mx-auto max-w-[300px] text-[13px] leading-relaxed text-stone-500 sm:hidden">
+            Paints, pipes, fasteners and building materials &mdash; all in one shop in Erode.
+          </p>
+          <p className="hidden text-xs sm:block sm:text-sm text-stone-500 tracking-wide leading-relaxed">
             From Birla Opus paints to industrial fasteners, conduit piping, and building materials &mdash; Akshara is Erode's one-stop destination for construction, renovation, and fine architectural finishing.
           </p>
         </div>
 
         {/* 2 ── Product Grids Container (Wrapper ensures IntersectionObserver fires on desktop & mobile) */}
         <div ref={gridRef} className="w-full">
-          {/* Mobile Grid: Small boxes like service (< 860px) */}
-          <div
-            className="grid min-[860px]:hidden grid-cols-2 gap-2.5 sm:gap-3.5 max-w-xl mx-auto w-full px-1 justify-items-stretch"
-          >
+          {/* Mobile list: one clean row per category (< 860px) */}
+          <div className="mx-auto flex w-full max-w-xl flex-col gap-3 min-[860px]:hidden">
             {CATEGORIES.map((cat, i) => (
-              <MobileCategoryCard
-                key={cat.id}
-                cat={cat}
-                index={i}
-                inView={gridInView}
-                isLastOdd={i === CATEGORIES.length - 1 && CATEGORIES.length % 2 !== 0}
-              />
+              <MobileCategoryCard key={cat.id} cat={cat} index={i} inView={gridInView} />
             ))}
           </div>
 
           {/* Desktop Grid: Strictly 5 in a Row matching screenshot (>= 860px) */}
           <div
-            className="hidden min-[860px]:grid min-[860px]:grid-cols-5 website-5-cols gap-2.5 sm:gap-3 lg:gap-3 xl:gap-3.5 max-w-[1360px] mx-auto w-full px-1 sm:px-0 justify-items-stretch"
+            className="hidden min-[860px]:grid min-[860px]:grid-cols-5 website-5-cols items-stretch gap-2.5 sm:gap-3 lg:gap-3 xl:gap-3.5 max-w-[1360px] mx-auto w-full px-1 sm:px-0"
           >
             {CATEGORIES.map((cat, i) => (
               <CategoryCard
@@ -426,7 +405,7 @@ export function ProductCatalogSection() {
 
         {/* 3 ── Browse Full Catalogue Button */}
         <div
-          className="mt-8 sm:mt-12 flex items-center justify-center"
+          className="mt-7 sm:mt-9 shortlg:mt-5 flex items-center justify-center"
           style={{
             opacity: gridInView ? 1 : 0,
             transform: gridInView ? "translateY(0)" : "translateY(16px)",

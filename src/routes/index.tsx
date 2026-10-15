@@ -84,6 +84,12 @@ export const Route = createFileRoute("/")(
           content: "Get an instant paint estimate & shop Birla Opus paints, hardware and pipes in Erode.",
         },
       ],
+      links: [
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Sora:wght@500;600;700&display=swap",
+        },
+      ],
       scripts: [
         { type: "application/ld+json", children: FAQ_SCHEMA },
         { type: "application/ld+json", children: BREADCRUMB_SCHEMA },
@@ -94,5 +100,10 @@ export const Route = createFileRoute("/")(
 );
 
 function Index() {
-  return <AksharaHero />;
+  // The Home page keeps its original typefaces (see .home-classic-fonts in styles.css)
+  return (
+    <div className="home-classic-fonts contents">
+      <AksharaHero />
+    </div>
+  );
 }
